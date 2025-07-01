@@ -1,0 +1,22 @@
+{
+  "name": "my-dit-planner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a-reynbaw/my-dit-planner.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/a-reynbaw/my-dit-planner/issues"
+  },
+  "homepage": "https://github.com/a-reynbaw/my-dit-planner#readme"
+
+}
