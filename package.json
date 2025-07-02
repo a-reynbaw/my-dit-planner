@@ -2,7 +2,7 @@
   "name": "my-dit-planner",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ."
@@ -17,6 +17,8 @@
   "bugs": {
     "url": "https://github.com/a-reynbaw/my-dit-planner/issues"
   },
-  "homepage": "https://github.com/a-reynbaw/my-dit-planner#readme"
-
+  "homepage": "https://github.com/a-reynbaw/my-dit-planner#readme",
+  "devDependencies": {
+    "electron": "^37.1.0"
+  }
 }
