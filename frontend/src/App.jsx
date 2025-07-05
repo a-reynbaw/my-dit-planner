@@ -1,38 +1,39 @@
 import React, { useState } from 'react';
-import NavBar from './components/NavBar.jsx';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import AllCourses from './pages/AllCourses';
 
-function App() {
+function Dashboard({ courses, setCourses, navigate }) {
   // Example static data; replace with backend data as needed
-  const [courses, setCourses] = useState([
-    { name: 'Introduction to Programming', status: 'Passed', grade: 8.5 },
-    { name: 'Mathematics I', status: 'Current Semester', grade: null },
-    { name: 'Computer Architecture', status: 'Not Taken', grade: null },
-    { name: 'Data Structures', status: 'Passed', grade: 7.8 },
-    { name: 'Algorithms', status: 'Not Taken', grade: null },
-    { name: 'Databases', status: 'Not Taken', grade: null },
-    { name: 'Operating Systems', status: 'Not Taken', grade: null },
-    { name: 'Web Development', status: 'Not Taken', grade: null },
-    { name: 'Software Engineering', status: 'Not Taken', grade: null },
-    { name: 'Networks', status: 'Not Taken', grade: null },
-  ]);
+  // const [courses, setCourses] = useState([
+  //   { name: 'Introduction to Programming', status: 'Passed', grade: 8.5 },
+  //   { name: 'Mathematics I', status: 'Current Semester', grade: null },
+  //   { name: 'Computer Architecture', status: 'Not Taken', grade: null },
+  //   { name: 'Data Structures', status: 'Passed', grade: 7.8 },
+  //   { name: 'Algorithms', status: 'Not Taken', grade: null },
+  //   { name: 'Databases', status: 'Not Taken', grade: null },
+  //   { name: 'Operating Systems', status: 'Not Taken', grade: null },
+  //   { name: 'Web Development', status: 'Not Taken', grade: null },
+  //   { name: 'Software Engineering', status: 'Not Taken', grade: null },
+  //   { name: 'Networks', status: 'Not Taken', grade: null },
+  // ]);
   const totalECTS = 240;
   const totalCompulsory = 16;
 
   // Derived stats
-  const completedCourses = courses.filter(c => c.status === 'Passed').length;
+  const completedCourses = courses.filter((c) => c.status === 'Passed').length;
   const completedECTS = 60; // Replace with real calculation
   const completedCompulsory = 8; // Replace with real calculation
   const averageGrade =
-    courses.filter(c => c.status === 'Passed' && c.grade != null).length > 0
+    courses.filter((c) => c.status === 'Passed' && c.grade != null).length > 0
       ? (
           courses
-            .filter(c => c.status === 'Passed' && c.grade != null)
+            .filter((c) => c.status === 'Passed' && c.grade != null)
             .reduce((acc, c) => acc + Number(c.grade), 0) /
-          courses.filter(c => c.status === 'Passed' && c.grade != null).length
+          courses.filter((c) => c.status === 'Passed' && c.grade != null).length
         ).toFixed(2)
       : '-';
   const failedCourses = 2; // Replace with real calculation
-  const plannedCourses = courses.filter(c => c.status === 'Current Semester').length;
+  const plannedCourses = courses.filter((c) => c.status === 'Current Semester').length;
 
   // Handlers
   const handleStatusChange = (idx, newStatus) => {
@@ -51,15 +52,15 @@ function App() {
     );
   };
 
-  const handleAddCourse = () => {
-    const newCourseName = prompt('Enter the course name:');
-    if (newCourseName && newCourseName.trim() !== '') {
-      setCourses((prev) => [
-        ...prev,
-        { name: newCourseName.trim(), status: 'Current Semester', grade: null },
-      ]);
-    }
-  };
+  // const handleAddCourse = () => {
+  //   const newCourseName = prompt('Enter the course name:');
+  //   if (newCourseName && newCourseName.trim() !== '') {
+  //     setCourses((prev) => [
+  //       ...prev,
+  //       { name: newCourseName.trim(), status: 'Current Semester', grade: null },
+  //     ]);
+  //   }
+  // };
 
   // Only show courses in the current semester
   const currentSemesterCourses = courses.filter((c) => c.status === 'Current Semester');
@@ -67,10 +68,8 @@ function App() {
   const completedCoursesList = courses.filter((c) => c.status === 'Passed').map((c) => c.name);
 
   return (
-    <div className="bg-purple-800 min-h-screen">
-      <div className="flex flex-col items-center w-full max-w-6xl mx-auto p-8 md:p-14">
-        <NavBar />
-
+    <div className="bg-purple-900 min-h-screen">
+      <div className="flex flex-col items-center w-full max-w-8xl mx-auto p-8 md:p-14">
         <h1 className="text-3xl font-bold mb-6 text-white w-full">DIT Hub</h1>
 
         {/* Progress Overview */}
@@ -108,7 +107,7 @@ function App() {
 
         {/* Current Semester Courses */}
         <section className="mb-8 w-full">
-          <div className="flex items-center justify-between mb-4">
+          {/* <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-semibold text-white">Current Semester Courses</h2>
             <button
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-4 rounded"
@@ -116,7 +115,7 @@ function App() {
             >
               + Add Course
             </button>
-          </div>
+          </div> */}
           {currentSemesterCourses.length === 0 ? (
             <p className="text-gray-700">No courses in the current semester.</p>
           ) : (
@@ -179,14 +178,35 @@ function App() {
 
         {/* Completed Courses */}
         <section className="mb-8 w-full">
-          <h2 className="text-2xl font-semibold mb-4 text-white">Completed Courses</h2>
-          <ul className="list-disc pl-5 space-y-1">
-            {completedCoursesList.map((course, idx) => (
-              <li key={idx} className="text-white">
-                {course}
-              </li>
-            ))}
-          </ul>
+          <div>
+            <h2 className="text-2xl font-semibold mb-4 text-white">See Courses</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Card 1: See All Courses */}
+              <div className="p-6 rounded-lg p-7 shadow bg-gray-400">
+                <h3 className="text-xl font-semibold p-4 mb-2 text-gray-800">See All Courses</h3>
+                <button
+                  className="w-full bg-gray-500 hover:bg-gray-600 text-gray-900 font-semibold py-2 px-4 rounded"
+                  onClick={() => navigate('/all-courses')}
+                >
+                  All Courses
+                </button>
+              </div>
+              {/* Card 2: Plan Courses */}
+              <div className="p-6 rounded-lg p-7 shadow bg-gray-400">
+                <h3 className="text-xl font-semibold p-4 mb-2 text-gray-800">Plan Courses</h3>
+                <button className="w-full bg-gray-500 hover:bg-gray-600 text-gray-900 font-semibold py-2 px-4 rounded">
+                  Plan Courses
+                </button>
+              </div>
+              {/* Card 3: See Timetable */}
+              <div className="p-6 rounded-lg p-7 shadow bg-gray-400">
+                <h3 className="text-xl font-semibold p-4 mb-2 text-gray-800">See Timetable</h3>
+                <button className="w-full bg-gray-500 hover:bg-gray-600 text-gray-900 font-semibold py-2 px-4 rounded">
+                  Timetable
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Other Features */}
@@ -196,6 +216,34 @@ function App() {
         </section>
       </div>
     </div>
+  );
+}
+
+function App() {
+  const [courses, setCourses] = useState([
+    { name: 'Introduction to Programming', status: 'Passed', grade: 8.5 },
+    { name: 'Mathematics I', status: 'Current Semester', grade: null },
+    { name: 'Computer Architecture', status: 'Not Taken', grade: null },
+    { name: 'Data Structures', status: 'Passed', grade: 7.8 },
+    { name: 'Algorithms', status: 'Not Taken', grade: null },
+    { name: 'Databases', status: 'Not Taken', grade: null },
+    { name: 'Operating Systems', status: 'Not Taken', grade: null },
+    { name: 'Web Development', status: 'Not Taken', grade: null },
+    { name: 'Software Engineering', status: 'Not Taken', grade: null },
+    { name: 'Networks', status: 'Not Taken', grade: null },
+  ]);
+  const navigate = useNavigate();
+
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <Dashboard courses={courses} setCourses={setCourses} navigate={navigate} />
+        }
+      />
+      <Route path="/all-courses" element={<AllCourses />} />
+    </Routes>
   );
 }
 

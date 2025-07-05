@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-// Replace with your actual backend API endpoint
+// Backend API endpoint
 const API_URL = 'http://localhost:5000/api/courses';
 
-function Courses() {
+function AllCourses() {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -26,10 +26,8 @@ function Courses() {
       body: JSON.stringify({ status: newStatus }),
     })
       .then((res) => res.json())
-      .then((updated) => {
-        setCourses((prev) =>
-          prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c))
-        );
+      .then(() => {
+        setCourses((prev) => prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)));
       });
   };
 
@@ -110,4 +108,4 @@ function Courses() {
   );
 }
 
-export default Courses;
+export default AllCourses;
