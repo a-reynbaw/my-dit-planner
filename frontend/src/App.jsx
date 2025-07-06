@@ -21,7 +21,9 @@ function Dashboard({ courses, setCourses, navigate }) {
     .filter((c) => c.status === 'Passed')
     .reduce((sum, course) => sum + course.ects, 0);
 
-  const completedCompulsory = courses.filter((c) => c.status === 'Passed' && c.type === 'ΥΜ').length;
+  const completedCompulsory = courses.filter(
+    (c) => c.status === 'Passed' && c.type === 'ΥΜ'
+  ).length;
   const averageGrade =
     courses.filter((c) => c.status === 'Passed' && c.grade != null).length > 0
       ? (
@@ -127,7 +129,6 @@ function Dashboard({ courses, setCourses, navigate }) {
                 </tr>
               </tbody>
             </table>
-
           </div>
         </section>
 
@@ -221,7 +222,7 @@ function Dashboard({ courses, setCourses, navigate }) {
             </div>
           </div>
         </section>
-              <span className="sr-only">YASUUU</span>
+        <span className="sr-only">YASUUU</span>
         {/* Other Features
         <section className="w-full">
           <h2 className="text-2xl font-semibold mb-4 text-white">Other Features</h2>
@@ -242,7 +243,6 @@ function App() {
       .then((data) => setCourses(data))
       .catch((error) => console.error('Error fetching courses:', error));
   }, []);
-
 
   return (
     <Routes>
