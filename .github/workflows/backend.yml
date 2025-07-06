@@ -37,5 +37,5 @@ jobs:
       - name: Test /api/courses endpoint
         run: curl --fail http://localhost:8000/api/courses
 
-      # - name: Test /api/requirements endpoint
-      #   run: curl --fail http://localhost:8000/api/requirements
+      - name: Test /api/courses/{course_id}/status endpoint
+        run: curl --fail -X PUT -H "Content-Type: application/json" -d '{"status": "Passed"}' http://localhost:8000/api/courses/1/status

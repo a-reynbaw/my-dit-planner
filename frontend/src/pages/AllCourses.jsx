@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown, Home } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,6 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { toGreeklish, toGreek } from 'greek-utils';
+import { useNavigate } from 'react-router-dom';
 
 // Backend API endpoint
 const API_URL = 'http://localhost:8000/api/courses';
@@ -25,6 +26,7 @@ function AllCourses() {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Fetch all courses from backend
   useEffect(() => {
@@ -77,7 +79,12 @@ function AllCourses() {
 
   return (
     <div className="p-8 font-sans w-full mx-auto">
-      <h1 className="text-3xl font-bold mb-6">All Courses</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">All Courses</h1>
+        <Button variant="outline" size="icon" onClick={() => navigate('/')}>
+          <Home className="h-4 w-4" />
+        </Button>
+      </div>
 
       {/* Search Bar with Lucide Icon */}
       <div className="mb-6 flex justify-center">

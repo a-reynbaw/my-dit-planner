@@ -167,6 +167,7 @@ def init_database():
     ''')
     # Insert requirements if not present
     requirements = [
+        ("Συνολικά", "Total", None, 240),
         ("Υποχρεωτικά", "Compulsory courses", 18, 128),
         ("Επιλογής Υποχρεωτικά Κατεύθυνσης", "Elective compulsory direction", 4, 24),
         ("Project Κατεύθυνσης", "Direction project", 1, 8),

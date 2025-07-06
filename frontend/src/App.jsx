@@ -1,28 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import AllCourses from '@/pages/AllCourses';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 function Dashboard({ courses, setCourses, navigate }) {
-  // Example static data; replace with backend data as needed
-  // const [courses, setCourses] = useState([
-  //   { name: 'Introduction to Programming', status: 'Passed', grade: 8.5 },
-  //   { name: 'Mathematics I', status: 'Current Semester', grade: null },
-  //   { name: 'Computer Architecture', status: 'Not Taken', grade: null },
-  //   { name: 'Data Structures', status: 'Passed', grade: 7.8 },
-  //   { name: 'Algorithms', status: 'Not Taken', grade: null },
-  //   { name: 'Databases', status: 'Not Taken', grade: null },
-  //   { name: 'Operating Systems', status: 'Not Taken', grade: null },
-  //   { name: 'Web Development', status: 'Not Taken', grade: null },
-  //   { name: 'Software Engineering', status: 'Not Taken', grade: null },
-  //   { name: 'Networks', status: 'Not Taken', grade: null },
-  // ]);
   const totalECTS = 240;
   const totalCompulsory = 16;
 
   // Derived stats
   const completedCourses = courses.filter((c) => c.status === 'Passed').length;
-  const completedECTS = 60; // Replace with real calculation
-  const completedCompulsory = 8; // Replace with real calculation
+  const completedECTS = courses
+    .filter((c) => c.status === 'Passed')
+    .reduce((sum, course) => sum + course.ects, 0);
+
+  const completedCompulsory = courses.filter((c) => c.status === 'Passed' && c.type === 'ΥΜ').length;
   const averageGrade =
     courses.filter((c) => c.status === 'Passed' && c.grade != null).length > 0
       ? (
@@ -32,18 +31,37 @@ function Dashboard({ courses, setCourses, navigate }) {
           courses.filter((c) => c.status === 'Passed' && c.grade != null).length
         ).toFixed(2)
       : '-';
-  const failedCourses = 2; // Replace with real calculation
-  const plannedCourses = courses.filter((c) => c.status === 'Current Semester').length;
+  const failedCourses = courses.filter((c) => c.status === 'Failed').length;
+  const plannedCourses = courses.filter((c) => c.status === 'Planned').length;
 
   // Handlers
-  const handleStatusChange = (idx, newStatus) => {
-    setCourses((prev) =>
-      prev.map((course, i) =>
-        i === idx
-          ? { ...course, status: newStatus, grade: newStatus === 'Passed' ? course.grade : null }
-          : course
-      )
+  const handleStatusChange = (courseId, newStatus) => {
+    const originalCourses = [...courses];
+    const updatedCourses = courses.map((course) =>
+      course.id === courseId
+        ? { ...course, status: newStatus, grade: newStatus === 'Passed' ? course.grade : null }
+        : course
     );
+    setCourses(updatedCourses);
+
+    fetch(`http://localhost:8000/api/courses/${courseId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status: newStatus }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to update status');
+        }
+        return response.json();
+      })
+      .catch((error) => {
+        console.error('Error updating course status:', error);
+        // Revert to the original state if the API call fails
+        setCourses(originalCourses);
+      });
   };
 
   const handleGradeChange = (idx, newGrade) => {
@@ -65,174 +83,166 @@ function Dashboard({ courses, setCourses, navigate }) {
   // Only show courses in the current semester
   const currentSemesterCourses = courses.filter((c) => c.status === 'Current Semester');
   // For the completed courses section
-  const completedCoursesList = courses.filter((c) => c.status === 'Passed').map((c) => c.name);
+  const completedCoursesData = courses.filter((c) => c.status === 'Passed');
 
   return (
-    <div className="bg-purple-900 min-h-screen">
+    <div className="bg-gray-200 min-h-screen">
       <div className="flex flex-col items-center w-full max-w-8xl mx-auto p-8 md:p-14">
-        <h1 className="text-3xl font-bold mb-6 text-white w-full">DIT Hub</h1>
+        <h1 className="text-3xl font-bold mb-6 text-gray-900 w-full">DIT Hub</h1>
 
+        {/* Table for current status*/}
         {/* Progress Overview */}
         <section className="mb-8 w-full">
-          <h2 className="text-2xl font-semibold mb-4 text-white">Progress Overview</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-gray-900">Progress Overview</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-gray-800 rounded-lg shadow text-white">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 text-left">Courses Completed</th>
-                  <th className="py-2 px-4 text-left">ECTS Obtained</th>
-                  <th className="py-2 px-4 text-left">Compulsory Completed</th>
-                  <th className="py-2 px-4 text-left">Planned Courses</th>
-                  <th className="py-2 px-4 text-left">Failed Courses</th>
-                  <th className="py-2 px-4 text-left">Average Grade</th>
-                </tr>
-              </thead>
               <tbody>
                 <tr className="bg-gray-700">
+                  <td className="py-2 px-4">Courses Completed</td>
                   <td className="py-2 px-4">{completedCourses}</td>
+                </tr>
+                <tr className="bg-gray-700">
+                  <td className="py-2 px-4">ECTS Obtained</td>
                   <td className="py-2 px-4">
                     {completedECTS} / {totalECTS}
                   </td>
+                </tr>
+                <tr className="bg-gray-700">
+                  <td className="py-2 px-4">Compulsory Completed</td>
                   <td className="py-2 px-4">
                     {completedCompulsory} / {totalCompulsory}
                   </td>
+                </tr>
+                <tr className="bg-gray-700">
+                  <td className="py-2 px-4">Planned Courses</td>
                   <td className="py-2 px-4">{plannedCourses}</td>
+                </tr>
+                <tr className="bg-gray-700">
+                  <td className="py-2 px-4">Failed Courses</td>
                   <td className="py-2 px-4">{failedCourses}</td>
+                </tr>
+                <tr className="bg-gray-700">
+                  <td className="py-2 px-4">Average Grade</td>
                   <td className="py-2 px-4">{averageGrade}</td>
                 </tr>
               </tbody>
             </table>
+
           </div>
         </section>
 
-        {/* Current Semester Courses */}
-        <section className="mb-8 w-full">
-          {/* <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-white">Current Semester Courses</h2>
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-4 rounded"
-              onClick={handleAddCourse}
-            >
-              + Add Course
-            </button>
-          </div> */}
-          {currentSemesterCourses.length === 0 ? (
-            <p className="text-gray-700">No courses in the current semester.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-gray-800 rounded-lg shadow text-white">
-                <thead>
-                  <tr>
-                    <th className="py-2 px-4 text-left">Course Name</th>
-                    <th className="py-2 px-4 text-left">Status</th>
-                    <th className="py-2 px-4 text-left">Grade</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentSemesterCourses.map((course, idx) => {
-                    // Find the index in the original courses array
-                    const originalIdx = courses.findIndex(
-                      (c) =>
-                        c.name === course.name &&
-                        c.status === course.status &&
-                        c.grade === course.grade
-                    );
-                    return (
-                      <tr key={originalIdx} className="bg-gray-700">
-                        <td className="py-2 px-4">{course.name}</td>
-                        <td className="py-2 px-4">
-                          <select
-                            className="bg-gray-900 text-white rounded px-2 py-1"
-                            value={course.status}
-                            onChange={(e) => handleStatusChange(originalIdx, e.target.value)}
-                          >
-                            <option value="Not Taken">Not Taken</option>
-                            <option value="Current Semester">Current Semester</option>
-                            <option value="Passed">Passed</option>
-                          </select>
-                        </td>
-                        <td className="py-2 px-4">
-                          {course.status === 'Passed' ? (
-                            <input
-                              type="number"
-                              min="0"
-                              max="10"
-                              step="0.1"
-                              className="bg-gray-900 text-white rounded px-2 py-1 w-24"
-                              value={course.grade ?? ''}
-                              onChange={(e) => handleGradeChange(originalIdx, e.target.value)}
-                              placeholder="Grade"
-                            />
-                          ) : (
-                            <span className="text-gray-400">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full mb-8">
+          {/* Current Semester Courses */}
+          <Card className="bg-gray-800 border-gray-700 text-white">
+            <CardHeader>
+              <CardTitle>Current Semester Courses</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {currentSemesterCourses.length === 0 ? (
+                <p className="text-gray-400">No courses in the current semester.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-gray-700 hover:bg-gray-700">
+                      <TableHead className="text-white">Course Name</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentSemesterCourses.map((course) => (
+                      <TableRow key={course.id} className="border-gray-700 hover:bg-gray-700">
+                        <TableCell>{course.name}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Completed Courses */}
+          {/* Completed Courses List */}
+          <Card className="bg-gray-800 border-gray-700 text-white">
+            <CardHeader>
+              <CardTitle>Completed Courses</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {completedCoursesData.length === 0 ? (
+                <p className="text-gray-400">No courses completed yet.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-gray-700 hover:bg-gray-700">
+                      <TableHead className="text-white">Course Name</TableHead>
+                      <TableHead className="text-white text-right">Grade</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {completedCoursesData.map((course) => (
+                      <TableRow key={course.id} className="border-gray-700 hover:bg-gray-700">
+                        <TableCell>{course.name}</TableCell>
+                        <TableCell className="text-right">{course.grade ?? '-'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* See Courses Cards */}
         <section className="mb-8 w-full">
           <div>
-            <h2 className="text-2xl font-semibold mb-4 text-white">See Courses</h2>
+            {/* <h2 className="text-2xl font-semibold mb-4 text-white">See Courses</h2> */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Card 1: See All Courses */}
-              <div className="p-6 rounded-lg p-7 shadow bg-gray-400">
-                <h3 className="text-xl font-semibold p-4 mb-2 text-gray-800">See All Courses</h3>
+              <div className="p-6 rounded-lg shadow bg-gray-800">
+                <h3 className="text-xl font-semibold p-4 mb-2 text-white">See All Courses</h3>
                 <button
-                  className="w-full bg-gray-500 hover:bg-gray-600 text-gray-900 font-semibold py-2 px-4 rounded"
+                  className="w-full bg-gray-400 hover:bg-gray-500 text-gray-900 font-semibold py-2 px-4 rounded"
                   onClick={() => navigate('/all-courses')}
                 >
                   All Courses
                 </button>
               </div>
               {/* Card 2: Plan Courses */}
-              <div className="p-6 rounded-lg p-7 shadow bg-gray-400">
-                <h3 className="text-xl font-semibold p-4 mb-2 text-gray-800">Plan Courses</h3>
-                <button className="w-full bg-gray-500 hover:bg-gray-600 text-gray-900 font-semibold py-2 px-4 rounded">
+              <div className="p-6 rounded-lg shadow bg-gray-800">
+                <h3 className="text-xl font-semibold p-4 mb-2 text-white">Plan Courses</h3>
+                <button className="w-full bg-gray-400 hover:bg-gray-500 text-gray-900 font-semibold py-2 px-4 rounded">
                   Plan Courses
                 </button>
               </div>
               {/* Card 3: See Timetable */}
-              <div className="p-6 rounded-lg p-7 shadow bg-gray-400">
-                <h3 className="text-xl font-semibold p-4 mb-2 text-gray-800">See Timetable</h3>
-                <button className="w-full bg-gray-500 hover:bg-gray-600 text-gray-900 font-semibold py-2 px-4 rounded">
+              <div className="p-6 rounded-lg shadow bg-gray-800">
+                <h3 className="text-xl font-semibold p-4 mb-2 text-white">See Timetable</h3>
+                <button className="w-full bg-gray-400 hover:bg-gray-500 text-gray-900 font-semibold py-2 px-4 rounded">
                   Timetable
                 </button>
               </div>
             </div>
           </div>
         </section>
-
-        {/* Other Features */}
+              <span className="sr-only">YASUUU</span>
+        {/* Other Features
         <section className="w-full">
           <h2 className="text-2xl font-semibold mb-4 text-white">Other Features</h2>
           <p className="text-white">More profile features coming soon...</p>
-        </section>
+        </section> */}
       </div>
     </div>
   );
 }
 
 function App() {
-  const [courses, setCourses] = useState([
-    { name: 'Introduction to Programming', status: 'Passed', grade: 8.5 },
-    { name: 'Mathematics I', status: 'Current Semester', grade: null },
-    { name: 'Computer Architecture', status: 'Not Taken', grade: null },
-    { name: 'Data Structures', status: 'Passed', grade: 7.8 },
-    { name: 'Algorithms', status: 'Not Taken', grade: null },
-    { name: 'Databases', status: 'Not Taken', grade: null },
-    { name: 'Operating Systems', status: 'Not Taken', grade: null },
-    { name: 'Web Development', status: 'Not Taken', grade: null },
-    { name: 'Software Engineering', status: 'Not Taken', grade: null },
-    { name: 'Networks', status: 'Not Taken', grade: null },
-  ]);
+  const [courses, setCourses] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/courses')
+      .then((res) => res.json())
+      .then((data) => setCourses(data))
+      .catch((error) => console.error('Error fetching courses:', error));
+  }, []);
+
 
   return (
     <Routes>

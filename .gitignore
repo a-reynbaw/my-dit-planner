@@ -2,3 +2,4 @@ script.py
 node_modules
 env/
 __pycache__/
+input.txt
