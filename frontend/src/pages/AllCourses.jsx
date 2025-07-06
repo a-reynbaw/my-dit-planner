@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 // Backend API endpoint
-const API_URL = 'http://localhost:5000/api/courses';
+const API_URL = 'http://localhost:8000/api/courses';
 
 function AllCourses() {
   const [courses, setCourses] = useState([]);
@@ -39,63 +39,65 @@ function AllCourses() {
   );
 
   return (
-    <div className="p-8 font-sans max-w-5xl mx-auto text-white">
+    <div className="p-8 font-sans w-full mx-auto text-white">
       <h1 className="text-3xl font-bold mb-6">All Courses</h1>
-      <div className="mb-6">
+      <div className="mb-6 flex justify-center">
         <input
           type="text"
           placeholder="Search by name or code..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-4 py-2 rounded bg-gray-800 text-white w-full md:w-1/2"
+          className="px-6 py-3 rounded-full bg-gray-800 text-white w-full md:w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
       {loading ? (
         <p>Loading courses...</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-gray-800 rounded-lg shadow text-white">
+          <table className="w-full bg-gray-800 rounded-lg shadow text-white">
             <thead>
-              <tr>
-                <th className="py-2 px-4 text-left">Name</th>
-                <th className="py-2 px-4 text-left">Code</th>
-                <th className="py-2 px-4 text-left">ECTS</th>
-                <th className="py-2 px-4 text-left">Semester</th>
-                <th className="py-2 px-4 text-left">Type</th>
-                <th className="py-2 px-4 text-left">Status</th>
-                <th className="py-2 px-4 text-left">Actions</th>
+              <tr className="bg-gray-700">
+                <th className="py-4 px-6 text-left">Name</th>
+                <th className="py-4 px-6 text-left">Code</th>
+                <th className="py-4 px-6 text-left">ECTS</th>
+                <th className="py-4 px-6 text-left">Semester</th>
+                <th className="py-4 px-6 text-left">Type</th>
+                <th className="py-4 px-6 text-left">Status</th>
+                <th className="py-4 px-6 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredCourses.map((course) => (
-                <tr key={course.id} className="bg-gray-700">
-                  <td className="py-2 px-4">{course.name}</td>
-                  <td className="py-2 px-4">{course.code}</td>
-                  <td className="py-2 px-4">{course.ects}</td>
-                  <td className="py-2 px-4">{course.semester}</td>
-                  <td className="py-2 px-4">{course.type}</td>
-                  <td className="py-2 px-4">{course.status}</td>
-                  <td className="py-2 px-4 space-x-2">
-                    <button
-                      onClick={() => updateStatus(course.id, 'Current Semester')}
-                      className="px-2 py-1 bg-blue-500 rounded hover:bg-blue-600 text-white text-sm"
-                      disabled={course.status === 'Current Semester'}
-                    >
-                      Set as Current
-                    </button>
-                    <button
-                      onClick={() => updateStatus(course.id, 'Passed')}
-                      className="px-2 py-1 bg-green-500 rounded hover:bg-green-600 text-white text-sm"
-                      disabled={course.status === 'Passed'}
-                    >
-                      Set as Passed
-                    </button>
+              {filteredCourses.map((course, index) => (
+                <tr key={course.id} className={index % 2 === 0 ? "bg-gray-800" : "bg-gray-600"}>
+                  <td className="py-4 px-6">{course.name}</td>
+                  <td className="py-4 px-6">{course.code}</td>
+                  <td className="py-4 px-6">{course.ects}</td>
+                  <td className="py-4 px-6">{course.semester}</td>
+                  <td className="py-4 px-6">{course.type}</td>
+                  <td className="py-4 px-6">{course.status}</td>
+                  <td className="py-4 px-6">
+                    <div className="flex flex-col space-y-2">
+                      <button
+                        onClick={() => updateStatus(course.id, 'Current Semester')}
+                        className="w-full px-3 py-2 bg-blue-500 rounded hover:bg-blue-600 text-white text-sm"
+                        disabled={course.status === 'Current Semester'}
+                      >
+                        Set as Current
+                      </button>
+                      <button
+                        onClick={() => updateStatus(course.id, 'Passed')}
+                        className="w-full px-3 py-2 bg-green-500 rounded hover:bg-green-600 text-white text-sm"
+                        disabled={course.status === 'Passed'}
+                      >
+                        Set as Passed
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
               {filteredCourses.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-4 text-center text-gray-400">
+                  <td colSpan={7} className="py-6 text-center text-gray-400">
                     No courses found.
                   </td>
                 </tr>
