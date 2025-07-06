@@ -9,6 +9,8 @@ on:
 jobs:
   lint-format-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Add this to grant write permissions
 
     defaults:
       run:
@@ -51,8 +53,7 @@ jobs:
           git add frontend
           git commit -m "Prettier formatted the code"
           git push
-        # Run git commands from the root directory
         working-directory: .
 
       - name: Build project
-        run: npm run
+        run: npm run build
