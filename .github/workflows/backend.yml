@@ -1,0 +1,41 @@
+name: Backend CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  run-and-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run server in background
+        run: python3 server.py &
+
+      - name: Wait for server to start
+        run: sleep 10
+
+      - name: Test /api/courses endpoint
+        run: curl --fail http://localhost:8000/api/courses
+
+      # - name: Test /api/requirements endpoint
+      #   run: curl --fail http://localhost:8000/api/requirements
