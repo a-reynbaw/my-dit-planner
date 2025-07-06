@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import AllCourses from './pages/AllCourses';
+import AllCourses from '@/pages/AllCourses';
 
 function Dashboard({ courses, setCourses, navigate }) {
   // Example static data; replace with backend data as needed
@@ -238,9 +238,7 @@ function App() {
     <Routes>
       <Route
         path="/"
-        element={
-          <Dashboard courses={courses} setCourses={setCourses} navigate={navigate} />
-        }
+        element={<Dashboard courses={courses} setCourses={setCourses} navigate={navigate} />}
       />
       <Route path="/all-courses" element={<AllCourses />} />
     </Routes>

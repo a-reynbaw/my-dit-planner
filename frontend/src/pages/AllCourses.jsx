@@ -1,4 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { Search, ChevronDown } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { toGreeklish, toGreek } from 'greek-utils';
 
 // Backend API endpoint
 const API_URL = 'http://localhost:8000/api/courses';
@@ -31,79 +49,138 @@ function AllCourses() {
       });
   };
 
-  // Filtered courses by search
-  const filteredCourses = courses.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.code.toLowerCase().includes(search.toLowerCase())
-  );
+  // Enhanced search with Greek/Greeklish support
+  const filteredCourses = courses.filter((c) => {
+    if (!search.trim()) return true; // Show all courses if search is empty
+
+    const searchLower = search.toLowerCase();
+    const courseName = c.name.toLowerCase();
+    const courseCode = c.code.toLowerCase();
+
+    // Convert search term and course data for bidirectional matching
+    const searchAsGreek = toGreek(searchLower);
+    const searchAsGreeklish = toGreeklish(searchLower);
+    const courseNameAsGreeklish = toGreeklish(courseName);
+    const courseCodeAsGreeklish = toGreeklish(courseCode);
+
+    return (
+      courseName.includes(searchLower) ||
+      courseCode.includes(searchLower) ||
+      courseName.includes(searchAsGreek) ||
+      courseCode.includes(searchAsGreek) ||
+      courseNameAsGreeklish.includes(searchLower) ||
+      courseCodeAsGreeklish.includes(searchLower) ||
+      courseNameAsGreeklish.includes(searchAsGreeklish) ||
+      courseCodeAsGreeklish.includes(searchAsGreeklish)
+    );
+  });
 
   return (
-    <div className="p-8 font-sans w-full mx-auto text-white">
+    <div className="p-8 font-sans w-full mx-auto">
       <h1 className="text-3xl font-bold mb-6">All Courses</h1>
+
+      {/* Search Bar with Lucide Icon */}
       <div className="mb-6 flex justify-center">
-        <input
-          type="text"
-          placeholder="Search by name or code..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="px-6 py-3 rounded-full bg-gray-800 text-white w-full md:w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <div className="relative w-full md:w-1/2">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="Search by name or code (Greek/Greeklish)..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10 rounded-full"
+          />
+        </div>
       </div>
+
       {loading ? (
         <p>Loading courses...</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full bg-gray-800 rounded-lg shadow text-white">
-            <thead>
-              <tr className="bg-gray-700">
-                <th className="py-4 px-6 text-left">Name</th>
-                <th className="py-4 px-6 text-left">Code</th>
-                <th className="py-4 px-6 text-left">ECTS</th>
-                <th className="py-4 px-6 text-left">Semester</th>
-                <th className="py-4 px-6 text-left">Type</th>
-                <th className="py-4 px-6 text-left">Status</th>
-                <th className="py-4 px-6 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCourses.map((course, index) => (
-                <tr key={course.id} className={index % 2 === 0 ? "bg-gray-800" : "bg-gray-600"}>
-                  <td className="py-4 px-6">{course.name}</td>
-                  <td className="py-4 px-6">{course.code}</td>
-                  <td className="py-4 px-6">{course.ects}</td>
-                  <td className="py-4 px-6">{course.semester}</td>
-                  <td className="py-4 px-6">{course.type}</td>
-                  <td className="py-4 px-6">{course.status}</td>
-                  <td className="py-4 px-6">
-                    <div className="flex flex-col space-y-2">
-                      <button
+        <div className="rounded-md border">
+          <Table className="table-fixed w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Code</TableHead>
+                <TableHead>ECTS</TableHead>
+                <TableHead>Semester</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCourses.map((course) => (
+                <TableRow key={course.id}>
+                  <TableCell className="truncate">{course.name}</TableCell>
+                  <TableCell>{course.code}</TableCell>
+                  <TableCell>{course.ects}</TableCell>
+                  <TableCell>{course.semester}</TableCell>
+                  <TableCell>{course.type}</TableCell>
+                  <TableCell>
+                    <span className="text-xs md:text-sm">{course.status}</span>
+                  </TableCell>
+                  <TableCell>
+                    {/* Desktop: Two separate buttons */}
+                    <div className="hidden md:flex flex-col space-y-2">
+                      <Button
                         onClick={() => updateStatus(course.id, 'Current Semester')}
-                        className="w-full px-3 py-2 bg-blue-500 rounded hover:bg-blue-600 text-white text-sm"
+                        variant="default"
+                        size="sm"
                         disabled={course.status === 'Current Semester'}
+                        className="bg-blue-600 hover:bg-blue-700"
                       >
-                        Set as Current
-                      </button>
-                      <button
+                        Current
+                      </Button>
+                      <Button
                         onClick={() => updateStatus(course.id, 'Passed')}
-                        className="w-full px-3 py-2 bg-green-500 rounded hover:bg-green-600 text-white text-sm"
+                        variant="default"
+                        size="sm"
                         disabled={course.status === 'Passed'}
+                        className="bg-green-600 hover:bg-green-700"
                       >
-                        Set as Passed
-                      </button>
+                        Passed
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+
+                    {/* Mobile: Dropdown menu */}
+                    <div className="md:hidden">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="w-full px-2 text-xs">
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Current Semester')}
+                            disabled={course.status === 'Current Semester'}
+                            className="text-blue-600"
+                          >
+                            Set as Current
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Passed')}
+                            disabled={course.status === 'Passed'}
+                            className="text-green-600"
+                          >
+                            Set as Passed
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
               {filteredCourses.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="py-6 text-center text-gray-400">
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-muted-foreground">
                     No courses found.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>
