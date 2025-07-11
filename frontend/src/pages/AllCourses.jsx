@@ -215,7 +215,9 @@ function AllCourses() {
                         {course.type}
                       </Badge>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-gray-300">{course.ects}</TableCell>
+                    <TableCell className="hidden md:table-cell text-gray-300">
+                      {course.ects}
+                    </TableCell>
                     <TableCell>
                       <Badge className={getStatusBadgeColor(course.status)}>{course.status}</Badge>
                     </TableCell>
