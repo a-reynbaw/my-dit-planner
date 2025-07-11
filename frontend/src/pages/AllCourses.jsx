@@ -185,6 +185,7 @@ function AllCourses() {
                 <TableHead className="text-white">Code</TableHead>
                 <TableHead className="text-white hidden md:table-cell">Semester</TableHead>
                 <TableHead className="text-white hidden md:table-cell">Type</TableHead>
+                <TableHead className="text-white hidden md:table-cell">ECTS</TableHead>
                 <TableHead className="text-white">Status</TableHead>
                 <TableHead className="text-white text-right">Actions</TableHead>
               </TableRow>
@@ -214,6 +215,7 @@ function AllCourses() {
                         {course.type}
                       </Badge>
                     </TableCell>
+                    <TableCell className="hidden md:table-cell text-gray-300">{course.ects}</TableCell>
                     <TableCell>
                       <Badge className={getStatusBadgeColor(course.status)}>{course.status}</Badge>
                     </TableCell>
@@ -268,7 +270,7 @@ function AllCourses() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center h-24 text-gray-400">
+                  <TableCell colSpan={7} className="text-center h-24 text-gray-400">
                     No courses found matching your criteria.
                   </TableCell>
                 </TableRow>
