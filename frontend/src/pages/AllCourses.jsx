@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Search, ChevronDown, Home } from 'lucide-react';
+import { Search, ChevronDown, Home, SlidersHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Table,
@@ -16,179 +20,262 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import { toGreeklish, toGreek } from 'greek-utils';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
-// Backend API endpoint
 const API_URL = 'http://localhost:8000/api/courses';
+
+const getStatusBadgeColor = (status) => {
+  switch (status) {
+    case 'Passed':
+      return 'bg-green-600 hover:bg-green-700 text-white transition-colors duration-200';
+    case 'Current Semester':
+      return 'bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-200';
+    case 'Planned':
+      return 'bg-yellow-500 hover:bg-yellow-600 text-black transition-colors duration-200';
+    case 'Failed':
+      return 'bg-red-600 hover:bg-red-700 text-white transition-colors duration-200';
+    default:
+      return 'bg-gray-500 hover:bg-gray-600 text-white transition-colors duration-200';
+  }
+};
 
 function AllCourses() {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({ semester: 'all', type: 'all' });
   const navigate = useNavigate();
 
-  // Fetch all courses from backend
   useEffect(() => {
     fetch(API_URL)
       .then((res) => res.json())
       .then((data) => {
         setCourses(data);
         setLoading(false);
-      });
+      })
+      .catch(() => toast.error('Failed to load courses.'));
   }, []);
 
-  // Handler to update course status
   const updateStatus = (id, newStatus) => {
+    const originalCourses = [...courses];
+    setCourses((prev) => prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)));
+
     fetch(`${API_URL}/${id}/status`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
     })
-      .then((res) => res.json())
-      .then(() => {
-        setCourses((prev) => prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)));
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        toast.success(`Status updated to "${newStatus}"`);
+      })
+      .catch(() => {
+        toast.error('Failed to update status. Reverting.');
+        setCourses(originalCourses);
       });
   };
 
-  // Enhanced search with Greek/Greeklish support
   const filteredCourses = courses.filter((c) => {
-    if (!search.trim()) return true; // Show all courses if search is empty
-
     const searchLower = search.toLowerCase();
     const courseName = c.name.toLowerCase();
-    const courseCode = c.code.toLowerCase();
 
-    // Convert search term and course data for bidirectional matching
-    const searchAsGreek = toGreek(searchLower);
-    const searchAsGreeklish = toGreeklish(searchLower);
-    const courseNameAsGreeklish = toGreeklish(courseName);
-    const courseCodeAsGreeklish = toGreeklish(courseCode);
-
-    return (
+    // Search logic
+    const matchesSearch =
+      search.trim() === '' ||
       courseName.includes(searchLower) ||
-      courseCode.includes(searchLower) ||
-      courseName.includes(searchAsGreek) ||
-      courseCode.includes(searchAsGreek) ||
-      courseNameAsGreeklish.includes(searchLower) ||
-      courseCodeAsGreeklish.includes(searchLower) ||
-      courseNameAsGreeklish.includes(searchAsGreeklish) ||
-      courseCodeAsGreeklish.includes(searchAsGreeklish)
-    );
+      c.code.toLowerCase().includes(searchLower) ||
+      toGreek(courseName).includes(toGreek(searchLower)) ||
+      toGreeklish(courseName).includes(toGreeklish(searchLower));
+
+    // Filter logic
+    const matchesSemester = filters.semester === 'all' || c.semester === filters.semester;
+    const matchesType = filters.type === 'all' || c.type === filters.type;
+
+    return matchesSearch && matchesSemester && matchesType;
   });
 
-  return (
-    <div className="p-8 font-sans w-full mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">All Courses</h1>
-        <Button variant="outline" size="icon" onClick={() => navigate('/')}>
-          <Home className="h-4 w-4" />
-        </Button>
-      </div>
+  const courseTypes = [...new Set(courses.map((c) => c.type))];
 
-      {/* Search Bar with Lucide Icon */}
-      <div className="mb-6 flex justify-center">
-        <div className="relative w-full md:w-1/2">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+  return (
+    <div className="bg-gray-900 min-h-screen text-white p-4 md:p-8">
+      <header className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight">All University Courses</h1>
+          <p className="text-lg text-gray-400">Browse, search, and manage all available courses.</p>
+        </div>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => navigate('/')}
+          className="bg-gray-700 border-gray-600 hover:bg-gray-600 text-white hover:text-white transition-colors"
+        >
+          <Home className="h-5 w-5" />
+        </Button>
+      </header>
+
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="relative flex-grow">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <Input
             type="text"
             placeholder="Search by name or code (Greek/Greeklish)..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 rounded-full"
+            className="w-full pl-10 h-12 bg-gray-800 border-gray-700 text-white rounded-md focus:border-blue-500 transition-all duration-200"
           />
         </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="h-12 w-full md:w-auto bg-gray-700 border-gray-600 text-white hover:bg-gray-600 hover:text-white transition-colors duration-200"
+            >
+              <SlidersHorizontal className="mr-2 h-4 w-4" /> Filters
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56 bg-gray-800 text-white border-gray-700" align="end">
+            <DropdownMenuLabel className="text-white">Filter by Semester</DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-gray-600" />
+            {['all', 1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+              <DropdownMenuCheckboxItem
+                key={sem}
+                checked={filters.semester === sem}
+                onCheckedChange={() => setFilters((f) => ({ ...f, semester: sem }))}
+                className="text-white focus:bg-gray-700 focus:text-white"
+              >
+                {sem === 'all' ? 'All Semesters' : `Semester ${sem}`}
+              </DropdownMenuCheckboxItem>
+            ))}
+
+            <DropdownMenuLabel className="mt-2 text-white">Filter by Type</DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-gray-600" />
+            <DropdownMenuCheckboxItem
+              checked={filters.type === 'all'}
+              onCheckedChange={() => setFilters((f) => ({ ...f, type: 'all' }))}
+              className="text-white focus:bg-gray-700 focus:text-white"
+            >
+              All Types
+            </DropdownMenuCheckboxItem>
+            {courseTypes.map((type) => (
+              <DropdownMenuCheckboxItem
+                key={type}
+                checked={filters.type === type}
+                onCheckedChange={() => setFilters((f) => ({ ...f, type }))}
+                className="text-white focus:bg-gray-700 focus:text-white"
+              >
+                {type}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {loading ? (
-        <p>Loading courses...</p>
+        <p className="text-center py-10">Loading courses...</p>
       ) : (
-        <div className="rounded-md border">
-          <Table className="table-fixed w-full">
+        <Card className="bg-gray-800 border-gray-700">
+          <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Code</TableHead>
-                <TableHead>ECTS</TableHead>
-                <TableHead>Semester</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
+              <TableRow className="border-b-gray-700">
+                <TableHead className="text-white">Name</TableHead>
+                <TableHead className="text-white">Code</TableHead>
+                <TableHead className="text-white hidden md:table-cell">Semester</TableHead>
+                <TableHead className="text-white hidden md:table-cell">Type</TableHead>
+                <TableHead className="text-white">Status</TableHead>
+                <TableHead className="text-white text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredCourses.map((course) => (
-                <TableRow key={course.id}>
-                  <TableCell className="truncate">{course.name}</TableCell>
-                  <TableCell>{course.code}</TableCell>
-                  <TableCell>{course.ects}</TableCell>
-                  <TableCell>{course.semester}</TableCell>
-                  <TableCell>{course.type}</TableCell>
-                  <TableCell>
-                    <span className="text-xs md:text-sm">{course.status}</span>
-                  </TableCell>
-                  <TableCell>
-                    {/* Desktop: Two separate buttons */}
-                    <div className="hidden md:flex flex-col space-y-2">
-                      <Button
-                        onClick={() => updateStatus(course.id, 'Current Semester')}
-                        variant="default"
-                        size="sm"
-                        disabled={course.status === 'Current Semester'}
-                        className="bg-blue-600 hover:bg-blue-700"
+              {filteredCourses.length > 0 ? (
+                filteredCourses.map((course) => (
+                  <TableRow
+                    key={course.id}
+                    className="border-b-gray-700 hover:bg-gray-700/50 transition-colors duration-200"
+                  >
+                    <TableCell className="font-medium text-white">{course.name}</TableCell>
+                    <TableCell className="text-gray-300">{course.code}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <Badge
+                        variant="secondary"
+                        className="transition-all duration-200 hover:scale-105"
                       >
-                        Current
-                      </Button>
-                      <Button
-                        onClick={() => updateStatus(course.id, 'Passed')}
-                        variant="default"
-                        size="sm"
-                        disabled={course.status === 'Passed'}
-                        className="bg-green-600 hover:bg-green-700"
+                        {course.semester}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <Badge
+                        variant="outline"
+                        className="text-gray-300 transition-all duration-200 hover:bg-gray-700"
                       >
-                        Passed
-                      </Button>
-                    </div>
-
-                    {/* Mobile: Dropdown menu */}
-                    <div className="md:hidden">
+                        {course.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getStatusBadgeColor(course.status)}>{course.status}</Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline" size="sm" className="w-full px-2 text-xs">
-                            <ChevronDown className="h-4 w-4" />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-white hover:bg-gray-700 transition-colors duration-200"
+                          >
+                            Actions <ChevronDown className="h-4 w-4 ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent
+                          align="end"
+                          className="bg-gray-800 text-white border-gray-700"
+                        >
+                          <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Passed')}
+                            disabled={course.status === 'Passed'}
+                            className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
+                          >
+                            Set as Passed
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Current Semester')}
                             disabled={course.status === 'Current Semester'}
-                            className="text-blue-600"
+                            className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
                             Set as Current
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => updateStatus(course.id, 'Passed')}
-                            disabled={course.status === 'Passed'}
-                            className="text-green-600"
+                            onClick={() => updateStatus(course.id, 'Planned')}
+                            disabled={course.status === 'Planned'}
+                            className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
-                            Set as Passed
+                            Set to Plan
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="bg-gray-700" />
+                          <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Not Taken')}
+                            disabled={course.status === 'Not Taken'}
+                            className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
+                          >
+                            Reset Status
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {filteredCourses.length === 0 && (
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground">
-                    No courses found.
+                  <TableCell colSpan={6} className="text-center h-24 text-gray-400">
+                    No courses found matching your criteria.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
-        </div>
+        </Card>
       )}
     </div>
   );
