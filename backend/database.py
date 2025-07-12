@@ -203,7 +203,7 @@ def update_course_grade(courses_id, new_grade):
     """Upadate the grade of a course"""
     with get_db_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute('UPDATE courses SET grade = ? WHERE id = ?', (new_garde, course_id))
+        cursor.execute('UPDATE courses SET grade = ? WHERE id = ?', (new_grade, course_id))
         conn.commit()
 
 def get_completed_courses():
