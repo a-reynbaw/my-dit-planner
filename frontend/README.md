@@ -10,3 +10,13 @@ Currently, two official plugins are available:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+TODO
+- aranal, ct and usvd as compolsory if someone chooses CS direction
+- plan only for semesters a course can be added
+- eleuthera
+- add disertation and internship, not in db ideally, but as a choice in main page(?)
+- also add direction as a choice in main page
+- make the planning stay, so add that to the backend
+- add feature so it colors the the semesters that a course can be added during planning

@@ -14,10 +14,13 @@ function PlanCourses() {
   const [loading, setLoading] = useState(true);
   const [activeCourse, setActiveCourse] = useState(null);
 
-  const [containers, setContainers] = useState({
+  const initialContainers = {
     unassigned: [],
+    passed: [],
     ...Object.fromEntries([...Array(8).keys()].map((i) => [`semester-${i + 1}`, []])),
-  });
+  };
+
+  const [containers, setContainers] = useState(initialContainers);
 
   useEffect(() => {
     fetch(API_URL)
@@ -26,12 +29,21 @@ function PlanCourses() {
         setContainers((prev) => ({
           ...prev,
           unassigned: data.filter((c) => c.status === 'Planned'),
+          passed: data.filter((c) => c.status === 'Passed'),
         }));
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching courses:', err);
         setLoading(false);
       });
   }, []);
 
   const sensors = useSensors(useSensor(PointerSensor));
+
+  const totalECTS = 240;
+  const plannedECTS = containers.unassigned.reduce((sum, course) => sum + (course.ects || 0), 0);
+  const completedECTS = containers.passed.reduce((sum, course) => sum + (course.ects || 0), 0);
 
   const findContainerIdForCourse = (courseId) => {
     return Object.keys(containers).find((key) =>
@@ -66,18 +78,13 @@ function PlanCourses() {
           body: JSON.stringify({ status: 'Not Taken' }),
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to update course status');
-        }
+        if (!response.ok) throw new Error('Failed to update course status');
 
         setContainers((prev) => {
           const newContainers = { ...prev };
-          const sourceItems = [...newContainers[sourceContainerId]];
-          const activeIndex = sourceItems.findIndex((c) => c.id === activeCourseId);
-          if (activeIndex !== -1) {
-            sourceItems.splice(activeIndex, 1);
-            newContainers[sourceContainerId] = sourceItems;
-          }
+          newContainers[sourceContainerId] = newContainers[sourceContainerId].filter(
+            (course) => course.id !== activeCourseId
+          );
           return newContainers;
         });
       } catch (error) {
@@ -119,6 +126,12 @@ function PlanCourses() {
             <p className="text-lg text-gray-400">
               Drag and drop courses to organize your academic path.
             </p>
+          </div>
+          <div>
+            <h4 className="text-xl font-bold">Planned ECTS</h4>
+            <span className="text-lg font-semibold text-blue-300">
+              {plannedECTS + completedECTS} / {totalECTS}
+            </span>
           </div>
           <Button
             variant="outline"
