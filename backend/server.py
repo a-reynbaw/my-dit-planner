@@ -7,6 +7,7 @@ from database import (
     get_all_courses,
     get_degree_requirements,
     update_course_status,
+    DATABASE_PATH
 )
 import os
 
@@ -22,9 +23,13 @@ app.add_middleware(
 )
 
 @app.on_event("startup")
+# Initialize the database on startup if it doesn't exist
 def startup_event():
-    init_database()
-    print("Database initialized successfully")
+    if not os.path.exists(DATABASE_PATH):
+        init_database()
+        print("Database initialized successfully")
+    else:
+        print("Database already exists, skipping initialization")
 
 # Models
 class CourseStatusUpdate(BaseModel):
