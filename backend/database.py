@@ -150,10 +150,10 @@ def init_database():
         ('Φωτονική', 'ΕΠ12', 6, 8, 'Not Taken', 'ΠΜ', 'COM', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL'),
         ('Ψηφιακές Επικοινωνίες', 'ΕΠ04', 6, 8, 'Not Taken', 'ΠΜ', 'CET', 'NULL', 'NULL', 'NULL', 'NULL', 'B', 'NULL', 'NULL')
     ]
-    for name, code, ects, semester, status, type_, direction, S1, S2, S3, S4, S5, S6 in courses:
+    for name, code, ects, semester, status, type_, direction, S1, S2, S3, S4, S5, S6, grade in courses:
         cursor.execute(
             '''INSERT OR IGNORE INTO courses (name, code, ects, semester, status, type, direction, S1, S2, S3, S4, S5, S6, grade)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
             (name, code, ects, semester, status, type_, direction, S1, S2, S3, S4, S5, S6, None)
         )
 
