@@ -60,6 +60,10 @@ jobs:
       - name: Verify course status was updated
         run: |
           curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .status == "Passed"'
+          
+      - name: Verify course grade was updated
+        run: |
+          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .grade == 8'
 
       - name: Restore DB
         run: cp courses.db.orig courses.db
