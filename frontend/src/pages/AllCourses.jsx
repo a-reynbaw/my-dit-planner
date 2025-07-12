@@ -71,7 +71,7 @@ function AllCourses() {
           return updatedCourse;
         }
         return c;
-      }),
+      })
     );
 
     fetch(`${API_URL}/${id}/status`, {
