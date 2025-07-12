@@ -32,11 +32,11 @@ def startup_event():
         print("Database already exists, skipping initialization")
 
 # Models
+class CourseGradeUpdate(BaseModel):
+    grade: float
 class CourseStatusUpdate(BaseModel):
     status: str
 
-class CourseGradeUpdate(BaseModel):
-    grade: float
 
 # API Endpoints
 
@@ -60,7 +60,7 @@ def api_update_course_status(course_id: int, update: CourseStatusUpdate):
 def api_update_course_grade(course_id: int, update: CourseGradeUpdate):
     try:
         update_course_grade(course_id, update.grade)
-        return {"message": "Status updated"}
+        return {"message": "Grade updated"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating course status: {str(e)}")
 
