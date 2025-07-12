@@ -34,6 +34,9 @@ def startup_event():
 # Models
 class CourseStatusUpdate(BaseModel):
     status: str
+    
+class CourseGradeUpdate(BaseModel):
+    status: float
 
 # API Endpoints
 
@@ -53,13 +56,21 @@ def api_update_course_status(course_id: int, update: CourseStatusUpdate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating course status: {str(e)}")
 
-@app.get("/api/requirements")
-def api_get_requirements():
+@app.put("/api/courses/{course_id}/grade")
+def api_update_course_grade(course_id: int, update: CourseGradeUpdate):
     try:
-        requirements = get_degree_requirements()
-        return requirements
+        update_course_grade(course_id, update.grade)
+        return {"message": "Status updated"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error loading requirements: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating course status: {str(e)}")
+
+# @app.get("/api/requirements")
+# def api_get_requirements():
+#     try:
+#         requirements = get_degree_requirements()
+#         return requirements
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error loading requirements: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

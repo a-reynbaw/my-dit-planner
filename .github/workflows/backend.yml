@@ -50,6 +50,13 @@ jobs:
             -d '{"status": "Passed"}' \
             http://localhost:8000/api/courses/1/status
 
+      - name: Update course grade
+        run: |
+          curl --fail -X PUT \
+          -H "Content-Type: application/json" \
+          -d '{"grade": 8}' \
+          http://localhost:8000/api/courses/1/grade
+
       - name: Verify course status was updated
         run: |
           curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .status == "Passed"'
