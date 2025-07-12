@@ -34,9 +34,9 @@ def startup_event():
 # Models
 class CourseStatusUpdate(BaseModel):
     status: str
-    
+
 class CourseGradeUpdate(BaseModel):
-    status: float
+    grade: float
 
 # API Endpoints
 
