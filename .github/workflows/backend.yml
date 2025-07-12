@@ -41,7 +41,7 @@ jobs:
         run: sleep 10
 
       - name: Test /api/courses endpoint
-        run: curl --fail http://localhost:8000/api/courses
+        run: curl --fail http://localhost:8000/api/courses | jq .
 
       - name: Update course status
         run: |

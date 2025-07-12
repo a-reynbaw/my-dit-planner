@@ -199,7 +199,7 @@ def update_course_status(course_id, new_status):
         cursor.execute('UPDATE courses SET status = ? WHERE id = ?', (new_status, course_id))
         conn.commit()
 
-def update_course_grade(courses_id, new_grade):
+def update_course_grade(course_id, new_grade):
     """Upadate the grade of a course"""
     with get_db_connection() as conn:
         cursor = conn.cursor()
