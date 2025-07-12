@@ -7,6 +7,7 @@ from database import (
     get_all_courses,
     # get_degree_requirements,
     update_course_status,
+    update_course_grade,
     DATABASE_PATH
 )
 import os
