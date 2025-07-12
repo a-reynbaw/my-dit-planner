@@ -297,6 +297,13 @@ function AllCourses() {
                             Set as Passed
                           </DropdownMenuItem>
                           <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Failed')}
+                            disabled={course.status === 'Failed'}
+                            className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
+                          >
+                            Set as Failed
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Current Semester')}
                             disabled={course.status === 'Current Semester'}
                             className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"

@@ -47,6 +47,7 @@ function Dashboard({ courses, navigate }) {
   const passedCourses = courses.filter((c) => c.status === 'Passed');
   const completedECTS = passedCourses.reduce((sum, course) => sum + course.ects, 0);
   const completedCompulsory = passedCourses.filter((c) => c.type === 'ΥΜ').length;
+  const completedGE = passedCourses.filter((c) => c.type === 'ΓΠ').length;
   const failedCourses = courses.filter((c) => c.status === 'Failed').length;
   const plannedCourses = courses.filter((c) => c.status === 'Planned').length;
   const currentSemesterCourses = courses.filter((c) => c.status === 'Current Semester');
@@ -56,10 +57,11 @@ function Dashboard({ courses, navigate }) {
       ? (
           passedCourses
             .filter((c) => c.grade != null)
-            .reduce((acc, c) => acc + Number(c.grade), 0) /
-          passedCourses.filter((c) => c.grade != null).length
+            .reduce((acc, c) => acc + Number(c.grade) * c.ects, 0) /
+          completedECTS
         ).toFixed(2)
       : 'N/A';
+
 
   const ectsProgress = (completedECTS / totalECTS) * 100;
 
@@ -99,7 +101,7 @@ function Dashboard({ courses, navigate }) {
             />
             <StatCard
               title="Compulsory Done"
-              value={`${completedCompulsory} / ${totalCompulsory}`}
+              value={`${completedCompulsory + completedGE} / ${totalCompulsory}`}
               icon={Target}
               color="text-yellow-400"
             />
