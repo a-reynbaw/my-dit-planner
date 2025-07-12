@@ -57,11 +57,9 @@ function Dashboard({ courses, navigate }) {
       ? (
           passedCourses
             .filter((c) => c.grade != null)
-            .reduce((acc, c) => acc + Number(c.grade) * c.ects, 0) /
-          completedECTS
+            .reduce((acc, c) => acc + Number(c.grade) * c.ects, 0) / completedECTS
         ).toFixed(2)
       : 'N/A';
-
 
   const ectsProgress = (completedECTS / totalECTS) * 100;
 
