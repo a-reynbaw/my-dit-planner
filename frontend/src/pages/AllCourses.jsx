@@ -61,7 +61,18 @@ function AllCourses() {
 
   const updateStatus = (id, newStatus) => {
     const originalCourses = [...courses];
-    setCourses((prev) => prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)));
+    setCourses((prev) =>
+      prev.map((c) => {
+        if (c.id === id) {
+          const updatedCourse = { ...c, status: newStatus };
+          if (newStatus === 'Not Taken') {
+            updatedCourse.grade = null;
+          }
+          return updatedCourse;
+        }
+        return c;
+      }),
+    );
 
     fetch(`${API_URL}/${id}/status`, {
       method: 'PUT',
@@ -74,6 +85,31 @@ function AllCourses() {
       })
       .catch(() => {
         toast.error('Failed to update status. Reverting.');
+        setCourses(originalCourses);
+      });
+  };
+
+  const updateGrade = (id, newGrade) => {
+    const gradeValue = parseFloat(newGrade);
+    if (isNaN(gradeValue) || gradeValue < 0 || gradeValue > 10) {
+      toast.error('Please enter a valid grade between 0 and 10.');
+      return;
+    }
+
+    const originalCourses = [...courses];
+    setCourses((prev) => prev.map((c) => (c.id === id ? { ...c, grade: gradeValue } : c)));
+
+    fetch(`http://localhost:8000/api/courses/${id}/grade`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ grade: gradeValue }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        toast.success(`Grade updated to ${gradeValue}`);
+      })
+      .catch(() => {
+        toast.error('Failed to update grade. Reverting.');
         setCourses(originalCourses);
       });
   };
@@ -186,6 +222,7 @@ function AllCourses() {
                 <TableHead className="text-white hidden md:table-cell">Semester</TableHead>
                 <TableHead className="text-white hidden md:table-cell">Type</TableHead>
                 <TableHead className="text-white hidden md:table-cell">ECTS</TableHead>
+                <TableHead className="text-white hidden lg:table-cell">Grade</TableHead>
                 <TableHead className="text-white">Status</TableHead>
                 <TableHead className="text-white text-right">Actions</TableHead>
               </TableRow>
@@ -217,6 +254,22 @@ function AllCourses() {
                     </TableCell>
                     <TableCell className="hidden md:table-cell text-gray-300">
                       {course.ects}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {course.status === 'Passed' ? (
+                        <Input
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          max="10"
+                          defaultValue={course.grade || ''}
+                          onBlur={(e) => updateGrade(course.id, e.target.value)}
+                          className="w-20 bg-gray-700 border-gray-600 text-white h-8"
+                          placeholder="N/A"
+                        />
+                      ) : (
+                        <span className="text-gray-500">-</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge className={getStatusBadgeColor(course.status)}>{course.status}</Badge>

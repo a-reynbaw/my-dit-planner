@@ -232,8 +232,8 @@ def reset_database():
 
 # DO NOT UNCOMMENT THIS BLOCK UNLESS YOU WANT TO RESET THE DATABASE
 
-if __name__ == "__main__":
-    reset_database()  # Drops existing tables
-    init_database()   # Re-creates and fills them
-    courses = get_all_courses()
-    print(f"Total courses in DB: {len(courses)}")
+# if __name__ == "__main__":
+#     reset_database()  # Drops existing tables
+#     init_database()   # Re-creates and fills them
+#     courses = get_all_courses()
+#     print(f"Total courses in DB: {len(courses)}")

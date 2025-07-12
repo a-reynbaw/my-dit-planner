@@ -68,4 +68,15 @@ jobs:
           
       - name: Verify course grade was updated
         run: |
-          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .grade == 8'
+          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .grade == 8.0'
+
+      - name: Reset course status
+        run: |
+          curl --fail -X PUT \
+            -H "Content-Type: application/json" \
+            -d '{"status": "Not Taken"}' \
+            http://localhost:8000/api/courses/1/status
+
+      - name: Verify course status was reset
+        run: |
+          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .status == "Not Taken"'

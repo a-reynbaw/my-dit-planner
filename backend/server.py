@@ -53,6 +53,8 @@ def api_get_courses():
 def api_update_course_status(course_id: int, update: CourseStatusUpdate):
     try:
         update_course_status(course_id, update.status)
+        if update.status == 'Not Taken':
+            update_course_grade(course_id, None)  # Reset grade if status is 'Not Taken'
         return {"message": "Status updated"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating course status: {str(e)}")
