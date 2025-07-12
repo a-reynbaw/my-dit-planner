@@ -5,7 +5,7 @@ from typing import List, Optional
 from database import (
     init_database,
     get_all_courses,
-    get_degree_requirements,
+    # get_degree_requirements,
     update_course_status,
     DATABASE_PATH
 )
