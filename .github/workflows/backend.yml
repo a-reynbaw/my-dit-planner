@@ -30,15 +30,20 @@ jobs:
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Backup original DB
-        run: cp courses.db courses.db.orig
+      
+      - name: Ensure clean database state
+        run: rm -f courses.db
 
       - name: Run server in background
-        run: python3 server.py &
+        run: uvicorn server:app --host 0.0.0.0 --port 8000 &
 
-      - name: Wait for server to start
-        run: sleep 10
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for server..."
+          while ! curl -s http://localhost:8000/api/courses > /dev/null; do
+            sleep 1
+          done
+          echo "Server is up!"
 
       - name: Test /api/courses endpoint
         run: curl --fail http://localhost:8000/api/courses | jq .
@@ -64,6 +69,3 @@ jobs:
       - name: Verify course grade was updated
         run: |
           curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .grade == 8'
-
-      - name: Restore DB
-        run: cp courses.db.orig courses.db
