@@ -42,7 +42,18 @@ function PlanCourses() {
   const sensors = useSensors(useSensor(PointerSensor));
 
   const totalECTS = 240;
-  const plannedECTS = containers.unassigned.reduce((sum, course) => sum + (course.ects || 0), 0);
+  
+  // Fix: Count ECTS from all planned courses (unassigned + all semester containers)
+  const plannedECTS = Object.keys(containers).reduce((sum, containerKey) => {
+    // Skip the 'passed' container since those are completed, not planned
+    if (containerKey === 'passed') return sum;
+    
+    return sum + containers[containerKey].reduce((containerSum, course) => {
+      // Only count courses with 'Planned' status
+      return containerSum + (course.status === 'Planned' ? (course.ects || 0) : 0);
+    }, 0);
+  }, 0);
+  
   const completedECTS = containers.passed.reduce((sum, course) => sum + (course.ects || 0), 0);
 
   const findContainerIdForCourse = (courseId) => {
