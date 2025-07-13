@@ -16,23 +16,6 @@ My DIT Planner is a full-stack web application designed to help students of the 
 - **Backend**: Python, FastAPI, SQLite
 - **Containerization**: Docker, Docker Compose, Nginx
 
-## Getting Started
-
-To run this project locally, you need to have Docker and Docker Compose installed.
-
-1.  **Clone the repository:**
-```sh
-git clone <repository-url>
-cd my-dit-planner
-```
-
-2.  **Build and run the containers:**
-```sh
-docker-compose up --build
-```
-
-3.  **Access the application:**
-    Open your web browser and navigate to `http://localhost:5173`. The backend API will be available at `http://localhost:8000`.
 
 ## Project Structure
 
@@ -54,20 +37,21 @@ docker-compose up --build
 
 ## Installation and Setup
 1. Clone the repository:
-```bash
-git clone
-```
+    ```bash
+    git clone <repository-url>
+    ```
 2. Navigate to the project directory:
-```bash
-cd my-dit-planner
-```
+    ```bash
+    cd my-dit-planner
+    ```
 3. Install dependencies:
-To build the whole app simply run:
-```bash
-docker-compose up --build
-```
 
-This will build both the frontend and backend Docker images and start the services.
+    To build the whole app simply run:
+    ```bash
+    docker-compose up --build
+    ```
+
+    This will build both the frontend and backend Docker images and start the services.
    
 4. Access the application:
 Open your web browser and navigate to `http://localhost:5173` for the frontend. The backend API will be available at `http://localhost:8000`.
