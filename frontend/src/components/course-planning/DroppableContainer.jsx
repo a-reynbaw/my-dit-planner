@@ -9,11 +9,28 @@ function DroppableContainer({ id, title, courses, activeCourse }) {
   const isSemesterContainer = id.startsWith('semester');
   const semesterNumber = isSemesterContainer ? parseInt(id.split('-')[1], 10) : null;
 
-  const isValidDropTarget =
-    activeCourse &&
-    (!isSemesterContainer ||
-      (isSemesterContainer && activeCourse.semester === semesterNumber) ||
-      id === 'unassigned');
+  // Updated validation logic for odd/even semesters
+  const isValidDropTarget = () => {
+    if (!activeCourse) return false;
+    
+    // Always allow drops to unassigned container
+    if (id === 'unassigned') return true;
+    
+    // For non-semester containers, allow drops
+    if (!isSemesterContainer) return true;
+    
+    // For semester containers, check odd/even matching
+    const courseSemester = activeCourse.semester;
+    const isOddSemesterCourse = courseSemester % 2 === 1; // odd semester (1, 3, 5, 7)
+    const isEvenSemesterCourse = courseSemester % 2 === 0; // even semester (2, 4, 6, 8)
+    const isOddDestination = semesterNumber % 2 === 1;
+    const isEvenDestination = semesterNumber % 2 === 0;
+
+    // Check if the drop is valid based on odd/even semester matching
+    return (isOddSemesterCourse && isOddDestination) || (isEvenSemesterCourse && isEvenDestination);
+  };
+
+  const isValidDrop = isValidDropTarget();
 
   return (
     <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow-lg">
@@ -21,11 +38,11 @@ function DroppableContainer({ id, title, courses, activeCourse }) {
       <div
         ref={setNodeRef}
         className={`min-h-[200px] rounded-lg border-2 border-dashed transition-colors ${
-          isOver && isValidDropTarget
+          isOver && isValidDrop
             ? 'border-green-500 bg-gray-700/50'
-            : isOver && !isValidDropTarget
+            : isOver && !isValidDrop
               ? 'border-red-500 bg-red-900/20'
-              : activeCourse && isValidDropTarget
+              : activeCourse && isValidDrop
                 ? 'border-blue-500'
                 : 'border-gray-600'
         }`}

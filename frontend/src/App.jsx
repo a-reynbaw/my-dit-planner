@@ -15,6 +15,8 @@ import {
 
 import AllCourses from '@/pages/AllCourses';
 import PlanCourses from '@/pages/PlanCourses';
+import FailedCourses from '@/pages/FailedCourses';
+import CurrentCourses from '@/pages/CurrentCourses';
 import {
   Table,
   TableBody,
@@ -27,9 +29,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
-function StatCard({ title, value, icon: Icon, color }) {
+function StatCard({ title, value, icon: Icon, color, onClick }) {
   return (
-    <Card className="bg-gray-800 border-gray-700 text-white shadow-lg hover:bg-gray-700/50 transition-colors duration-300">
+    <Card 
+      className={`bg-gray-800 border-gray-700 text-white shadow-lg hover:bg-gray-700/50 transition-colors duration-300 ${onClick ? 'cursor-pointer' : ''}`}
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-gray-300">{title}</CardTitle>
         <Icon className={`h-5 w-5 ${color || 'text-gray-400'}`} />
@@ -114,47 +119,19 @@ function Dashboard({ courses, navigate }) {
               value={currentSemesterCourses.length}
               icon={BookOpen}
               color="text-purple-400"
+              onClick={() => navigate('/current-courses')}
             />
             <StatCard
               title="Courses Failed"
               value={failedCourses}
               icon={XCircle}
               color="text-red-400"
+              onClick={() => navigate('/failed-courses')}
             />
           </div>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full mb-10">
-          <Card className="bg-gray-800 border-gray-700 text-white">
-            <CardHeader>
-              <CardTitle>Current Semester Courses</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {currentSemesterCourses.length === 0 ? (
-                <p className="text-center py-10 text-gray-400">
-                  No courses in the current semester.
-                </p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-gray-700 hover:bg-gray-700/50">
-                      <TableHead className="text-white">Course Name</TableHead>
-                      <TableHead className="text-white text-right">ECTS</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {currentSemesterCourses.map((course) => (
-                      <TableRow key={course.id} className="border-gray-700 hover:bg-gray-700/50">
-                        <TableCell>{course.name}</TableCell>
-                        <TableCell className="text-right">{course.ects}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 w-full mb-10">
           <Card className="bg-gray-800 border-gray-700 text-white">
             <CardHeader>
               <CardTitle>Recently Passed Courses</CardTitle>
@@ -234,6 +211,8 @@ function App() {
       <Route path="/" element={<Dashboard courses={courses} navigate={navigate} />} />
       <Route path="/all-courses" element={<AllCourses />} />
       <Route path="/plan-courses" element={<PlanCourses />} />
+      <Route path="/failed-courses" element={<FailedCourses />} />
+      <Route path="/current-courses" element={<CurrentCourses />} />
       <Route
         path="/timetable"
         element={

@@ -58,6 +58,24 @@ function PlanCourses() {
     }
   }
 
+  // Helper function to check if a course can be dropped in a specific semester
+  const canDropCourseInSemester = (course, destinationContainerId) => {
+    if (!course || !destinationContainerId.startsWith('semester')) {
+      return true; // Allow drops to non-semester containers
+    }
+
+    const destinationSemesterNumber = parseInt(destinationContainerId.split('-')[1], 10);
+    const courseSemester = course.semester;
+    
+    const isOddSemesterCourse = courseSemester % 2 === 1; // odd semester (1, 3, 5, 7)
+    const isEvenSemesterCourse = courseSemester % 2 === 0; // even semester (2, 4, 6, 8)
+    const isOddDestination = destinationSemesterNumber % 2 === 1;
+    const isEvenDestination = destinationSemesterNumber % 2 === 0;
+
+    // Check if the drop is valid based on odd/even semester matching
+    return (isOddSemesterCourse && isOddDestination) || (isEvenSemesterCourse && isEvenDestination);
+  };
+
   async function handleDragEnd(event) {
     const { active, over } = event;
     setActiveCourse(null);
@@ -71,19 +89,17 @@ function PlanCourses() {
     if (!sourceContainerId) return;
 
     const course = active.data.current?.course;
-    const isDestinationSemester = destinationContainerId.startsWith('semester');
-    const destinationSemesterNumber = isDestinationSemester
-      ? parseInt(destinationContainerId.split('-')[1], 10)
-      : null;
 
+    // Check if the course can be dropped in the destination semester
     if (
-      isDestinationSemester &&
+      destinationContainerId.startsWith('semester') &&
       course &&
-      course.semester !== destinationSemesterNumber &&
       destinationContainerId !== 'unassigned'
     ) {
-      // Invalid drop, do nothing
-      return;
+      if (!canDropCourseInSemester(course, destinationContainerId)) {
+        // Invalid drop, do nothing
+        return;
+      }
     }
 
     if (destinationContainerId === 'trash') {
@@ -169,6 +185,7 @@ function PlanCourses() {
                 title="Courses to Plan"
                 courses={containers.unassigned}
                 activeCourse={activeCourse}
+                canDropCourse={canDropCourseInSemester}
               />
             </div>
 
@@ -180,6 +197,7 @@ function PlanCourses() {
                   title={`Semester ${key.split('-')[1]}`}
                   courses={containers[key]}
                   activeCourse={activeCourse}
+                  canDropCourse={canDropCourseInSemester}
                 />
               ))}
             </div>
