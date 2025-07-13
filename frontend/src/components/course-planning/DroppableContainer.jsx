@@ -1,10 +1,19 @@
 import { useDroppable } from '@dnd-kit/core';
 import DraggableCourse from './DraggableCourse';
 
-function DroppableContainer({ id, title, courses }) {
+function DroppableContainer({ id, title, courses, activeCourse }) {
   const { isOver, setNodeRef } = useDroppable({
     id,
   });
+
+  const isSemesterContainer = id.startsWith('semester');
+  const semesterNumber = isSemesterContainer ? parseInt(id.split('-')[1], 10) : null;
+
+  const isValidDropTarget =
+    activeCourse &&
+    (!isSemesterContainer ||
+      (isSemesterContainer && activeCourse.semester === semesterNumber) ||
+      id === 'unassigned');
 
   return (
     <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow-lg">
@@ -12,7 +21,13 @@ function DroppableContainer({ id, title, courses }) {
       <div
         ref={setNodeRef}
         className={`min-h-[200px] rounded-lg border-2 border-dashed transition-colors ${
-          isOver ? 'border-blue-500 bg-gray-700/50' : 'border-gray-600'
+          isOver && isValidDropTarget
+            ? 'border-green-500 bg-gray-700/50'
+            : isOver && !isValidDropTarget
+              ? 'border-red-500 bg-red-900/20'
+              : activeCourse && isValidDropTarget
+                ? 'border-blue-500'
+                : 'border-gray-600'
         }`}
       >
         {courses.length > 0 ? (

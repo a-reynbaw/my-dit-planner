@@ -7,7 +7,7 @@ import DraggableCourse from '@/components/course-planning/DraggableCourse';
 import DroppableContainer from '@/components/course-planning/DroppableContainer';
 import TrashCan from '@/components/course-planning/TrashCan';
 
-const API_URL = 'http://localhost:8000/api/courses';
+const API_URL = '/api/courses';
 
 function PlanCourses() {
   const navigate = useNavigate();
@@ -69,6 +69,22 @@ function PlanCourses() {
     const destinationContainerId = over.id;
 
     if (!sourceContainerId) return;
+
+    const course = active.data.current?.course;
+    const isDestinationSemester = destinationContainerId.startsWith('semester');
+    const destinationSemesterNumber = isDestinationSemester
+      ? parseInt(destinationContainerId.split('-')[1], 10)
+      : null;
+
+    if (
+      isDestinationSemester &&
+      course &&
+      course.semester !== destinationSemesterNumber &&
+      destinationContainerId !== 'unassigned'
+    ) {
+      // Invalid drop, do nothing
+      return;
+    }
 
     if (destinationContainerId === 'trash') {
       try {
@@ -152,6 +168,7 @@ function PlanCourses() {
                 id="unassigned"
                 title="Courses to Plan"
                 courses={containers.unassigned}
+                activeCourse={activeCourse}
               />
             </div>
 
@@ -162,6 +179,7 @@ function PlanCourses() {
                   id={key}
                   title={`Semester ${key.split('-')[1]}`}
                   courses={containers[key]}
+                  activeCourse={activeCourse}
                 />
               ))}
             </div>

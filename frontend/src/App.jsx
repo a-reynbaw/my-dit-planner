@@ -223,7 +223,7 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/courses')
+    fetch('/api/courses')
       .then((res) => res.json())
       .then((data) => setCourses(data))
       .catch((error) => console.error('Error fetching courses:', error));

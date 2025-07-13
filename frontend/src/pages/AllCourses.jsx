@@ -25,7 +25,7 @@ import { toGreeklish, toGreek } from 'greek-utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-const API_URL = 'http://localhost:8000/api/courses';
+const API_URL = '/api/courses';
 
 const getStatusBadgeColor = (status) => {
   switch (status) {
