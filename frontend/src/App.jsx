@@ -31,7 +31,7 @@ import { Progress } from '@/components/ui/progress';
 
 function StatCard({ title, value, icon: Icon, color, onClick }) {
   return (
-    <Card 
+    <Card
       className={`bg-gray-800 border-gray-700 text-white shadow-lg hover:bg-gray-700/50 transition-colors duration-300 ${onClick ? 'cursor-pointer' : ''}`}
       onClick={onClick}
     >

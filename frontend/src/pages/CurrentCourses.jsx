@@ -163,7 +163,9 @@ function CurrentCourses() {
           <div className="text-center">
             <BookOpen className="h-16 w-16 text-blue-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-200 mb-2">No Current Courses</h3>
-            <p className="text-gray-400 mb-4">You don't have any courses set for the current semester.</p>
+            <p className="text-gray-400 mb-4">
+              You don't have any courses set for the current semester.
+            </p>
             <Button
               onClick={() => navigate('/all-courses')}
               className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
@@ -178,8 +180,9 @@ function CurrentCourses() {
             <div className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-purple-400" />
               <span className="text-purple-400 font-medium">
-                {filteredCourses.length} current semester course{filteredCourses.length !== 1 ? 's' : ''} 
-                ({filteredCourses.reduce((sum, course) => sum + course.ects, 0)} ECTS)
+                {filteredCourses.length} current semester course
+                {filteredCourses.length !== 1 ? 's' : ''}(
+                {filteredCourses.reduce((sum, course) => sum + course.ects, 0)} ECTS)
               </span>
             </div>
           </div>

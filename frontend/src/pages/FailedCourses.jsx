@@ -136,7 +136,9 @@ function FailedCourses() {
           <div className="text-center">
             <XCircle className="h-16 w-16 text-green-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-200 mb-2">Great job!</h3>
-            <p className="text-gray-400">You don't have any failed courses. Keep up the good work!</p>
+            <p className="text-gray-400">
+              You don't have any failed courses. Keep up the good work!
+            </p>
             <Button
               onClick={() => navigate('/all-courses')}
               className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"

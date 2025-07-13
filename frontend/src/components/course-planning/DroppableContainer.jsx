@@ -12,13 +12,13 @@ function DroppableContainer({ id, title, courses, activeCourse }) {
   // Updated validation logic for odd/even semesters
   const isValidDropTarget = () => {
     if (!activeCourse) return false;
-    
+
     // Always allow drops to unassigned container
     if (id === 'unassigned') return true;
-    
+
     // For non-semester containers, allow drops
     if (!isSemesterContainer) return true;
-    
+
     // For semester containers, check odd/even matching
     const courseSemester = activeCourse.semester;
     const isOddSemesterCourse = courseSemester % 2 === 1; // odd semester (1, 3, 5, 7)
