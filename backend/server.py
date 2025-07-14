@@ -41,6 +41,8 @@ class CourseGradeUpdate(BaseModel):
     grade: float
 class CourseStatusUpdate(BaseModel):
     status: str
+class CoursePlannedSemesterUpdate(BaseMode):
+    semester: int
 
 
 # API Endpoints
@@ -70,6 +72,14 @@ def api_update_course_grade(course_id: int, update: CourseGradeUpdate):
         return {"message": "Grade updated"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating course status: {str(e)}")
+
+@app.put("/api/course/{course_id}/planned_semester")
+def update_course_planned_semester(course_id: int, new_semester: CoursePlannedSemesterUpdate):
+    try:
+        update_course_planned_semester(course_id, new_semester.semester)
+        return {"message": "Planned semester updated"}
+    except:
+        raise HTTPException(status_code=500, detail=f"Error updating course planned semester status: {str(e)}")
 
 # @app.get("/api/requirements")
 # def api_get_requirements():
