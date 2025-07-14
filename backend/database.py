@@ -229,7 +229,7 @@ def update_course_planned_semester(course_id, new_semester):
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE courses SET planned_semester = ? WHERE id = ?', (new_semester, course_id))
-        conn.commit
+        conn.commit()
 
 def get_completed_courses():
     """Return all courses with status 'Completed'"""
