@@ -73,7 +73,7 @@ def api_update_course_grade(course_id: int, update: CourseGradeUpdate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating course status: {str(e)}")
 
-@app.put("/api/course/{course_id}/planned_semester")
+@app.put("/api/courses/{course_id}/planned_semester")
 def update_course_planned_semester(course_id: int, new_semester: CoursePlannedSemesterUpdate):
     try:
         update_course_planned_semester(course_id, new_semester.semester)
