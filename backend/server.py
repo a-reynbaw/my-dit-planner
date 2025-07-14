@@ -41,7 +41,7 @@ class CourseGradeUpdate(BaseModel):
     grade: float
 class CourseStatusUpdate(BaseModel):
     status: str
-class CoursePlannedSemesterUpdate(BaseMode):
+class CoursePlannedSemesterUpdate(BaseModel):
     semester: int
 
 
