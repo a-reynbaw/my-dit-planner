@@ -17,6 +17,7 @@ function PlanCourses() {
   const initialContainers = {
     unassigned: [],
     passed: [],
+    failed: [], // Add the failed container here
     ...Object.fromEntries([...Array(8).keys()].map((i) => [`semester-${i + 1}`, []])),
   };
 
@@ -30,6 +31,7 @@ function PlanCourses() {
           ...prev,
           unassigned: data.filter((c) => c.status === 'Planned'),
           passed: data.filter((c) => c.status === 'Passed'),
+          failed: data.filter((c) => c.status === 'Failed'),
         }));
         setLoading(false);
       })
@@ -45,8 +47,8 @@ function PlanCourses() {
 
   // Fix: Count ECTS from all planned courses (unassigned + all semester containers)
   const plannedECTS = Object.keys(containers).reduce((sum, containerKey) => {
-    // Skip the 'passed' container since those are completed, not planned
-    if (containerKey === 'passed') return sum;
+    // Skip the 'passed' and 'failed' containers since those are completed/failed, not planned
+    if (containerKey === 'passed' || containerKey === 'failed') return sum;
 
     return (
       sum +
@@ -58,6 +60,8 @@ function PlanCourses() {
   }, 0);
 
   const completedECTS = containers.passed.reduce((sum, course) => sum + (course.ects || 0), 0);
+
+  const failedECTS = containers.failed.reduce((sum, course) => sum + (course.ects || 0), 0);
 
   const findContainerIdForCourse = (courseId) => {
     return Object.keys(containers).find((key) =>
@@ -176,7 +180,7 @@ function PlanCourses() {
           <div>
             <h4 className="text-xl font-bold">Planned ECTS</h4>
             <span className="text-lg font-semibold text-blue-300">
-              {plannedECTS + completedECTS} / {totalECTS}
+              {plannedECTS + completedECTS + failedECTS} / {totalECTS}
             </span>
           </div>
           <Button
