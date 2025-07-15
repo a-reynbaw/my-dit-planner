@@ -66,7 +66,7 @@ jobs:
         run: |
           curl --fail -X PUT \
           -H "Content-Type: application/json" \
-          -d '{"semester": 3}' \
+          -d '{"planned_semester": 3}' \
           http://localhost:8000/api/courses/1/planned_semester
 
       - name: Verify course status was updated
