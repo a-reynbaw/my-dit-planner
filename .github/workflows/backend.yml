@@ -79,7 +79,7 @@ jobs:
 
       - name: Verify course planned semester was updated
         run: |
-          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .semester == 3'
+          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .planned_semester == 3'
 
       - name: Reset course status
         run: |
