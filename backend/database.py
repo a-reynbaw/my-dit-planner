@@ -224,6 +224,7 @@ def update_course_grade(course_id, new_grade):
         cursor.execute('UPDATE courses SET grade = ? WHERE id = ?', (new_grade, course_id))
         conn.commit()
 
+# --- THIS IS THE NEWLY ADDED FUNCTION ---
 def update_course_planned_semester(course_id, new_semester):
     """Update the planned semester for a course"""
     with get_db_connection() as conn:

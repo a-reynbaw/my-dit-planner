@@ -8,6 +8,7 @@ from database import (
     # get_degree_requirements,
     update_course_status,
     update_course_grade,
+    update_course_planned_semester, # Make sure to import the new function
     DATABASE_PATH
 )
 import os
@@ -42,6 +43,7 @@ class CourseGradeUpdate(BaseModel):
 class CourseStatusUpdate(BaseModel):
     status: str
 class CoursePlannedSemesterUpdate(BaseModel):
+    # This now correctly matches the test and frontend
     planned_semester: int
 
 
@@ -73,13 +75,17 @@ def api_update_course_grade(course_id: int, update: CourseGradeUpdate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating course status: {str(e)}")
 
+# --- THIS IS THE CORRECTED ENDPOINT ---
 @app.put("/api/courses/{course_id}/planned_semester")
-def api_update_course_planned_semester(course_id: int, update: CoursePlannedSemesterUpdate): 
+def api_update_course_planned_semester(course_id: int, update: CoursePlannedSemesterUpdate):
     try:
+        # Use the correct attribute from the Pydantic model
         update_course_planned_semester(course_id, update.planned_semester)
         return {"message": "Planned semester updated"}
+    # Correctly capture the exception as 'e'
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating course planned semester status: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating course planned semester: {str(e)}")
+
 
 # @app.get("/api/requirements")
 # def api_get_requirements():
