@@ -129,7 +129,7 @@ function PlanCourses() {
       const newContainers = JSON.parse(JSON.stringify(prev)); // Deep copy to prevent mutation
       const sourceItems = newContainers[sourceContainerId];
       const activeIndex = sourceItems.findIndex((c) => c.id === activeCourseId);
-      
+
       if (activeIndex === -1) return prev; // Should not happen
 
       const [movedItem] = sourceItems.splice(activeIndex, 1);
@@ -159,7 +159,7 @@ function PlanCourses() {
       setContainers(originalContainers); // Rollback on API error
     }
   };
-  
+
   const isDragging = activeCourse !== null;
   const semesterKeys = Object.keys(containers).filter((k) => k.startsWith('semester'));
 
@@ -220,7 +220,9 @@ function PlanCourses() {
         )}
       </div>
 
-      <DragOverlay>{activeCourse ? <DraggableCourse course={activeCourse} isOverlay /> : null}</DragOverlay>
+      <DragOverlay>
+        {activeCourse ? <DraggableCourse course={activeCourse} isOverlay /> : null}
+      </DragOverlay>
 
       {isDragging && <TrashCan />}
     </DndContext>
