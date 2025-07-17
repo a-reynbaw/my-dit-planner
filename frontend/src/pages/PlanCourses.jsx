@@ -80,7 +80,7 @@ function PlanCourses() {
           const currentCoursesECTS = data
             .filter((course) => course.status === 'Current Semester')
             .reduce((sum, course) => sum + (course.ects || 0), 0);
-          
+
           const failedCoursesECTS = data
             .filter((course) => course.status === 'Failed')
             .reduce((sum, course) => sum + (course.ects || 0), 0);
@@ -208,9 +208,7 @@ function PlanCourses() {
             <span className="text-lg font-semibold">
               {totalPlannedECTS} / {totalECTS}
             </span>
-            <p className="text-xs text-gray-500 mt-1">
-              Includes planned, current & failed courses
-            </p>
+            <p className="text-xs text-gray-500 mt-1">Includes planned, current & failed courses</p>
           </div>
           <Button
             variant="outline"

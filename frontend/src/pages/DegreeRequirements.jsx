@@ -21,7 +21,7 @@ function DegreeRequirements() {
   // Direction options
   const directions = [
     { value: 'CS', label: 'Computer Science (CS)' },
-    { value: 'CET', label: 'Computer Engineering & Telecommunications (CET)' }
+    { value: 'CET', label: 'Computer Engineering & Telecommunications (CET)' },
   ];
 
   useEffect(() => {
@@ -64,7 +64,7 @@ function DegreeRequirements() {
   const totalECTS = 240;
   const passedCourses = courses.filter((c) => c.status === 'Passed');
   const completedECTS = passedCourses.reduce((sum, course) => sum + course.ects, 0);
-  
+
   // Course type requirements
   const compulsoryCourses = courses.filter((c) => c.type === 'ΥΜ');
   const completedCompulsory = compulsoryCourses.filter((c) => c.status === 'Passed');
@@ -80,15 +80,15 @@ function DegreeRequirements() {
   const directionProgress = (completedDirection.length / 4) * 100; // 4 direction courses required
 
   // Direction project (should be a specific course type or identifiable by name)
-  const directionProjectCourses = courses.filter((c) => 
-    c.name.includes('Εργαστήριο') || c.name.includes('Project') || c.type === 'ΠΜ'
+  const directionProjectCourses = courses.filter(
+    (c) => c.name.includes('Εργαστήριο') || c.name.includes('Project') || c.type === 'ΠΜ'
   );
   const completedDirectionProject = directionProjectCourses.filter((c) => c.status === 'Passed');
   const directionProjectProgress = (completedDirectionProject.length / 1) * 100; // 1 direction project required
 
   // Final courses: Πρακτική I, Πρακτική IΙ, Πτυχιακή Ι, Πτυχιακή ΙΙ
-  const finalCourses = courses.filter((c) => 
-    c.name.includes('Πρακτική') || c.name.includes('Πτυχιακή')
+  const finalCourses = courses.filter(
+    (c) => c.name.includes('Πρακτική') || c.name.includes('Πτυχιακή')
   );
   const completedFinalCourses = finalCourses.filter((c) => c.status === 'Passed');
   const finalCoursesProgress = (completedFinalCourses.length / 2) * 100; // 2 out of 4 required
@@ -97,21 +97,24 @@ function DegreeRequirements() {
   const csRequiredCourses = [
     'Θεωρεία Υπολογισμού',
     'Υλοποίηση Συστημάτων Βάσεων Δεδομένων',
-    'Αριθμητική Ανάλυση'
+    'Αριθμητική Ανάλυση',
   ];
 
   // Check CS-specific requirements
-  const csRequiredCompleted = userDirection === 'CS' ? 
-    csRequiredCourses.filter(courseName => 
-      courses.some(course => course.name === courseName && course.status === 'Passed')
-    ).length : 0;
+  const csRequiredCompleted =
+    userDirection === 'CS'
+      ? csRequiredCourses.filter((courseName) =>
+          courses.some((course) => course.name === courseName && course.status === 'Passed')
+        ).length
+      : 0;
 
   const csRequiredProgress = userDirection === 'CS' ? (csRequiredCompleted / 3) * 100 : 100;
 
   // ECTS requirements
   const ectsProgress = (completedECTS / totalECTS) * 100;
 
-  const selectedDirectionLabel = directions.find(d => d.value === userDirection)?.label || userDirection;
+  const selectedDirectionLabel =
+    directions.find((d) => d.value === userDirection)?.label || userDirection;
 
   const requirements = [
     {
@@ -121,7 +124,7 @@ function DegreeRequirements() {
       progress: ectsProgress,
       icon: Target,
       color: 'text-blue-400',
-      description: 'Complete 240 ECTS to graduate'
+      description: 'Complete 240 ECTS to graduate',
     },
     {
       title: 'Compulsory Courses (ΥΜ)',
@@ -130,7 +133,7 @@ function DegreeRequirements() {
       progress: compulsoryProgress,
       icon: CheckCircle2,
       color: 'text-green-400',
-      description: '18 compulsory courses required for graduation'
+      description: '18 compulsory courses required for graduation',
     },
     {
       title: 'General Education (ΓΠ)',
@@ -139,7 +142,7 @@ function DegreeRequirements() {
       progress: geProgress,
       icon: CheckCircle2,
       color: 'text-yellow-400',
-      description: '3 general education courses required'
+      description: '3 general education courses required',
     },
     {
       title: 'Direction Courses (ΚΜ)',
@@ -148,7 +151,7 @@ function DegreeRequirements() {
       progress: directionProgress,
       icon: Target,
       color: 'text-orange-400',
-      description: '4 direction courses required'
+      description: '4 direction courses required',
     },
     {
       title: 'Direction Project',
@@ -157,7 +160,7 @@ function DegreeRequirements() {
       progress: directionProjectProgress,
       icon: BookOpen,
       color: 'text-purple-400',
-      description: '1 direction project required'
+      description: '1 direction project required',
     },
     {
       title: 'Final Courses',
@@ -166,8 +169,8 @@ function DegreeRequirements() {
       progress: finalCoursesProgress,
       icon: Clock,
       color: 'text-cyan-400',
-      description: 'Choose 2 from: Πρακτική I/II or Πτυχιακή I/II'
-    }
+      description: 'Choose 2 from: Πρακτική I/II or Πτυχιακή I/II',
+    },
   ];
 
   // Add CS-specific requirement if CS is selected
@@ -179,7 +182,7 @@ function DegreeRequirements() {
       progress: csRequiredProgress,
       icon: Target,
       color: 'text-red-400',
-      description: 'CS direction requires 3 specific courses'
+      description: 'CS direction requires 3 specific courses',
     });
   }
 
@@ -202,8 +205,8 @@ function DegreeRequirements() {
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700">
                 {directions.map((direction) => (
-                  <SelectItem 
-                    key={direction.value} 
+                  <SelectItem
+                    key={direction.value}
                     value={direction.value}
                     className="text-white hover:bg-gray-700"
                   >
@@ -245,14 +248,14 @@ function DegreeRequirements() {
               </p>
             </div>
           </div>
-          
+
           {userDirection === 'CS' && (
             <div className="mt-4">
               <p className="text-sm text-gray-400 mb-2">CS Required Courses (3 mandatory):</p>
               <div className="space-y-2">
                 {csRequiredCourses.map((courseName, index) => {
-                  const isCompleted = courses.some(course => 
-                    course.name === courseName && course.status === 'Passed'
+                  const isCompleted = courses.some(
+                    (course) => course.name === courseName && course.status === 'Passed'
                   );
                   return (
                     <div key={index} className="flex items-center gap-2">
@@ -261,7 +264,9 @@ function DegreeRequirements() {
                       ) : (
                         <XCircle className="h-4 w-4 text-red-400" />
                       )}
-                      <span className={`text-sm ${isCompleted ? 'text-green-400' : 'text-gray-300'}`}>
+                      <span
+                        className={`text-sm ${isCompleted ? 'text-green-400' : 'text-gray-300'}`}
+                      >
                         {courseName}
                       </span>
                     </div>
@@ -270,7 +275,7 @@ function DegreeRequirements() {
               </div>
             </div>
           )}
-          
+
           {userDirection === 'CET' && (
             <div className="mt-4">
               <p className="text-sm text-green-400">
@@ -278,22 +283,27 @@ function DegreeRequirements() {
               </p>
             </div>
           )}
-          
+
           <div className="mt-4">
             <p className="text-sm text-gray-400 mb-2">Final Courses (choose 2):</p>
             <div className="flex flex-wrap gap-2">
-              {['Πρακτική I', 'Πρακτική IΙ', 'Πτυχιακή Ι', 'Πτυχιακή ΙΙ'].map((courseName, index) => {
-                const isCompleted = courses.some(course => 
-                  course.name.includes(courseName) && course.status === 'Passed'
-                );
-                return (
-                  <span key={index} className={`px-2 py-1 rounded text-sm ${
-                    isCompleted ? 'bg-green-700 text-green-200' : 'bg-gray-700 text-gray-300'
-                  }`}>
-                    {courseName}
-                  </span>
-                );
-              })}
+              {['Πρακτική I', 'Πρακτική IΙ', 'Πτυχιακή Ι', 'Πτυχιακή ΙΙ'].map(
+                (courseName, index) => {
+                  const isCompleted = courses.some(
+                    (course) => course.name.includes(courseName) && course.status === 'Passed'
+                  );
+                  return (
+                    <span
+                      key={index}
+                      className={`px-2 py-1 rounded text-sm ${
+                        isCompleted ? 'bg-green-700 text-green-200' : 'bg-gray-700 text-gray-300'
+                      }`}
+                    >
+                      {courseName}
+                    </span>
+                  );
+                }
+              )}
             </div>
           </div>
         </CardContent>
@@ -316,10 +326,7 @@ function DegreeRequirements() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <Progress 
-                  value={req.progress} 
-                  className="w-full h-2 bg-gray-700"
-                />
+                <Progress value={req.progress} className="w-full h-2 bg-gray-700" />
                 <div className="flex justify-between text-sm text-gray-400">
                   <span>{req.progress.toFixed(1)}% Complete</span>
                   <span>{req.total - req.completed} remaining</span>
@@ -403,11 +410,15 @@ function DegreeRequirements() {
               )}
               <div className="flex justify-between">
                 <span>Direction project:</span>
-                <span className="text-red-400">{Math.max(0, 1 - completedDirectionProject.length)}</span>
+                <span className="text-red-400">
+                  {Math.max(0, 1 - completedDirectionProject.length)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Final courses:</span>
-                <span className="text-red-400">{Math.max(0, 2 - completedFinalCourses.length)}</span>
+                <span className="text-red-400">
+                  {Math.max(0, 2 - completedFinalCourses.length)}
+                </span>
               </div>
             </div>
           </CardContent>
