@@ -62,9 +62,39 @@ function PlanCourses() {
 
   const sensors = useSensors(useSensor(PointerSensor));
 
+  // Calculate ECTS from planned courses (in containers)
   const plannedECTS = Object.values(containers)
     .flat()
     .reduce((sum, course) => sum + (course.ects || 0), 0);
+
+  // We need to fetch and calculate current and failed courses ECTS
+  const [additionalECTS, setAdditionalECTS] = useState(0);
+
+  useEffect(() => {
+    // This effect runs after the main data is loaded
+    if (!loading) {
+      fetch(API_URL)
+        .then((res) => res.json())
+        .then((data) => {
+          // Calculate ECTS from current and failed courses
+          const currentCoursesECTS = data
+            .filter((course) => course.status === 'Current Semester')
+            .reduce((sum, course) => sum + (course.ects || 0), 0);
+          
+          const failedCoursesECTS = data
+            .filter((course) => course.status === 'Failed')
+            .reduce((sum, course) => sum + (course.ects || 0), 0);
+
+          setAdditionalECTS(currentCoursesECTS + failedCoursesECTS);
+        })
+        .catch((error) => {
+          console.error('Error calculating additional ECTS:', error);
+        });
+    }
+  }, [loading]);
+
+  // Total ECTS including planned, current, and failed courses
+  const totalPlannedECTS = plannedECTS + additionalECTS;
 
   const findContainerIdForCourse = (courseId) => {
     return Object.keys(containers).find((key) =>
@@ -176,8 +206,11 @@ function PlanCourses() {
           <div className="text-right">
             <h4 className="text-xl font-bold text-blue-300">Planned ECTS</h4>
             <span className="text-lg font-semibold">
-              {plannedECTS} / {totalECTS}
+              {totalPlannedECTS} / {totalECTS}
             </span>
+            <p className="text-xs text-gray-500 mt-1">
+              Includes planned, current & failed courses
+            </p>
           </div>
           <Button
             variant="outline"

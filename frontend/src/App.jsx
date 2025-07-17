@@ -17,6 +17,7 @@ import AllCourses from '@/pages/AllCourses';
 import PlanCourses from '@/pages/PlanCourses';
 import FailedCourses from '@/pages/FailedCourses';
 import CurrentCourses from '@/pages/CurrentCourses';
+import DegreeRequirements from '@/pages/DegreeRequirements';
 import {
   Table,
   TableBody,
@@ -103,10 +104,11 @@ function Dashboard({ courses, navigate }) {
               color="text-green-400"
             />
             <StatCard
-              title="Compulsory Done"
+              title="Degree Requirements"
               value={`${completedCompulsory + completedGE} / ${totalCompulsory}`}
               icon={Target}
               color="text-yellow-400"
+              onClick={() => navigate('/degree-requirements')}
             />
             <StatCard
               title="Courses Planned"
@@ -213,6 +215,7 @@ function App() {
       <Route path="/plan-courses" element={<PlanCourses />} />
       <Route path="/failed-courses" element={<FailedCourses />} />
       <Route path="/current-courses" element={<CurrentCourses />} />
+      <Route path="/degree-requirements" element={<DegreeRequirements />} />
       <Route
         path="/timetable"
         element={
