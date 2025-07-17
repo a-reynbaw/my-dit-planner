@@ -1,0 +1,53 @@
+FROM debian:bookworm
+
+# Build parameters
+ARG NODE_VER="22.17.0"
+ARG PROJECT_DIR="/opt/ditplanner"
+ARG NONDUCK_DOMAIN="localhost"
+ENV NODE_VER="${NODE_VER}"
+ENV PROJECT_DIR="${PROJECT_DIR}"
+ENV NONDUCK_DOMAIN="${NONDUCK_DOMAIN}"
+
+# Deps
+RUN apt-get update && apt-get install -y \
+    curl unzip net-tools apache2 moreutils \
+    gettext-base openssl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js
+RUN curl -fsSL https://fnm.vercel.app/install | bash && \
+    . ${HOME}/.bashrc && \
+    fnm install ${NODE_VER}
+
+ENV PATH="/root/.local/share/fnm/node-versions/v${NODE_VER}/installation/bin/:${PATH}"
+
+# Copy frontend
+RUN mkdir -p ${PROJECT_DIR} && \
+    mkdir -p /var/www/empty
+WORKDIR ${PROJECT_DIR}
+COPY --chmod=0755 ./frontend .
+COPY --chmod=0755 ./docker/front/certs ./selfcerts
+COPY --chmod=0755 ./docker/front/*.sh .
+
+# Build application
+RUN npm install && npm run build
+
+# Setup Apache
+WORKDIR /etc/apache2/conf-enabled
+RUN a2disconf * && a2enconf security
+
+WORKDIR /etc/apache2/mods-enabled
+RUN a2dismod -f autoindex filter negotiation && \
+    a2enmod headers proxy_http ssl
+
+WORKDIR /etc/apache2/sites-enabled
+COPY ./docker/front/*.conf /etc/apache2/sites-available/
+RUN a2dissite 000-default
+
+WORKDIR ${PROJECT_DIR}
+
+EXPOSE 443
+
+ENTRYPOINT ["./entrypoint.sh"]
+
+CMD ["apachectl", "-D", "FOREGROUND"]
