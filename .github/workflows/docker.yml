@@ -25,7 +25,7 @@ jobs:
           sleep 20
 
       - name: Check frontend service
-        run: curl -f http://localhost:5173
+        run: curl -f -k https://localhost/
 
       - name: Check backend service
         run: curl -f http://localhost:8000/health
