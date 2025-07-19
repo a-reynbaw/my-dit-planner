@@ -40,7 +40,7 @@ jobs:
       - name: Wait for server to be ready
         run: |
           echo "Waiting for server..."
-          timeout 30s bash -c 'while ! curl -s http://localhost:8000/health > /dev/null; do sleep 1; done'
+          timeout 60s bash -c 'while ! curl -s http://localhost:8000/health > /dev/null; do sleep 1; done'
           echo "Server is up!"
 
       - name: Test /api/courses endpoint
