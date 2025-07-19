@@ -80,9 +80,7 @@ function DegreeRequirements() {
   const directionProgress = (completedDirection.length / 4) * 100; // 4 direction courses required
 
   // Direction project (should be a specific course type or identifiable by name)
-  const directionProjectCourses = courses.filter(
-    (c) => c.name.includes('Εργαστήριο') || c.name.includes('Project') || c.type === 'ΠΜ'
-  );
+  const directionProjectCourses = courses.filter((c) => c.name.startsWith('Ανάπτυξη'));
   const completedDirectionProject = directionProjectCourses.filter((c) => c.status === 'Passed');
   const directionProjectProgress = (completedDirectionProject.length / 1) * 100; // 1 direction project required
 
@@ -95,7 +93,7 @@ function DegreeRequirements() {
 
   // CS-specific required courses
   const csRequiredCourses = [
-    'Θεωρεία Υπολογισμού',
+    'Θεωρία Υπολογισμού',
     'Υλοποίηση Συστημάτων Βάσεων Δεδομένων',
     'Αριθμητική Ανάλυση',
   ];

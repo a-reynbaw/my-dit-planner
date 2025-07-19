@@ -71,6 +71,6 @@ sudo docker-compose down -v --rmi all
 ```
 
 ## To-Do List
-- [ ] bug in degree requirements for the project: shows that the project has been done even though it hasn't
-- [ ] update main paige to show case the other pages better
+- [X] bug in degree requirements for the project: shows that the project has been done even though it hasn't
+- [Χ] update main paige to show case the other pages better
 - [ ] correct requirements

@@ -11,6 +11,7 @@ import {
   CalendarClock,
   ListTree,
   BadgeEuro,
+  ArrowRightCircle,
 } from 'lucide-react';
 
 import AllCourses from '@/pages/AllCourses';
@@ -31,9 +32,13 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
 function StatCard({ title, value, icon: Icon, color, onClick }) {
+  const isClickable = !!onClick;
+
   return (
     <Card
-      className={`bg-gray-800 border-gray-700 text-white shadow-lg hover:bg-gray-700/50 transition-colors duration-300 ${onClick ? 'cursor-pointer' : ''}`}
+      className={`relative group bg-gray-800 border-gray-700 text-white shadow-lg hover:bg-gray-700/50 transition-colors duration-300 ${
+        isClickable ? 'cursor-pointer' : ''
+      }`}
       onClick={onClick}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -42,6 +47,9 @@ function StatCard({ title, value, icon: Icon, color, onClick }) {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
+        {isClickable && (
+          <ArrowRightCircle className="absolute bottom-6 right-6 h-5 w-5 text-gray-400 opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+        )}
       </CardContent>
     </Card>
   );

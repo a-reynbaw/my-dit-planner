@@ -24,8 +24,6 @@ function PlanCourses() {
   const [containers, setContainers] = useState(createInitialContainers());
   const [totalECTS, setTotalECTS] = useState(240);
 
-  // --- CORRECTED useEffect ---
-  // This hook now correctly partitions the courses on initial load.
   useEffect(() => {
     setLoading(true);
     fetch(API_URL)
@@ -35,6 +33,8 @@ function PlanCourses() {
 
         // Filter for only the courses that need planning
         const plannedCourses = data.filter((course) => course.status === 'Planned');
+
+        console.log('[PLANNER] Fetched courses with "Planned" status:', plannedCourses);
 
         plannedCourses.forEach((course) => {
           // If the course has a specific semester planned, place it there.
@@ -67,6 +67,8 @@ function PlanCourses() {
     .flat()
     .reduce((sum, course) => sum + (course.ects || 0), 0);
 
+  console.log(`[PLANNER] ECTS from "Planned" courses (drag & drop area): ${plannedECTS}`);
+
   // We need to fetch and calculate current and failed courses ECTS
   const [additionalECTS, setAdditionalECTS] = useState(0);
 
@@ -77,13 +79,20 @@ function PlanCourses() {
         .then((res) => res.json())
         .then((data) => {
           // Calculate ECTS from current and failed courses
-          const currentCoursesECTS = data
-            .filter((course) => course.status === 'Current Semester')
-            .reduce((sum, course) => sum + (course.ects || 0), 0);
+          const currentCourses = data.filter((course) => course.status === 'Current Semester');
+          const failedCourses = data.filter((course) => course.status === 'Failed');
 
-          const failedCoursesECTS = data
-            .filter((course) => course.status === 'Failed')
-            .reduce((sum, course) => sum + (course.ects || 0), 0);
+          const currentCoursesECTS = currentCourses.reduce(
+            (sum, course) => sum + (course.ects || 0),
+            0
+          );
+          const failedCoursesECTS = failedCourses.reduce(
+            (sum, course) => sum + (course.ects || 0),
+            0
+          );
+
+          // console.log(`[PLANNER] ECTS from "Current Semester" courses: ${currentCoursesECTS}`);
+          // console.log(`[PLANNER] ECTS from "Failed" courses: ${failedCoursesECTS}`);
 
           setAdditionalECTS(currentCoursesECTS + failedCoursesECTS);
         })
@@ -95,6 +104,10 @@ function PlanCourses() {
 
   // Total ECTS including planned, current, and failed courses
   const totalPlannedECTS = plannedECTS + additionalECTS;
+
+  // console.log(
+  //   `[PLANNER] FINAL CALCULATION: totalPlannedECTS = ${plannedECTS} (planned) + ${additionalECTS} (current/failed) = ${totalPlannedECTS}`
+  // );
 
   const findContainerIdForCourse = (courseId) => {
     return Object.keys(containers).find((key) =>
@@ -141,7 +154,6 @@ function PlanCourses() {
       return;
     }
 
-    // --- Validation Logic (Odd/Even Semester) ---
     const isDroppingInSemester = destinationContainerId.startsWith('semester');
     if (isDroppingInSemester) {
       const destSemesterNum = parseInt(destinationContainerId.split('-')[1], 10);
@@ -153,15 +165,13 @@ function PlanCourses() {
       }
     }
 
-    // --- Optimistic UI Update ---
     const originalContainers = containers;
     setContainers((prev) => {
-      const newContainers = JSON.parse(JSON.stringify(prev)); // Deep copy to prevent mutation
+      const newContainers = JSON.parse(JSON.stringify(prev));
       const sourceItems = newContainers[sourceContainerId];
       const activeIndex = sourceItems.findIndex((c) => c.id === activeCourseId);
 
-      if (activeIndex === -1) return prev; // Should not happen
-
+      if (activeIndex === -1) return prev;
       const [movedItem] = sourceItems.splice(activeIndex, 1);
 
       if (destinationContainerId === 'trash') {
@@ -172,7 +182,6 @@ function PlanCourses() {
       return newContainers;
     });
 
-    // --- Backend API Call ---
     try {
       if (destinationContainerId === 'trash') {
         await updateCourseBackend(activeCourseId, { status: 'Not Taken', planned_semester: 0 });
