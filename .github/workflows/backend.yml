@@ -39,7 +39,9 @@ jobs:
 
       - name: Wait for server to be ready
         run: |
-          echo "Waiting for server..."
+          echo "Waiting for server to start..."
+          sleep 5 # Add a fixed delay to allow the server process to initialize
+          echo "Polling health endpoint..."
           timeout 60s bash -c 'while ! curl -s http://localhost:8000/health > /dev/null; do sleep 1; done'
           echo "Server is up!"
 
