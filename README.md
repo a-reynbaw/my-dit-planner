@@ -71,10 +71,6 @@ sudo docker-compose down -v --rmi all
 ```
 
 ## To-Do List
-- [ ] aranal, ct and usvd as compolsory if someone chooses CS direction
-- [ ] plan only for semesters a course can be added
-- [ ] eleuthera
-- [ ] add disertation and internship, not in db ideally, but as a choice in main page(?)
-- [ ] also add direction as a choice in main page
-- [ ] make the planning stay, so add that to the backend
-- [ ] add feature so it colors the the semesters that a course can be added during planning
+- [ ] bug in degree requirements for the project: shows that the project has been done even though it hasn't
+- [ ] update main paige to show case the other pages better
+- [ ] correct requirements
