@@ -172,17 +172,19 @@ def init_database():
             first_name TEXT,
             last_name TEXT,
             current_semester INT,
-            direction TEXT,
+            direction TEXT
         )
     ''')
 
     profile = [
-        ('Anastasia', 'Marinakou', '2', None)
+        ('Anastasia', 'Marinakou', 2, None)
     ]
     try:
         for first_name, last_name, current_semester, direction in profile:
-            cursor.exevute(
-                (first_name, last_name, current_semester, None)
+            cursor.execute(
+                '''INSERT OR IGNORE INTO profile (first_name, last_name, current_semester, direction)
+                   VALUES (?, ?, ?, ?)''',
+                (first_name, last_name, current_semester, direction)
             )
         conn.commit()
     except Exception as e:

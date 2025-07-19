@@ -35,10 +35,15 @@ jobs:
         run: rm -f courses.db
 
       - name: Run server in background
-        run: python3 server.py &
+        run: uvicorn server:app --host 0.0.0.0 --port 8000 &
 
-      - name: Check /health endpoint
-        run: curl --fail http://localhost:8000/health
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for server..."
+          while ! curl -s http://localhost:8000/api/courses > /dev/null; do
+            sleep 1
+          done
+          echo "Server is up!"
 
       - name: Test /api/courses endpoint
         run: curl --fail http://localhost:8000/api/courses | jq .
