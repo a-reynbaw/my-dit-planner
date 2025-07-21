@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 from database import (
+    get_sdi_with_id,
     init_database,
     get_all_courses,
     # get_degree_requirements,
@@ -55,6 +56,14 @@ def api_get_courses():
         return courses
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading courses: {str(e)}")
+    
+@app.get("/api/profile")
+def api_get_sdi():
+    try:
+        sdi = get_sdi_with_id(0)
+        return sdi
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading sdi: {str(e)}")
 
 @app.put("/api/courses/{course_id}/status")
 def api_update_course_status(course_id: int, update: CourseStatusUpdate):

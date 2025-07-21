@@ -19,6 +19,7 @@ import PlanCourses from '@/pages/PlanCourses';
 import FailedCourses from '@/pages/FailedCourses';
 import CurrentCourses from '@/pages/CurrentCourses';
 import DegreeRequirements from '@/pages/DegreeRequirements';
+import Timetable from '@/pages/Timetable';
 import {
   Table,
   TableBody,
@@ -193,7 +194,7 @@ function Dashboard({ courses, navigate }) {
                     variant="outline"
                     className="w-full border-gray-600 group-hover:bg-blue-600 group-hover:text-white transition-colors"
                   >
-                    Go to {item.path.split('-').join(' ')}
+                    Go to {item.title.toLowerCase()}
                   </Button>
                 </CardContent>
               </Card>
@@ -224,18 +225,7 @@ function App() {
       <Route path="/failed-courses" element={<FailedCourses />} />
       <Route path="/current-courses" element={<CurrentCourses />} />
       <Route path="/degree-requirements" element={<DegreeRequirements />} />
-      <Route
-        path="/timetable"
-        element={
-          <div className="flex items-center justify-center h-screen bg-gray-900 text-white text-2xl">
-            Timetable page is under construction. Pay us to speed it up!{' '}
-            <BadgeEuro className="inline-block ml-2" />
-            <Button onClick={() => navigate('/')} className="ml-4">
-              Go Back
-            </Button>
-          </div>
-        }
-      />
+      <Route path="/timetable" element={<Timetable />} />
     </Routes>
   );
 }

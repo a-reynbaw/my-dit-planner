@@ -4,3 +4,5 @@ env/
 __pycache__/
 input.txt
 context.py
+*.pdf
+*.csv

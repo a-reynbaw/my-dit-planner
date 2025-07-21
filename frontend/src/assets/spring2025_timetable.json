@@ -1,0 +1,2176 @@
+{
+  "semester": "Spring 2025",
+  "total_courses": 217,
+  "schedule": [
+    {
+      "day": "Δευτέρα",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Εφαρμοσμένα Μαθηματικά",
+      "semester": "2",
+      "lecturer": "Λουκά",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Θεωρία Υπολογισμού",
+      "semester": "6",
+      "lecturer": "Ροντογιάννης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Ψηφιακές Επικοινωνίες",
+      "semester": "7",
+      "lecturer": "Πασσάς",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Σχολική Τάξη & Μικροδιδασκαλία",
+      "semester": "8",
+      "lecturer": "Γόγουλου",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Εφαρμοσμένα Μαθηματικά",
+      "semester": "2",
+      "lecturer": "Λουκά",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Θεωρία Υπολογισμού",
+      "semester": "6",
+      "lecturer": "Ροντογιάννης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Ψηφιακές Επικοινωνίες",
+      "semester": "7",
+      "lecturer": "Πασσάς",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Σχολική Τάξη & Μικροδιδασκαλία",
+      "semester": "8",
+      "lecturer": "Γόγουλου",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Ανάλυση I",
+      "semester": "2",
+      "lecturer": "Σμυρνέλης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Ψηφιακές Επικοινωνίες",
+      "semester": "7",
+      "lecturer": "Πασσάς",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Λογικός Προγραμματισμός",
+      "semester": "6",
+      "lecturer": "Πιτσικάλης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Ανάλυση I",
+      "semester": "2",
+      "lecturer": "Σμυρνέλης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Λογικός Προγραμματισμός",
+      "semester": "6",
+      "lecturer": "Πιτσικάλης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Αρχιτεκτονική Υπολογιστών I",
+      "semester": "2",
+      "lecturer": "Γκιζόπουλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Προγραμματισμός Συστήματος (άρτιοι ΑΜ)",
+      "semester": "6",
+      "lecturer": "Ντούλας",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Προγραμματισμός Συστήματος (περιττοί ΑΜ)",
+      "semester": "6",
+      "lecturer": "Ρουσσοπούλου",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Σημασιολογία Γλωσσών Προγραμματισμού",
+      "semester": "8",
+      "lecturer": "Ροντογιάννης",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Επεξεργασία Εικόνας",
+      "semester": "8",
+      "lecturer": "Κακογεωργίου",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Τεχνολογία Λογισμικού",
+      "semester": "8",
+      "lecturer": "Πιτσικάλης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Αρχιτεκτονική Υπολογιστών I",
+      "semester": "2",
+      "lecturer": "Γκιζόπουλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Προγραμματισμός Συστήματος (άρτιοι ΑΜ)",
+      "semester": "6",
+      "lecturer": "Ντούλας",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Προγραμματισμός Συστήματος (περιττοί ΑΜ)",
+      "semester": "6",
+      "lecturer": "Ρουσσοπούλου",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Σημασιολογία Γλωσσών Προγραμματισμού",
+      "semester": "8",
+      "lecturer": "Ροντογιάννης",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Επεξεργασία Εικόνας",
+      "semester": "8",
+      "lecturer": "Κακογεωργίου",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Τεχνολογία Λογισμικού",
+      "semester": "8",
+      "lecturer": "Πιτσικάλης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Δομές Δεδομένων και Τεχνικές Προγραμματισμού (περιττοί ΑΜ)",
+      "semester": "2",
+      "lecturer": "Χατζηκοκολάκης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Μεταγλωττιστές",
+      "semester": "6",
+      "lecturer": "Σμαραγδάκης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Δομές Δεδομένων και Τεχνικές Προγραμματισμού (άρτιοι ΑΜ)",
+      "semester": "2",
+      "lecturer": "Κουμπαράκης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Κυματοδηγοί, Γραμμές Μεταφοράς και Οπτικές Ίνες",
+      "semester": "8",
+      "lecturer": "Τσίπουρας",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Επεξεργασία Εικόνας",
+      "semester": "8",
+      "lecturer": "Κακογεωργίου",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Ασύρματα Δίκτυα Αισθητήρων",
+      "semester": "6",
+      "lecturer": "Χατζηευθυμιάδης",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Δομές Δεδομένων και Τεχνικές Προγραμματισμού (περιττοί ΑΜ)",
+      "semester": "2",
+      "lecturer": "Χατζηκοκολάκης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Μεταγλωττιστές",
+      "semester": "6",
+      "lecturer": "Σμαραγδάκης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Δομές Δεδομένων και Τεχνικές Προγραμματισμού (άρτιοι ΑΜ)",
+      "semester": "2",
+      "lecturer": "Κουμπαράκης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Κυματοδηγοί, Γραμμές Μεταφοράς και Οπτικές Ίνες",
+      "semester": "8",
+      "lecturer": "Τσίπουρας",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Ασύρματα Δίκτυα Αισθητήρων",
+      "semester": "6",
+      "lecturer": "Χατζηευθυμιάδης",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Αρχιτεκτονική Υπολογιστών I",
+      "semester": "2",
+      "lecturer": "Γκιζόπουλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Τεχνολογίες Εφαρμογών Διαδικτύου",
+      "semester": "6",
+      "lecturer": "Χαμόδρακας",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Κυματοδηγοί, Γραμμές Μεταφοράς και Οπτικές Ίνες",
+      "semester": "8",
+      "lecturer": "Τσίπουρας",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Φωτονική",
+      "semester": "8",
+      "lecturer": "Κανέλλος",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "18:00",
+      "end_time": "19:00",
+      "course_name": "Αρχιτεκτονική Υπολογιστών I",
+      "semester": "2",
+      "lecturer": "Γκιζόπουλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "18:00",
+      "end_time": "19:00",
+      "course_name": "Τεχνολογίες Εφαρμογών Διαδικτύου",
+      "semester": "6",
+      "lecturer": "Χαμόδρακας",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "18:00",
+      "end_time": "19:00",
+      "course_name": "Φωτονική",
+      "semester": "8",
+      "lecturer": "Κανέλλος",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "19:00",
+      "end_time": "20:00",
+      "course_name": "Τεχνολογίες Εφαρμογών Διαδικτύου",
+      "semester": "6",
+      "lecturer": "Χαμόδρακας",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Δευτέρα",
+      "start_time": "19:00",
+      "end_time": "20:00",
+      "course_name": "Φωτονική",
+      "semester": "8",
+      "lecturer": "Κανέλλος",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Εφαρμοσμένα Μαθηματικά",
+      "semester": "2",
+      "lecturer": "Λουκά",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Αλγοριθμική Επίλυση Προβλημάτων",
+      "semester": "8",
+      "lecturer": "Τζάμος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (Φροντ. ΑΜ mod 4=0)",
+      "semester": "4",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Μαθηματικά Πληροφορικής",
+      "semester": "6",
+      "lecturer": "Κολλιόπουλος",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Εφαρμοσμένα Μαθηματικά",
+      "semester": "2",
+      "lecturer": "Λουκά",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Αλγοριθμική Επίλυση Προβλημάτων",
+      "semester": "8",
+      "lecturer": "Τζάμος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (Φροντ. ΑΜ mod 4=0)",
+      "semester": "4",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Μαθηματικά Πληροφορικής",
+      "semester": "6",
+      "lecturer": "Κολλιόπουλος",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Ανάλυση I",
+      "semester": "2",
+      "lecturer": "Σμυρνέλης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Προγραμματισμός Συστήματος (άρτιοι ΑΜ)",
+      "semester": "6",
+      "lecturer": "Ντούλας",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Προγραμματισμός Συστήματος (περιττοί ΑΜ)",
+      "semester": "6",
+      "lecturer": "Ρουσσοπούλου",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Υπολογιστική Θεωρία Μηχανικής Μάθησης",
+      "semester": "8",
+      "lecturer": "Τζάμος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (Φροντ. ΑΜ mod 4=1)",
+      "semester": "4",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Ανάλυση I",
+      "semester": "2",
+      "lecturer": "Σμυρνέλης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Προγραμματισμός Συστήματος (άρτιοι ΑΜ)",
+      "semester": "6",
+      "lecturer": "Ντούλας",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Προγραμματισμός Συστήματος (περιττοί ΑΜ)",
+      "semester": "6",
+      "lecturer": "Ρουσσοπούλου",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Ανάλυση Εικόνας και Τεχνητή Όραση",
+      "semester": "8",
+      "lecturer": "Κακογεωργίου",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Υπολογιστική Θεωρία Μηχανικής Μάθησης",
+      "semester": "8",
+      "lecturer": "Τζάμος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (Φροντ. ΑΜ mod 4=1)",
+      "semester": "4",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Αρχιτεκτονική Υπολογιστών I",
+      "semester": "2",
+      "lecturer": "Γκιζόπουλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Ηλεκτρονική",
+      "semester": "6",
+      "lecturer": "Συβρίδης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (περιττοί ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ρούσσου",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Ανάλυση Εικόνας και Τεχνητή Όραση",
+      "semester": "8",
+      "lecturer": "Κακογεωργίου",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Θεωρία Γραφημάτων",
+      "semester": "8",
+      "lecturer": "Κολλιόπουλος",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Τεχνητή Νοημοσύνη II (Φ)",
+      "semester": "6",
+      "lecturer": "Κουμπαράκης",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Αρχιτεκτονική Υπολογιστών I",
+      "semester": "2",
+      "lecturer": "Γκιζόπουλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Ηλεκτρονική",
+      "semester": "6",
+      "lecturer": "Συβρίδης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (περιττοί ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ρούσσου",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Ανάλυση Εικόνας και Τεχνητή Όραση",
+      "semester": "8",
+      "lecturer": "Κακογεωργίου",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Θεωρία Γραφημάτων",
+      "semester": "8",
+      "lecturer": "Κολλιόπουλος",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Ηλεκτρομαγνητισμός, Οπτική, Σύγχρονη Φυσική",
+      "semester": "2",
+      "lecturer": "Συβρίδης, Τσίπουρας",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Αλγόριθμοι - Θεμελιώσεις Μηχανικής Μάθησης",
+      "semester": "6",
+      "lecturer": "Αχλιόπτας",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Διαχείριση Δικτύων",
+      "semester": "6",
+      "lecturer": "Αλωνιστιώτη",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Ιστορία της Πληροφορικής και των Τηλεπικοινωνιών",
+      "semester": "8",
+      "lecturer": "Τύμπας",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Ηλεκτρομαγνητισμός, Οπτική, Σύγχρονη Φυσική",
+      "semester": "2",
+      "lecturer": "Συβρίδης, Τσίπουρας",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Αλγόριθμοι - Θεμελιώσεις Μηχανικής Μάθησης",
+      "semester": "6",
+      "lecturer": "Αχλιόπτας",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Διαχείριση Δικτύων",
+      "semester": "6",
+      "lecturer": "Αλωνιστιώτη",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Ιστορία της Πληροφορικής και των Τηλεπικοινωνιών",
+      "semester": "8",
+      "lecturer": "Τύμπας",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Ηλεκτρομαγνητισμός, Οπτική, Σύγχρονη Φυσική",
+      "semester": "2",
+      "lecturer": "Συβρίδης, Τσίπουρας",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Ιστορία της Πληροφορικής και των Τηλεπικοινωνιών",
+      "semester": "8",
+      "lecturer": "Τύμπας",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Μικροοικονομική Ανάλυση",
+      "semester": "8",
+      "lecturer": "Βαρουτάς, Κατσιάνης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "18:00",
+      "end_time": "19:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ιωαννίδης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "18:00",
+      "end_time": "19:00",
+      "course_name": "Μικροοικονομική Ανάλυση",
+      "semester": "8",
+      "lecturer": "Βαρουτάς, Κατσιάνης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "19:00",
+      "end_time": "20:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ιωαννίδης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τρίτη",
+      "start_time": "19:00",
+      "end_time": "20:00",
+      "course_name": "Μικροοικονομική Ανάλυση",
+      "semester": "8",
+      "lecturer": "Βαρουτάς, Κατσιάνης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Ηλεκτρομαγνητισμός, Οπτική, Σύγχρονη Φυσική (Φ)",
+      "semester": "2",
+      "lecturer": "Τσίπουρας",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Μαθηματικά Πληροφορικής (Φ)",
+      "semester": "6",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ιωαννίδης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Θεωρία Γραφημάτων",
+      "semester": "8",
+      "lecturer": "Κολλιόπουλος",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Ηλεκτρομαγνητισμός, Οπτική, Σύγχρονη Φυσική (Φ)",
+      "semester": "2",
+      "lecturer": "Τσίπουρας",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Μαθηματικά Πληροφορικής (Φ)",
+      "semester": "6",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ιωαννίδης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Θεωρία Γραφημάτων",
+      "semester": "8",
+      "lecturer": "Κολλιόπουλος",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Γιαννοπούλου",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (περιττοί ΑΜ)",
+      "semester": "4",
+      "lecturer": "Εμίρης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Προστασία και Ασφάλεια Υπολογιστικών Συστημάτων",
+      "semester": "8",
+      "lecturer": "Αυγερινός",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Παράλληλοι Αλγόριθμοι",
+      "semester": "8",
+      "lecturer": "Λουκά",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Αλγοριθμική Επίλυση Προβλημάτων",
+      "semester": "8",
+      "lecturer": "Τζάμος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Επιστημονικοί Υπολογισμοί",
+      "semester": "6",
+      "lecturer": "Τζαφέρης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Γιαννοπούλου",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (περιττοί ΑΜ)",
+      "semester": "4",
+      "lecturer": "Εμίρης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Προστασία και Ασφάλεια Υπολογιστικών Συστημάτων",
+      "semester": "8",
+      "lecturer": "Αυγερινός",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Παράλληλοι Αλγόριθμοι",
+      "semester": "8",
+      "lecturer": "Λουκά",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Αλγοριθμική Επίλυση Προβλημάτων",
+      "semester": "8",
+      "lecturer": "Τζάμος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Επιστημονικοί Υπολογισμοί",
+      "semester": "6",
+      "lecturer": "Τζαφέρης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Ανάλυση I (Φ)",
+      "semester": "2",
+      "lecturer": "Λουκά",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Ηλεκτρονική",
+      "semester": "6",
+      "lecturer": "Συβρίδης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (περιττοί ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ρούσσου",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Μουσική Πληροφορική",
+      "semester": "8",
+      "lecturer": "Καζάζης",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Παράλληλοι Αλγόριθμοι",
+      "semester": "8",
+      "lecturer": "Τζαφέρης",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Υπολογιστική Θεωρία Μηχανικής Μάθησης",
+      "semester": "8",
+      "lecturer": "Τζάμος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (Φροντ. ΑΜ mod 4=2)",
+      "semester": "4",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Μαθηματικά Πληροφορικής",
+      "semester": "6",
+      "lecturer": "Κολλιόπουλος",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Ανάλυση I (Φ)",
+      "semester": "2",
+      "lecturer": "Λουκά",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Ηλεκτρονική",
+      "semester": "6",
+      "lecturer": "Συβρίδης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (περιττοί ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ρούσσου",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Μουσική Πληροφορική",
+      "semester": "8",
+      "lecturer": "Καζάζης",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Παράλληλοι Αλγόριθμοι",
+      "semester": "8",
+      "lecturer": "Τζαφέρης",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Υπολογιστική Θεωρία Μηχανικής Μάθησης",
+      "semester": "8",
+      "lecturer": "Τζάμος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (Φροντ. ΑΜ mod 4=2)",
+      "semester": "4",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Μαθηματικά Πληροφορικής",
+      "semester": "6",
+      "lecturer": "Κολλιόπουλος",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Δομές Δεδομένων και Τεχνικές Προγραμματισμού (περιττοί ΑΜ)",
+      "semester": "2",
+      "lecturer": "Χατζηκοκολάκης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Μεταγλωττιστές",
+      "semester": "6",
+      "lecturer": "Σμαραγδάκης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Δομές Δεδομένων και Τεχνικές Προγραμματισμού (άρτιοι ΑΜ)",
+      "semester": "2",
+      "lecturer": "Κουμπαράκης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Μουσική Πληροφορική",
+      "semester": "8",
+      "lecturer": "Καζάζης",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Εργαστήριο Ηλεκτρονικής",
+      "semester": "6",
+      "lecturer": "Νίκας",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (Φροντ. ΑΜ mod 4=3)",
+      "semester": "4",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Δομές Δεδομένων και Τεχνικές Προγραμματισμού (περιττοί ΑΜ)",
+      "semester": "2",
+      "lecturer": "Χατζηκοκολάκης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Μεταγλωττιστές",
+      "semester": "6",
+      "lecturer": "Σμαραγδάκης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Δομές Δεδομένων και Τεχνικές Προγραμματισμού (άρτιοι ΑΜ)",
+      "semester": "2",
+      "lecturer": "Κουμπαράκης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Κρυπτογραφία (Φ)",
+      "semester": "8",
+      "lecturer": "Χάιδος",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (Φροντ. ΑΜ mod 4=3)",
+      "semester": "4",
+      "lecturer": "Φουρτουνέλλη",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Αναγνώριση Προτύπων - Μηχανική Μάθηση",
+      "semester": "6",
+      "lecturer": "Παναγάκης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "18:00",
+      "end_time": "19:00",
+      "course_name": "Αναγνώριση Προτύπων - Μηχανική Μάθηση",
+      "semester": "6",
+      "lecturer": "Παναγάκης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Τετάρτη",
+      "start_time": "19:00",
+      "end_time": "20:00",
+      "course_name": "Αναγνώριση Προτύπων - Μηχανική Μάθηση",
+      "semester": "6",
+      "lecturer": "Παναγάκης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ιωαννίδης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Θεωρία Υπολογισμού",
+      "semester": "6",
+      "lecturer": "Ροντογιάννης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Ασύρματα Δίκτυα Αισθητήρων",
+      "semester": "6",
+      "lecturer": "Χατζηευθυμιάδης",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ιωαννίδης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Θεωρία Υπολογισμού",
+      "semester": "6",
+      "lecturer": "Ροντογιάννης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Ασύρματα Δίκτυα Αισθητήρων",
+      "semester": "6",
+      "lecturer": "Χατζηευθυμιάδης",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Δίκτυα Επικοινωνιών I",
+      "semester": "4",
+      "lecturer": "Σταυρακάκης, Βάιος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Επεξεργασία Στοχαστικών Σημάτων",
+      "semester": "6",
+      "lecturer": "Αλεξανδρόπουλος",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Τεχνικές Εξόρυξης Δεδομένων",
+      "semester": "6",
+      "lecturer": "Γουνόπουλος",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Ανάπτυξη Υλικού-Λογισμικού για Ενσωματωμένα Συστήματα",
+      "semester": "8",
+      "lecturer": "Μανωλάκος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Κβαντική Μηχανική Μάθηση",
+      "semester": "8",
+      "lecturer": "Μανδηλαρά",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Επιστημονικοί Υπολογισμοί",
+      "semester": "6",
+      "lecturer": "Τζαφέρης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Δίκτυα Επικοινωνιών I",
+      "semester": "4",
+      "lecturer": "Σταυρακάκης, Βάιος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Επεξεργασία Στοχαστικών Σημάτων",
+      "semester": "6",
+      "lecturer": "Αλεξανδρόπουλος",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Τεχνικές Εξόρυξης Δεδομένων",
+      "semester": "6",
+      "lecturer": "Γουνόπουλος",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Σημασιολογία Γλωσσών Προγραμματισμού",
+      "semester": "8",
+      "lecturer": "Ροντογιάννης",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Ανάπτυξη Υλικού-Λογισμικού για Ενσωματωμένα Συστήματα",
+      "semester": "8",
+      "lecturer": "Μανωλάκος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Κβαντική Μηχανική Μάθηση",
+      "semester": "8",
+      "lecturer": "Μανδηλαρά",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Επιστημονικοί Υπολογισμοί",
+      "semester": "6",
+      "lecturer": "Τζαφέρης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Συστήματα Επικοινωνιών",
+      "semester": "4",
+      "lecturer": "Κανέλλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Τεχνητή Νοημοσύνη II (Βαθιά Μηχ. Μάθ. Για Επεξ. Φυσ. Γλώσσας)",
+      "semester": "6",
+      "lecturer": "Κουμπαράκης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Προστασία και Ασφάλεια Υπολογιστικών Συστημάτων",
+      "semester": "8",
+      "lecturer": "Αυγερινός",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Σημασιολογία Γλωσσών Προγραμματισμού",
+      "semester": "8",
+      "lecturer": "Ροντογιάννης",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Ανάπτυξη Υλικού-Λογισμικού για Ενσωματωμένα Συστήματα",
+      "semester": "8",
+      "lecturer": "Μανωλάκος",
+      "room": "Δ",
+      "building_room": "Δ"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Κβαντική Μηχανική Μάθηση",
+      "semester": "8",
+      "lecturer": "Μανδηλαρά",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Θεωρία Πληροφορίας και Κωδίκων",
+      "semester": "6",
+      "lecturer": "Αλεξανδρόπουλος",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Συστήματα Επικοινωνιών",
+      "semester": "4",
+      "lecturer": "Κανέλλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Τεχνητή Νοημοσύνη II (Βαθιά Μηχ. Μάθ. Για Επεξ. Φυσ. Γλώσσας)",
+      "semester": "6",
+      "lecturer": "Κουμπαράκης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Προστασία και Ασφάλεια Υπολογιστικών Συστημάτων",
+      "semester": "8",
+      "lecturer": "Αυγερινός",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Πολυμέσα και Ασύρματη Δικτύωση",
+      "semester": "6",
+      "lecturer": "Πασσάς, Μπαλαούρας",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Θεωρία Πληροφορίας και Κωδίκων",
+      "semester": "6",
+      "lecturer": "Αλεξανδρόπουλος",
+      "room": "ΣΤ",
+      "building_room": "ΣΤ"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Ηλεκτρομαγνητισμός, Οπτική, Σύγχρονη Φυσική",
+      "semester": "2",
+      "lecturer": "Συβρίδης, Τσίπουρας",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Τεχνητή Νοημοσύνη II (Βαθιά Μηχ. Μάθ. Για Επεξ. Φυσ. Γλώσσας)",
+      "semester": "6",
+      "lecturer": "Κουμπαράκης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Αλγόριθμοι - Θεμελιώσεις Μηχανικής Μάθησης",
+      "semester": "6",
+      "lecturer": "Αχλιόπτας",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Πολυμέσα και Ασύρματη Δικτύωση",
+      "semester": "6",
+      "lecturer": "Πασσάς, Μπαλαούρας",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Ηλεκτρομαγνητισμός, Οπτική, Σύγχρονη Φυσική",
+      "semester": "2",
+      "lecturer": "Συβρίδης, Τσίπουρας",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Αλγόριθμοι - Θεμελιώσεις Μηχανικής Μάθησης",
+      "semester": "6",
+      "lecturer": "Αχλιόπτας",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Πολυμέσα και Ασύρματη Δικτύωση",
+      "semester": "6",
+      "lecturer": "Πασσάς, Μπαλαούρας",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Ηλεκτρομαγνητισμός, Οπτική, Σύγχρονη Φυσική",
+      "semester": "2",
+      "lecturer": "Συβρίδης, Τσίπουρας",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "17:00",
+      "end_time": "18:00",
+      "course_name": "Ανάλυση/Σχεδίαση Συστημάτων Λογισμικού",
+      "semester": "6",
+      "lecturer": "Αλεξανδράκης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Πέμπτη",
+      "start_time": "18:00",
+      "end_time": "19:00",
+      "course_name": "Ανάλυση/Σχεδίαση Συστημάτων Λογισμικού",
+      "semester": "6",
+      "lecturer": "Αλεξανδράκης",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Δίκτυα Επικοινωνιών I",
+      "semester": "4",
+      "lecturer": "Σταυρακάκης, Βάιος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "09:00",
+      "end_time": "10:00",
+      "course_name": "Λογικός Προγραμματισμός",
+      "semester": "6",
+      "lecturer": "Πιτσικάλης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Δίκτυα Επικοινωνιών I",
+      "semester": "4",
+      "lecturer": "Σταυρακάκης, Βάιος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "course_name": "Λογικός Προγραμματισμός",
+      "semester": "6",
+      "lecturer": "Πιτσικάλης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Συστήματα Επικοινωνιών",
+      "semester": "4",
+      "lecturer": "Κανέλλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Διοίκηση Έργων και Τεχνικές Παρουσίασης και Συγγραφής Επιστημονικών Εκθέσεων",
+      "semester": "8",
+      "lecturer": "Τολίδης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Τεχνικές Εξόρυξης Δεδομένων",
+      "semester": "6",
+      "lecturer": "Γουνόπουλος",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Θεωρία Πληροφορίας και Κωδίκων",
+      "semester": "6",
+      "lecturer": "Αλεξανδρόπουλος",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "11:00",
+      "end_time": "12:00",
+      "course_name": "Τεχνολογία Λογισμικού",
+      "semester": "8",
+      "lecturer": "Πιτσικάλης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Συστήματα Επικοινωνιών",
+      "semester": "4",
+      "lecturer": "Κανέλλος",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Διοίκηση Έργων και Τεχνικές Παρουσίασης και Συγγραφής Επιστημονικών Εκθέσεων",
+      "semester": "8",
+      "lecturer": "Τολίδης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Τεχνικές Εξόρυξης Δεδομένων",
+      "semester": "6",
+      "lecturer": "Γουνόπουλος",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Επεξεργασία Ομιλίας και Φυσικής Γλώσσας",
+      "semester": "8",
+      "lecturer": "Καζάζης",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Θεωρία Πληροφορίας και Κωδίκων",
+      "semester": "6",
+      "lecturer": "Αλεξανδρόπουλος",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "12:00",
+      "end_time": "13:00",
+      "course_name": "Τεχνολογία Λογισμικού",
+      "semester": "8",
+      "lecturer": "Πιτσικάλης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Γιαννοπούλου",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (περιττοί ΑΜ)",
+      "semester": "4",
+      "lecturer": "Εμίρης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Διαχείριση Δικτύων",
+      "semester": "6",
+      "lecturer": "Αλωνιστιώτη",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Υπολογιστικά Συστήματα Μεγάλης Κλίμακας",
+      "semester": "8",
+      "lecturer": "Καρακώστας, Γκιζόπουλος",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Επεξεργασία Ομιλίας και Φυσικής Γλώσσας",
+      "semester": "8",
+      "lecturer": "Καζάζης",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Κρυπτογραφία",
+      "semester": "8",
+      "lecturer": "Χάιδος",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "13:00",
+      "end_time": "14:00",
+      "course_name": "Καινοτομία και Επιχειρηματικότητα",
+      "semester": "8",
+      "lecturer": "Τολίδης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Γιαννοπούλου",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Αλγόριθμοι & Πολυπλοκότητα (περιττοί ΑΜ)",
+      "semester": "4",
+      "lecturer": "Εμίρης",
+      "room": "Α1",
+      "building_room": "Α1"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Διαχείριση Δικτύων",
+      "semester": "6",
+      "lecturer": "Αλωνιστιώτη",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Υπολογιστικά Συστήματα Μεγάλης Κλίμακας",
+      "semester": "8",
+      "lecturer": "Καρακώστας, Γκιζόπουλος",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Επεξεργασία Ομιλίας και Φυσικής Γλώσσας",
+      "semester": "8",
+      "lecturer": "Καζάζης",
+      "room": "Γ",
+      "building_room": "Γ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Κρυπτογραφία",
+      "semester": "8",
+      "lecturer": "Χάιδος",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "14:00",
+      "end_time": "15:00",
+      "course_name": "Καινοτομία και Επιχειρηματικότητα",
+      "semester": "8",
+      "lecturer": "Τολίδης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ιωαννίδης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Επεξεργασία Στοχαστικών Σημάτων",
+      "semester": "6",
+      "lecturer": "Αλεξανδρόπουλος",
+      "room": "Α2",
+      "building_room": "Α2"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Υπολογιστικά Συστήματα Μεγάλης Κλίμακας",
+      "semester": "8",
+      "lecturer": "Καρακώστας, Γκιζόπουλος",
+      "room": "Β",
+      "building_room": "Β"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Κρυπτογραφία",
+      "semester": "8",
+      "lecturer": "Χάιδος",
+      "room": "Ε",
+      "building_room": "Ε"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "course_name": "Καινοτομία και Επιχειρηματικότητα",
+      "semester": "8",
+      "lecturer": "Τολίδης",
+      "room": "Ζ",
+      "building_room": "Ζ"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Σχεδίαση και Χρήση Βάσεων Δεδομένων (άρτιοι ΑΜ)",
+      "semester": "4",
+      "lecturer": "Ιωαννίδης",
+      "room": "Αμφιθέατρο",
+      "building_room": "Αμφιθέατρο"
+    },
+    {
+      "day": "Παρασκευή",
+      "start_time": "16:00",
+      "end_time": "17:00",
+      "course_name": "Επεξεργασία Στοχαστικών Σημάτων",
+      "semester": "6",
+      "lecturer": "Αλεξανδρόπουλος",
+      "room": "Α2",
+      "building_room": "Α2"
+    }
+  ]
+}

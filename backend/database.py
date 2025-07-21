@@ -169,6 +169,7 @@ def init_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS profile (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sdi INTEGER,
             first_name TEXT,
             last_name TEXT,
             current_semester INT,
@@ -177,14 +178,14 @@ def init_database():
     ''')
 
     profile = [
-        ('Anastasia', 'Marinakou', 2, None)
+        (2400120, 'Anastasia', 'Marinakou', 2, None)
     ]
     try:
-        for first_name, last_name, current_semester, direction in profile:
+        for sdi, first_name, last_name, current_semester, direction in profile:
             cursor.execute(
-                '''INSERT OR IGNORE INTO profile (first_name, last_name, current_semester, direction)
+                '''INSERT OR IGNORE INTO profile (sdi, first_name, last_name, current_semester, direction)
                    VALUES (?, ?, ?, ?)''',
-                (first_name, last_name, current_semester, direction)
+                (sdi, first_name, last_name, current_semester, direction)
             )
         conn.commit()
     except Exception as e:
@@ -233,6 +234,12 @@ def get_courses_by_planned_semester(p_s):
         cursor.execute('SELECT * FROM courses WHERE planned_semester = ?', (p_s))
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
+    
+def get_sdi_with_id(profile_id):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT sdi FROM profile WHERE id = ?', (profile_id,))
+        return cursor.fetchall()
 
 def update_course_status(course_id, new_status):
     """Update the status of a course"""
