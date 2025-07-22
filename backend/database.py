@@ -166,6 +166,30 @@ def init_database():
     except Exception as e:
         print(f"Error inserting courses: {str(e)}")
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS profile (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            first_name TEXT,
+            last_name TEXT,
+            current_semester INT,
+            direction TEXT
+        )
+    ''')
+
+    profile = [
+        ('Anastasia', 'Marinakou', 2, None)
+    ]
+    try:
+        for first_name, last_name, current_semester, direction in profile:
+            cursor.execute(
+                '''INSERT OR IGNORE INTO profile (first_name, last_name, current_semester, direction)
+                   VALUES (?, ?, ?, ?)''',
+                (first_name, last_name, current_semester, direction)
+            )
+        conn.commit()
+    except Exception as e:
+        print(f"Error inserting profile data: {str(e)}")
+
 
 
 @contextmanager
@@ -202,7 +226,7 @@ def get_courses_by_status(status):
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
 
-def get_coursese_by_planned_semester(p_s):
+def get_courses_by_planned_semester(p_s):
     """Return all courses for a specific planned semester"""
     with get_db_connection() as conn:
         cursor = conn.cursor()
@@ -230,6 +254,16 @@ def update_course_planned_semester(course_id, new_semester):
         cursor = conn.cursor()
         cursor.execute('UPDATE courses SET planned_semester = ? WHERE id = ?', (new_semester, course_id))
         conn.commit()
+
+# def update_direction(profile_id, new_direction):
+#     """Update the direction of a user"""
+#     with get_db_connection() as conn:
+#         cursor = conn.cursor()
+#         cursor.execute('UPDATE profile SET direction = ? WHERE id = ?', (new_direction, profile_id))
+#         conn.commit()
+
+# def update_current_semester(profile_id, new_semester):
+#     """Update the current semester of a user"""
 
 def get_completed_courses():
     """Return all courses with status 'Completed'"""

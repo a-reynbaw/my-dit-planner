@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Home } from 'lucide-react';
+import { Home, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import DraggableCourse from '@/components/course-planning/DraggableCourse';
 import DroppableContainer from '@/components/course-planning/DroppableContainer';
 import TrashCan from '@/components/course-planning/TrashCan';
+import { toast } from 'sonner';
 
 const API_URL = '/api/courses';
 
@@ -14,54 +15,99 @@ function PlanCourses() {
   const [loading, setLoading] = useState(true);
   const [activeCourse, setActiveCourse] = useState(null);
 
-  const initialContainers = {
+  // Define the structure of our containers
+  const createInitialContainers = () => ({
     unassigned: [],
-    passed: [],
-    failed: [], // Add the failed container here
     ...Object.fromEntries([...Array(8).keys()].map((i) => [`semester-${i + 1}`, []])),
-  };
+  });
 
-  const [containers, setContainers] = useState(initialContainers);
+  const [containers, setContainers] = useState(createInitialContainers());
+  const [totalECTS, setTotalECTS] = useState(240);
 
   useEffect(() => {
+    setLoading(true);
     fetch(API_URL)
       .then((res) => res.json())
       .then((data) => {
-        setContainers((prev) => ({
-          ...prev,
-          unassigned: data.filter((c) => c.status === 'Planned'),
-          passed: data.filter((c) => c.status === 'Passed'),
-          failed: data.filter((c) => c.status === 'Failed'),
-        }));
-        setLoading(false);
+        const newContainers = createInitialContainers(); // Start with fresh, empty containers
+
+        // Filter for only the courses that need planning
+        const plannedCourses = data.filter((course) => course.status === 'Planned');
+
+        console.log('[PLANNER] Fetched courses with "Planned" status:', plannedCourses);
+
+        plannedCourses.forEach((course) => {
+          // If the course has a specific semester planned, place it there.
+          if (course.planned_semester && course.planned_semester > 0) {
+            const containerId = `semester-${course.planned_semester}`;
+            // Ensure the container exists before pushing
+            if (newContainers[containerId]) {
+              newContainers[containerId].push(course);
+            }
+          } else {
+            // Otherwise, it belongs in the 'unassigned' list.
+            newContainers.unassigned.push(course);
+          }
+        });
+
+        setContainers(newContainers); // Set the new, correctly partitioned state
       })
-      .catch((err) => {
-        console.error('Error fetching courses:', err);
+      .catch(() => {
+        toast.error('Failed to load planned courses.');
+      })
+      .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const totalECTS = 240;
+  // Calculate ECTS from planned courses (in containers)
+  const plannedECTS = Object.values(containers)
+    .flat()
+    .reduce((sum, course) => sum + (course.ects || 0), 0);
 
-  // Fix: Count ECTS from all planned courses (unassigned + all semester containers)
-  const plannedECTS = Object.keys(containers).reduce((sum, containerKey) => {
-    // Skip the 'passed' and 'failed' containers since those are completed/failed, not planned
-    if (containerKey === 'passed' || containerKey === 'failed') return sum;
+  console.log(`[PLANNER] ECTS from "Planned" courses (drag & drop area): ${plannedECTS}`);
 
-    return (
-      sum +
-      containers[containerKey].reduce((containerSum, course) => {
-        // Only count courses with 'Planned' status
-        return containerSum + (course.status === 'Planned' ? course.ects || 0 : 0);
-      }, 0)
-    );
-  }, 0);
+  // We need to fetch and calculate current and failed courses ECTS
+  const [additionalECTS, setAdditionalECTS] = useState(0);
 
-  const completedECTS = containers.passed.reduce((sum, course) => sum + (course.ects || 0), 0);
+  useEffect(() => {
+    // This effect runs after the main data is loaded
+    if (!loading) {
+      fetch(API_URL)
+        .then((res) => res.json())
+        .then((data) => {
+          // Calculate ECTS from current and failed courses
+          const currentCourses = data.filter((course) => course.status === 'Current Semester');
+          const failedCourses = data.filter((course) => course.status === 'Failed');
 
-  const failedECTS = containers.failed.reduce((sum, course) => sum + (course.ects || 0), 0);
+          const currentCoursesECTS = currentCourses.reduce(
+            (sum, course) => sum + (course.ects || 0),
+            0
+          );
+          const failedCoursesECTS = failedCourses.reduce(
+            (sum, course) => sum + (course.ects || 0),
+            0
+          );
+
+          // console.log(`[PLANNER] ECTS from "Current Semester" courses: ${currentCoursesECTS}`);
+          // console.log(`[PLANNER] ECTS from "Failed" courses: ${failedCoursesECTS}`);
+
+          setAdditionalECTS(currentCoursesECTS + failedCoursesECTS);
+        })
+        .catch((error) => {
+          console.error('Error calculating additional ECTS:', error);
+        });
+    }
+  }, [loading]);
+
+  // Total ECTS including planned, current, and failed courses
+  const totalPlannedECTS = plannedECTS + additionalECTS;
+
+  // console.log(
+  //   `[PLANNER] FINAL CALCULATION: totalPlannedECTS = ${plannedECTS} (planned) + ${additionalECTS} (current/failed) = ${totalPlannedECTS}`
+  // );
 
   const findContainerIdForCourse = (courseId) => {
     return Object.keys(containers).find((key) =>
@@ -69,32 +115,31 @@ function PlanCourses() {
     );
   };
 
-  function handleDragStart(event) {
+  const handleDragStart = (event) => {
     const course = event.active.data.current?.course;
     if (course) {
       setActiveCourse(course);
     }
-  }
-
-  // Helper function to check if a course can be dropped in a specific semester
-  const canDropCourseInSemester = (course, destinationContainerId) => {
-    if (!course || !destinationContainerId.startsWith('semester')) {
-      return true; // Allow drops to non-semester containers
-    }
-
-    const destinationSemesterNumber = parseInt(destinationContainerId.split('-')[1], 10);
-    const courseSemester = course.semester;
-
-    const isOddSemesterCourse = courseSemester % 2 === 1; // odd semester (1, 3, 5, 7)
-    const isEvenSemesterCourse = courseSemester % 2 === 0; // even semester (2, 4, 6, 8)
-    const isOddDestination = destinationSemesterNumber % 2 === 1;
-    const isEvenDestination = destinationSemesterNumber % 2 === 0;
-
-    // Check if the drop is valid based on odd/even semester matching
-    return (isOddSemesterCourse && isOddDestination) || (isEvenSemesterCourse && isEvenDestination);
   };
 
-  async function handleDragEnd(event) {
+  const updateCourseBackend = async (courseId, updates) => {
+    if (updates.status) {
+      await fetch(`${API_URL}/${courseId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: updates.status }),
+      });
+    }
+    if (updates.planned_semester !== undefined) {
+      await fetch(`${API_URL}/${courseId}/planned_semester`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planned_semester: updates.planned_semester }),
+      });
+    }
+  };
+
+  const handleDragEnd = async (event) => {
     const { active, over } = event;
     setActiveCourse(null);
 
@@ -103,66 +148,56 @@ function PlanCourses() {
     const activeCourseId = active.id;
     const sourceContainerId = findContainerIdForCourse(activeCourseId);
     const destinationContainerId = over.id;
-
-    if (!sourceContainerId) return;
-
     const course = active.data.current?.course;
 
-    // Check if the course can be dropped in the destination semester
-    if (
-      destinationContainerId.startsWith('semester') &&
-      course &&
-      destinationContainerId !== 'unassigned'
-    ) {
-      if (!canDropCourseInSemester(course, destinationContainerId)) {
-        // Invalid drop, do nothing
+    if (!sourceContainerId || !course || sourceContainerId === destinationContainerId) {
+      return;
+    }
+
+    const isDroppingInSemester = destinationContainerId.startsWith('semester');
+    if (isDroppingInSemester) {
+      const destSemesterNum = parseInt(destinationContainerId.split('-')[1], 10);
+      const isOddCourse = course.semester % 2 === 1;
+      const isEvenDest = destSemesterNum % 2 === 0;
+      if ((isOddCourse && isEvenDest) || (!isOddCourse && !isEvenDest)) {
+        toast.warning('Course can only be placed in a corresponding odd/even semester.');
         return;
       }
     }
 
-    if (destinationContainerId === 'trash') {
-      try {
-        const response = await fetch(`${API_URL}/${activeCourseId}/status`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: 'Not Taken' }),
-        });
+    const originalContainers = containers;
+    setContainers((prev) => {
+      const newContainers = JSON.parse(JSON.stringify(prev));
+      const sourceItems = newContainers[sourceContainerId];
+      const activeIndex = sourceItems.findIndex((c) => c.id === activeCourseId);
 
-        if (!response.ok) throw new Error('Failed to update course status');
+      if (activeIndex === -1) return prev;
+      const [movedItem] = sourceItems.splice(activeIndex, 1);
 
-        setContainers((prev) => {
-          const newContainers = { ...prev };
-          newContainers[sourceContainerId] = newContainers[sourceContainerId].filter(
-            (course) => course.id !== activeCourseId
-          );
-          return newContainers;
-        });
-      } catch (error) {
-        console.error('Error un-planning course:', error);
+      if (destinationContainerId === 'trash') {
+        // Item is removed, handled by the API call below
+      } else {
+        newContainers[destinationContainerId].push(movedItem);
       }
-      return;
+      return newContainers;
+    });
+
+    try {
+      if (destinationContainerId === 'trash') {
+        await updateCourseBackend(activeCourseId, { status: 'Not Taken', planned_semester: 0 });
+        toast.success(`"${course.name}" was removed from your plan.`);
+      } else {
+        const newPlannedSemester = isDroppingInSemester
+          ? parseInt(destinationContainerId.split('-')[1], 10)
+          : 0; // 0 for 'unassigned'
+        await updateCourseBackend(activeCourseId, { planned_semester: newPlannedSemester });
+        toast.success(`Moved "${course.name}".`);
+      }
+    } catch (error) {
+      toast.error('Failed to save changes. Reverting.');
+      setContainers(originalContainers); // Rollback on API error
     }
-
-    if (sourceContainerId !== destinationContainerId) {
-      setContainers((prev) => {
-        const newContainers = { ...prev };
-        const sourceItems = [...newContainers[sourceContainerId]];
-        const destinationItems = [...newContainers[destinationContainerId]];
-
-        const activeIndex = sourceItems.findIndex((c) => c.id === activeCourseId);
-
-        if (activeIndex !== -1) {
-          const [movedItem] = sourceItems.splice(activeIndex, 1);
-          destinationItems.push(movedItem);
-
-          newContainers[sourceContainerId] = sourceItems;
-          newContainers[destinationContainerId] = destinationItems;
-        }
-
-        return newContainers;
-      });
-    }
-  }
+  };
 
   const isDragging = activeCourse !== null;
   const semesterKeys = Object.keys(containers).filter((k) => k.startsWith('semester'));
@@ -170,18 +205,19 @@ function PlanCourses() {
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
-        <header className="flex items-center justify-between mb-10">
+        <header className="flex flex-wrap items-center justify-between gap-4 mb-10">
           <div>
             <h1 className="text-4xl font-bold tracking-tight">Plan Your Semesters</h1>
             <p className="text-lg text-gray-400">
-              Drag and drop courses to organize your academic path.
+              Drag & drop courses to organize your academic path.
             </p>
           </div>
-          <div>
-            <h4 className="text-xl font-bold">Planned ECTS</h4>
-            <span className="text-lg font-semibold text-blue-300">
-              {plannedECTS + completedECTS + failedECTS} / {totalECTS}
+          <div className="text-right">
+            <h4 className="text-xl font-bold text-blue-300">Planned ECTS</h4>
+            <span className="text-lg font-semibold">
+              {totalPlannedECTS} / {totalECTS}
             </span>
+            <p className="text-xs text-gray-500 mt-1">Includes planned, current & failed courses</p>
           </div>
           <Button
             variant="outline"
@@ -194,7 +230,10 @@ function PlanCourses() {
         </header>
 
         {loading ? (
-          <p className="text-center py-10 text-gray-400">Loading planned courses...</p>
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="h-10 w-10 animate-spin text-blue-400" />
+            <p className="ml-4 text-xl text-gray-400">Loading Planner...</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-1">
@@ -203,7 +242,6 @@ function PlanCourses() {
                 title="Courses to Plan"
                 courses={containers.unassigned}
                 activeCourse={activeCourse}
-                canDropCourse={canDropCourseInSemester}
               />
             </div>
 
@@ -215,7 +253,6 @@ function PlanCourses() {
                   title={`Semester ${key.split('-')[1]}`}
                   courses={containers[key]}
                   activeCourse={activeCourse}
-                  canDropCourse={canDropCourseInSemester}
                 />
               ))}
             </div>

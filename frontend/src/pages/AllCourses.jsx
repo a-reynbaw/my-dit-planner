@@ -99,7 +99,7 @@ function AllCourses() {
     const originalCourses = [...courses];
     setCourses((prev) => prev.map((c) => (c.id === id ? { ...c, grade: gradeValue } : c)));
 
-    fetch(`http://localhost:8000/api/courses/${id}/grade`, {
+    fetch(`/api/courses/${id}/grade`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ grade: gradeValue }),

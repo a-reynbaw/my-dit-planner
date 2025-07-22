@@ -11,12 +11,14 @@ import {
   CalendarClock,
   ListTree,
   BadgeEuro,
+  ArrowRightCircle,
 } from 'lucide-react';
 
 import AllCourses from '@/pages/AllCourses';
 import PlanCourses from '@/pages/PlanCourses';
 import FailedCourses from '@/pages/FailedCourses';
 import CurrentCourses from '@/pages/CurrentCourses';
+import DegreeRequirements from '@/pages/DegreeRequirements';
 import {
   Table,
   TableBody,
@@ -30,9 +32,13 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
 function StatCard({ title, value, icon: Icon, color, onClick }) {
+  const isClickable = !!onClick;
+
   return (
     <Card
-      className={`bg-gray-800 border-gray-700 text-white shadow-lg hover:bg-gray-700/50 transition-colors duration-300 ${onClick ? 'cursor-pointer' : ''}`}
+      className={`relative group bg-gray-800 border-gray-700 text-white shadow-lg hover:bg-gray-700/50 transition-colors duration-300 ${
+        isClickable ? 'cursor-pointer' : ''
+      }`}
       onClick={onClick}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -41,6 +47,9 @@ function StatCard({ title, value, icon: Icon, color, onClick }) {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
+        {isClickable && (
+          <ArrowRightCircle className="absolute bottom-6 right-6 h-5 w-5 text-gray-400 opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+        )}
       </CardContent>
     </Card>
   );
@@ -103,10 +112,11 @@ function Dashboard({ courses, navigate }) {
               color="text-green-400"
             />
             <StatCard
-              title="Compulsory Done"
+              title="Degree Requirements"
               value={`${completedCompulsory + completedGE} / ${totalCompulsory}`}
               icon={Target}
               color="text-yellow-400"
+              onClick={() => navigate('/degree-requirements')}
             />
             <StatCard
               title="Courses Planned"
@@ -213,6 +223,7 @@ function App() {
       <Route path="/plan-courses" element={<PlanCourses />} />
       <Route path="/failed-courses" element={<FailedCourses />} />
       <Route path="/current-courses" element={<CurrentCourses />} />
+      <Route path="/degree-requirements" element={<DegreeRequirements />} />
       <Route
         path="/timetable"
         element={
