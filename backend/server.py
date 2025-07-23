@@ -57,11 +57,15 @@ def api_get_courses():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading courses: {str(e)}")
     
-@app.get("/api/profile")
+@app.get("/api/profile") 
 def api_get_sdi():
     try:
-        sdi = get_sdi_with_id(0)
-        return sdi
+        # Use profile_id = 1 instead of 0 (assuming the first profile has id=1)
+        result = get_sdi_with_id(1)
+        if result and len(result) > 0:
+            return {"sdi": result[0][0]}  # Extract the SDI value and return in expected format
+        else:
+            raise HTTPException(status_code=404, detail="User profile not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading sdi: {str(e)}")
 

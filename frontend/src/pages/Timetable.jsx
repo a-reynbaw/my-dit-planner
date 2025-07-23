@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Clock, MapPin, User, Calendar } from 'lucide-react';
+import { Home, Clock, MapPin, User, Calendar, Hash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -11,6 +11,7 @@ function Timetable() {
   const navigate = useNavigate();
   const [currentCourses, setCurrentCourses] = useState([]);
   const [myTimetable, setMyTimetable] = useState([]);
+  const [userSDI, setUserSDI] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Days and time slots for the grid
@@ -30,43 +31,113 @@ function Timetable() {
   ];
 
   useEffect(() => {
-    // Fetch courses marked as "Current Semester" from the database
-    fetch('/api/courses')
-      .then((res) => res.json())
-      .then((data) => {
-        const current = data.filter((course) => course.status === 'Current Semester');
-        console.log('Current Semester courses:', current); // Debug log
+    // Fetch both courses and user SDI using the existing endpoint
+    Promise.all([
+      fetch('/api/courses').then(res => res.json()),
+      fetch('/api/profile').then(res => res.json())  // Use existing endpoint
+    ])
+      .then(([coursesData, profileData]) => {
+        const current = coursesData.filter((course) => course.status === 'Current Semester');
+        console.log('Current Semester courses:', current);
+        console.log('User SDI:', profileData.sdi);
+        
         setCurrentCourses(current);
-
-        // Match current courses with timetable entries
-        const matchedTimetable = findMatchingTimetableEntries(current, timetableData.schedule);
-        console.log('Matched timetable entries:', matchedTimetable); // Debug log
+        setUserSDI(profileData.sdi);
+        
+        // Match current courses with timetable entries and filter by SDI
+        const matchedTimetable = findMatchingTimetableEntries(current, timetableData.schedule, profileData.sdi);
+        console.log('Matched timetable entries:', matchedTimetable);
         setMyTimetable(matchedTimetable);
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching courses:', error);
+        console.error('Error fetching data:', error);
         setLoading(false);
       });
   }, []);
 
+  // Function to determine if a course should be shown based on SDI
+  const shouldShowCourse = (courseName, userSDI) => {
+    const isSDIEven = userSDI % 2 === 0;
+    const courseNameLower = courseName.toLowerCase();
+    
+    console.log(`Checking course: "${courseName}", SDI: ${userSDI}, isEven: ${isSDIEven}`);
+    
+    // Check if the course has even/odd indicators - be more specific with patterns
+    const hasEvenIndicator = 
+      courseNameLower.includes('άρτιοι') || 
+      courseNameLower.includes('αρτιοι') ||
+      courseNameLower.includes('(άρτιοι)') ||
+      courseNameLower.includes('(αρτιοι)');
+      
+    const hasOddIndicator = 
+      courseNameLower.includes('περιττοί') || 
+      courseNameLower.includes('περιττοι') ||
+      courseNameLower.includes('(περιττοί)') ||
+      courseNameLower.includes('(περιττοι)');
+    
+    console.log(`  Has even indicator: ${hasEvenIndicator}`);
+    console.log(`  Has odd indicator: ${hasOddIndicator}`);
+    
+    // If the course has no even/odd indicator, always show it
+    if (!hasEvenIndicator && !hasOddIndicator) {
+      console.log(`  → Showing (no indicators)`);
+      return true;
+    }
+    
+    // If SDI is even, show only "άρτιοι" courses
+    if (isSDIEven) {
+      const shouldShow = hasEvenIndicator;
+      console.log(`  → SDI is even, showing: ${shouldShow} (has even indicator: ${hasEvenIndicator})`);
+      return shouldShow;
+    }
+    
+    // If SDI is odd, show only "περιττοί" courses
+    const shouldShow = hasOddIndicator;
+    console.log(`  → SDI is odd, showing: ${shouldShow} (has odd indicator: ${hasOddIndicator})`);
+    return shouldShow;
+  };
+
+  // Function to get the base course name without even/odd indicators
+  const getBaseCourse = (courseName) => {
+    return courseName
+      .replace(/\s*\(άρτιοι\)/gi, '')
+      .replace(/\s*\(αρτιοι\)/gi, '')
+      .replace(/\s*\(περιττοί\)/gi, '')
+      .replace(/\s*\(περιττοι\)/gi, '')
+      .replace(/\s*άρτιοι\s*/gi, ' ')
+      .replace(/\s*αρτιοι\s*/gi, ' ')
+      .replace(/\s*περιττοί\s*/gi, ' ')
+      .replace(/\s*περιττοι\s*/gi, ' ')
+      .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+      .trim();
+  };
+
   // Improved function to match courses with timetable entries
-  const findMatchingTimetableEntries = (courses, timetableSchedule) => {
+  const findMatchingTimetableEntries = (courses, timetableSchedule, userSDI) => {
     const matched = [];
 
     console.log('Searching for matches between:', {
       courses: courses.map((c) => c.name),
       timetableEntries: timetableSchedule.map((t) => t.course_name),
+      userSDI: userSDI,
+      isSDIEven: userSDI % 2 === 0
     });
 
     courses.forEach((course) => {
-      console.log(`\nLooking for matches for course: "${course.name}"`);
+      // console.log(`\nLooking for matches for course: "${course.name}"`);
 
       // Try to find matching timetable entries by course name
       const timetableEntries = timetableSchedule.filter((entry) => {
-        // Clean course names for comparison (remove extra spaces, special characters)
-        const cleanCourseName = course.name.trim().toLowerCase();
-        const cleanTimetableName = entry.course_name.trim().toLowerCase();
+        // First check if this course should be shown based on SDI
+        if (!shouldShowCourse(entry.course_name, userSDI)) {
+          console.log(`  Skipping "${entry.course_name}" due to SDI filter (SDI: ${userSDI})`);
+          return false;
+        }
+
+        // Clean course names for comparison (remove extra spaces, special characters, and even/odd indicators)
+        const cleanCourseName = getBaseCourse(course.name).trim().toLowerCase();
+        const cleanTimetableName = getBaseCourse(entry.course_name).trim().toLowerCase();
 
         console.log(`  Comparing: "${cleanCourseName}" vs "${cleanTimetableName}"`);
 
@@ -86,7 +157,7 @@ function Timetable() {
         }
 
         // More conservative word-based matching
-        const courseWords = cleanCourseName.split(' ').filter((w) => w.length > 3); // Increased min length
+        const courseWords = cleanCourseName.split(' ').filter((w) => w.length > 3);
         const timetableWords = cleanTimetableName.split(' ').filter((w) => w.length > 3);
 
         if (courseWords.length === 0 || timetableWords.length === 0) {
@@ -163,6 +234,8 @@ function Timetable() {
     );
   }
 
+  const isSDIEven = userSDI % 2 === 0;
+
   return (
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
       <header className="flex items-center justify-between mb-6">
@@ -171,6 +244,14 @@ function Timetable() {
           <p className="text-lg text-gray-400">
             Your schedule for Spring 2025 - {currentCourses.length} courses enrolled
           </p>
+          {userSDI && (
+            <div className="flex items-center gap-2 mt-2">
+              <Hash className="h-4 w-4 text-gray-400" />
+              <span className="text-sm text-gray-400">
+                SDI: {userSDI} ({isSDIEven ? 'Άρτιοι' : 'Περιττοί'})
+              </span>
+            </div>
+          )}
         </div>
         <Button
           variant="outline"
@@ -183,7 +264,7 @@ function Timetable() {
       </header>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card className="bg-gray-800 border-gray-700 text-white">
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -221,7 +302,41 @@ function Timetable() {
             </div>
           </CardContent>
         </Card>
+
+        <Card className="bg-gray-800 border-gray-700 text-white">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Hash className="h-5 w-5 text-orange-400" />
+              <div>
+                <p className="text-sm text-gray-400">SDI Group</p>
+                <p className="text-2xl font-bold text-orange-400">
+                  {userSDI ? (isSDIEven ? 'Άρτιοι' : 'Περιττοί') : 'N/A'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* SDI Filter Info */}
+      {userSDI && (
+        <Card className="bg-blue-900 border-blue-600 text-blue-100 mb-6">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Hash className="h-5 w-5 text-blue-300" />
+              <div>
+                <p className="text-sm font-medium text-blue-200">
+                  SDI-Based Filtering Active
+                </p>
+                <p className="text-xs text-blue-300">
+                  Showing courses for {isSDIEven ? 'Άρτιοι (Even)' : 'Περιττοί (Odd)'} students only. 
+                  Duplicate courses with different groups are automatically filtered.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {myTimetable.length === 0 ? (
         <Card className="bg-gray-800 border-gray-700 text-white">
@@ -235,6 +350,7 @@ function Timetable() {
               <li>• You haven't marked any courses as "Current Semester"</li>
               <li>• Course names don't match between database and timetable</li>
               <li>• Courses are not scheduled for Spring 2025</li>
+              <li>• Courses are filtered out based on your SDI group</li>
             </ul>
             <Button
               onClick={() => navigate('/all-courses')}
@@ -252,6 +368,11 @@ function Timetable() {
               <CardTitle className="text-white flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
                 Weekly Schedule
+                {userSDI && (
+                  <span className="text-sm text-gray-400 ml-2">
+                    ({isSDIEven ? 'Άρτιοι' : 'Περιττοί'} Group)
+                  </span>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
@@ -285,7 +406,7 @@ function Timetable() {
                                   className={`text-xs p-2 rounded border mb-1 ${getCourseColor(course.semester)}`}
                                 >
                                   <div className="font-medium truncate" title={course.course_name}>
-                                    {course.course_name}
+                                    {getBaseCourse(course.course_name)}
                                   </div>
                                   <div className="flex items-center gap-1 mt-1">
                                     <MapPin className="h-3 w-3" />
