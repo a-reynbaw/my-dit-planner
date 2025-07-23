@@ -5,7 +5,7 @@ on:
     branches: ['main']
   pull_request:
     branches: ['main']
-    
+
 jobs:
   run-and-test:
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
-      
+
       - name: Ensure clean database state
         run: rm -f courses.db
 
@@ -39,59 +39,63 @@ jobs:
 
       - name: Wait for server to be ready
         run: |
-          echo "Waiting for server..."
-          while ! curl -s http://localhost:8000/api/courses > /dev/null; do
-            sleep 1
-          done
+          echo "Waiting for server to be ready..."
+          timeout 20 bash -c 'until curl -s --fail http://localhost:8000/health > /dev/null; do echo -n "."; sleep 1; done'
           echo "Server is up!"
 
-      - name: Test /api/courses endpoint
-        run: curl --fail http://localhost:8000/api/courses | jq .
-
       - name: Test /api/profile endpoint
-        run: response=$(curl --fail -s http://localhost:8000/api/profile)
-          echo "$response" | jq -e '.sdi == 2400120'
-          
-      - name: Update course status
         run: |
-          curl --fail -X PUT \
-            -H "Content-Type: application/json" \
-            -d '{"status": "Passed"}' \
-            http://localhost:8000/api/courses/1/status
+          echo "--- Testing /api/profile ---"
+          response=$(curl --fail -s http://localhost:8000/api/profile)
+          echo "API Response: $response"
+          echo "$response" | jq -e '.sdi == 2400120'
+          echo "✓ Profile SDI is correct."
+
+      - name: Update course status to Passed
+        run: |
+          curl --fail -X PUT -H "Content-Type: application/json" -d '{"status": "Passed"}' http://localhost:8000/api/courses/1/status
+
+      - name: Verify course status was updated to Passed
+        run: |
+          echo "--- Verifying course 1 status is 'Passed' ---"
+          curl -s http://localhost:8000/api/courses | jq --argjson id 1 --arg status "Passed" -e 'any(.[] | .id == $id and .status == $status)'
+          echo "✓ Course status updated to Passed."
 
       - name: Update course grade
         run: |
-          curl --fail -X PUT \
-          -H "Content-Type: application/json" \
-          -d '{"grade": 8}' \
-          http://localhost:8000/api/courses/1/grade
+          curl --fail -X PUT -H "Content-Type: application/json" -d '{"grade": 8.5}' http://localhost:8000/api/courses/1/grade
 
+      - name: Verify course grade was updated
+        run: |
+          echo "--- Verifying course 1 grade is 8.5 ---"
+          curl -s http://localhost:8000/api/courses | jq --argjson id 1 --argjson grade 8.5 -e 'any(.[] | .id == $id and .grade == $grade)'
+          echo "✓ Course grade updated."
+          
       - name: Update course planned semester
         run: |
           curl --fail -X PUT \
-          -H "Content-Type: application/json" \
-          -d '{"planned_semester": 3}' \
-          http://localhost:8000/api/courses/1/planned_semester
-
-      - name: Verify course status was updated
-        run: |
-          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .status == "Passed"'
-          
-      - name: Verify course grade was updated
-        run: |
-          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .grade == 8.0'
+            -H "Content-Type: application/json" \
+            -d '{"planned_semester": 3}' \
+            http://localhost:8000/api/courses/1/planned_semester
 
       - name: Verify course planned semester was updated
         run: |
-          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .planned_semester == 3'
+          echo "--- Verifying course 1 planned semester is 3 ---"
+          curl -s http://localhost:8000/api/courses | jq --argjson id 1 --argjson ps 3 -e 'any(.[] | .id == $id and .planned_semester == $ps)'
+          echo "✓ Course planned semester updated."
 
-      - name: Reset course status
+      - name: Reset course status to Not Taken
         run: |
-          curl --fail -X PUT \
-            -H "Content-Type: application/json" \
-            -d '{"status": "Not Taken"}' \
-            http://localhost:8000/api/courses/1/status
+          curl --fail -X PUT -H "Content-Type: application/json" -d '{"status": "Not Taken"}' http://localhost:8000/api/courses/1/status
 
-      - name: Verify course status was reset
+      - name: Verify course status was reset to Not Taken
         run: |
-          curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .status == "Not Taken"'
+          echo "--- Verifying course 1 status is 'Not Taken' ---"
+          curl -s http://localhost:8000/api/courses | jq --argjson id 1 --arg status "Not Taken" -e 'any(.[] | .id == $id and .status == $status)'
+          echo "✓ Course status was reset."
+
+      - name: Verify course grade was reset to null
+        run: |
+          echo "--- Verifying course 1 grade is null after status reset ---"
+          curl -s http://localhost:8000/api/courses | jq --argjson id 1 -e 'any(.[] | .id == $id and .grade == null)'
+          echo "✓ Course grade was correctly reset to null."
