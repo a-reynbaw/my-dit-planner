@@ -33,19 +33,23 @@ function Timetable() {
   useEffect(() => {
     // Fetch both courses and user SDI using the existing endpoint
     Promise.all([
-      fetch('/api/courses').then(res => res.json()),
-      fetch('/api/profile').then(res => res.json())  // Use existing endpoint
+      fetch('/api/courses').then((res) => res.json()),
+      fetch('/api/profile').then((res) => res.json()), // Use existing endpoint
     ])
       .then(([coursesData, profileData]) => {
         const current = coursesData.filter((course) => course.status === 'Current Semester');
         console.log('Current Semester courses:', current);
         console.log('User SDI:', profileData.sdi);
-        
+
         setCurrentCourses(current);
         setUserSDI(profileData.sdi);
-        
+
         // Match current courses with timetable entries and filter by SDI
-        const matchedTimetable = findMatchingTimetableEntries(current, timetableData.schedule, profileData.sdi);
+        const matchedTimetable = findMatchingTimetableEntries(
+          current,
+          timetableData.schedule,
+          profileData.sdi
+        );
         console.log('Matched timetable entries:', matchedTimetable);
         setMyTimetable(matchedTimetable);
         setLoading(false);
@@ -60,38 +64,40 @@ function Timetable() {
   const shouldShowCourse = (courseName, userSDI) => {
     const isSDIEven = userSDI % 2 === 0;
     const courseNameLower = courseName.toLowerCase();
-    
+
     console.log(`Checking course: "${courseName}", SDI: ${userSDI}, isEven: ${isSDIEven}`);
-    
+
     // Check if the course has even/odd indicators - be more specific with patterns
-    const hasEvenIndicator = 
-      courseNameLower.includes('άρτιοι') || 
+    const hasEvenIndicator =
+      courseNameLower.includes('άρτιοι') ||
       courseNameLower.includes('αρτιοι') ||
       courseNameLower.includes('(άρτιοι)') ||
       courseNameLower.includes('(αρτιοι)');
-      
-    const hasOddIndicator = 
-      courseNameLower.includes('περιττοί') || 
+
+    const hasOddIndicator =
+      courseNameLower.includes('περιττοί') ||
       courseNameLower.includes('περιττοι') ||
       courseNameLower.includes('(περιττοί)') ||
       courseNameLower.includes('(περιττοι)');
-    
+
     console.log(`  Has even indicator: ${hasEvenIndicator}`);
     console.log(`  Has odd indicator: ${hasOddIndicator}`);
-    
+
     // If the course has no even/odd indicator, always show it
     if (!hasEvenIndicator && !hasOddIndicator) {
       console.log(`  → Showing (no indicators)`);
       return true;
     }
-    
+
     // If SDI is even, show only "άρτιοι" courses
     if (isSDIEven) {
       const shouldShow = hasEvenIndicator;
-      console.log(`  → SDI is even, showing: ${shouldShow} (has even indicator: ${hasEvenIndicator})`);
+      console.log(
+        `  → SDI is even, showing: ${shouldShow} (has even indicator: ${hasEvenIndicator})`
+      );
       return shouldShow;
     }
-    
+
     // If SDI is odd, show only "περιττοί" courses
     const shouldShow = hasOddIndicator;
     console.log(`  → SDI is odd, showing: ${shouldShow} (has odd indicator: ${hasOddIndicator})`);
@@ -121,7 +127,7 @@ function Timetable() {
       courses: courses.map((c) => c.name),
       timetableEntries: timetableSchedule.map((t) => t.course_name),
       userSDI: userSDI,
-      isSDIEven: userSDI % 2 === 0
+      isSDIEven: userSDI % 2 === 0,
     });
 
     courses.forEach((course) => {
@@ -325,12 +331,10 @@ function Timetable() {
             <div className="flex items-center gap-2">
               <Hash className="h-5 w-5 text-blue-300" />
               <div>
-                <p className="text-sm font-medium text-blue-200">
-                  SDI-Based Filtering Active
-                </p>
+                <p className="text-sm font-medium text-blue-200">SDI-Based Filtering Active</p>
                 <p className="text-xs text-blue-300">
-                  Showing courses for {isSDIEven ? 'Άρτιοι (Even)' : 'Περιττοί (Odd)'} students only. 
-                  Duplicate courses with different groups are automatically filtered.
+                  Showing courses for {isSDIEven ? 'Άρτιοι (Even)' : 'Περιττοί (Odd)'} students
+                  only. Duplicate courses with different groups are automatically filtered.
                 </p>
               </div>
             </div>
