@@ -359,7 +359,10 @@ function Timetable() {
                                     key={`${course.course_id}-${index}`}
                                     className={`text-xs p-2 rounded border mb-1 ${getCourseColor(course.semester)}`}
                                   >
-                                    <div className="font-medium truncate" title={course.course_name}>
+                                    <div
+                                      className="font-medium truncate"
+                                      title={course.course_name}
+                                    >
                                       {getBaseCourse(course.course_name)}
                                     </div>
                                     <div className="flex items-center gap-1 mt-1">
@@ -435,7 +438,6 @@ function Timetable() {
               })}
             </div>
           </div>
-
 
           {/* Course List */}
           <Card className="bg-gray-800 border-gray-700 text-white mt-6">
