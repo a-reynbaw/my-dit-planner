@@ -13,6 +13,7 @@ function Timetable() {
   const [myTimetable, setMyTimetable] = useState([]);
   const [userSDI, setUserSDI] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeDay, setActiveDay] = useState('Δευτέρα');
 
   // Days and time slots for the grid
   const days = ['Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή'];
@@ -38,9 +39,6 @@ function Timetable() {
     ])
       .then(([coursesData, profileData]) => {
         const current = coursesData.filter((course) => course.status === 'Current Semester');
-        console.log('Current Semester courses:', current);
-        console.log('User SDI:', profileData.sdi);
-
         setCurrentCourses(current);
         setUserSDI(profileData.sdi);
 
@@ -50,7 +48,6 @@ function Timetable() {
           timetableData.schedule,
           profileData.sdi
         );
-        console.log('Matched timetable entries:', matchedTimetable);
         setMyTimetable(matchedTimetable);
         setLoading(false);
       })
@@ -65,9 +62,6 @@ function Timetable() {
     const isSDIEven = userSDI % 2 === 0;
     const courseNameLower = courseName.toLowerCase();
 
-    console.log(`Checking course: "${courseName}", SDI: ${userSDI}, isEven: ${isSDIEven}`);
-
-    // Check if the course has even/odd indicators - be more specific with patterns
     const hasEvenIndicator =
       courseNameLower.includes('άρτιοι') ||
       courseNameLower.includes('αρτιοι') ||
@@ -80,28 +74,15 @@ function Timetable() {
       courseNameLower.includes('(περιττοί)') ||
       courseNameLower.includes('(περιττοι)');
 
-    console.log(`  Has even indicator: ${hasEvenIndicator}`);
-    console.log(`  Has odd indicator: ${hasOddIndicator}`);
-
-    // If the course has no even/odd indicator, always show it
     if (!hasEvenIndicator && !hasOddIndicator) {
-      console.log(`  → Showing (no indicators)`);
       return true;
     }
 
-    // If SDI is even, show only "άρτιοι" courses
     if (isSDIEven) {
-      const shouldShow = hasEvenIndicator;
-      console.log(
-        `  → SDI is even, showing: ${shouldShow} (has even indicator: ${hasEvenIndicator})`
-      );
-      return shouldShow;
+      return hasEvenIndicator;
     }
 
-    // If SDI is odd, show only "περιττοί" courses
-    const shouldShow = hasOddIndicator;
-    console.log(`  → SDI is odd, showing: ${shouldShow} (has odd indicator: ${hasOddIndicator})`);
-    return shouldShow;
+    return hasOddIndicator;
   };
 
   // Function to get the base course name without even/odd indicators
@@ -123,46 +104,26 @@ function Timetable() {
   const findMatchingTimetableEntries = (courses, timetableSchedule, userSDI) => {
     const matched = [];
 
-    console.log('Searching for matches between:', {
-      courses: courses.map((c) => c.name),
-      timetableEntries: timetableSchedule.map((t) => t.course_name),
-      userSDI: userSDI,
-      isSDIEven: userSDI % 2 === 0,
-    });
-
     courses.forEach((course) => {
-      // console.log(`\nLooking for matches for course: "${course.name}"`);
-
-      // Try to find matching timetable entries by course name
       const timetableEntries = timetableSchedule.filter((entry) => {
-        // First check if this course should be shown based on SDI
         if (!shouldShowCourse(entry.course_name, userSDI)) {
-          console.log(`  Skipping "${entry.course_name}" due to SDI filter (SDI: ${userSDI})`);
           return false;
         }
 
-        // Clean course names for comparison (remove extra spaces, special characters, and even/odd indicators)
         const cleanCourseName = getBaseCourse(course.name).trim().toLowerCase();
         const cleanTimetableName = getBaseCourse(entry.course_name).trim().toLowerCase();
 
-        console.log(`  Comparing: "${cleanCourseName}" vs "${cleanTimetableName}"`);
-
-        // Direct match
         if (cleanCourseName === cleanTimetableName) {
-          console.log(`    ✓ Direct match found`);
           return true;
         }
 
-        // Partial match (timetable name contains course name or vice versa)
         if (
           cleanCourseName.includes(cleanTimetableName) ||
           cleanTimetableName.includes(cleanCourseName)
         ) {
-          console.log(`    ✓ Partial match found`);
           return true;
         }
 
-        // More conservative word-based matching
         const courseWords = cleanCourseName.split(' ').filter((w) => w.length > 3);
         const timetableWords = cleanTimetableName.split(' ').filter((w) => w.length > 3);
 
@@ -173,29 +134,18 @@ function Timetable() {
         const commonWords = courseWords.filter((word) =>
           timetableWords.some(
             (tWord) =>
-              tWord === word || // Exact word match
+              tWord === word ||
               (word.length > 4 && tWord.includes(word)) ||
               (tWord.length > 4 && word.includes(tWord))
           )
         );
 
-        // More strict threshold: require at least 70% word match AND minimum 2 common words
         const matchRatio = commonWords.length / Math.min(courseWords.length, timetableWords.length);
         const isMatch = matchRatio >= 0.7 && commonWords.length >= 2;
-
-        if (isMatch) {
-          console.log(
-            `    ✓ Word-based match found (${matchRatio.toFixed(2)} ratio, ${commonWords.length} common words)`
-          );
-          console.log(`      Common words: ${commonWords.join(', ')}`);
-        }
 
         return isMatch;
       });
 
-      console.log(`  Found ${timetableEntries.length} timetable entries for "${course.name}"`);
-
-      // Add matched entries with course info
       timetableEntries.forEach((entry) => {
         matched.push({
           ...entry,
@@ -207,7 +157,6 @@ function Timetable() {
       });
     });
 
-    console.log(`Total matched entries: ${matched.length}`);
     return matched;
   };
 
@@ -270,7 +219,7 @@ function Timetable() {
       </header>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card className="bg-gray-800 border-gray-700 text-white">
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -366,72 +315,127 @@ function Timetable() {
         </Card>
       ) : (
         <>
-          {/* Timetable Grid */}
-          <Card className="bg-gray-800 border-gray-700 overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Weekly Schedule
-                {userSDI && (
-                  <span className="text-sm text-gray-400 ml-2">
-                    ({isSDIEven ? 'Άρτιοι' : 'Περιττοί'} Group)
-                  </span>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[800px]">
-                  <thead>
-                    <tr className="border-b border-gray-700">
-                      <th className="p-2 text-left text-gray-400 w-20 sticky left-0 bg-gray-800">
-                        Time
-                      </th>
-                      {days.map((day) => (
-                        <th key={day} className="p-2 text-center text-gray-400 min-w-[150px]">
-                          {day}
+          {/* Timetable Grid - Hidden on small screens */}
+          <div className="hidden lg:block">
+            <Card className="bg-gray-800 border-gray-700 overflow-hidden">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Weekly Schedule
+                  {userSDI && (
+                    <span className="text-sm text-gray-400 ml-2">
+                      ({isSDIEven ? 'Άρτιοι' : 'Περιττοί'} Group)
+                    </span>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[800px]">
+                    <thead>
+                      <tr className="border-b border-gray-700">
+                        <th className="p-2 text-left text-gray-400 w-20 sticky left-0 bg-gray-800">
+                          Time
                         </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {timeSlots.map((timeSlot) => (
-                      <tr key={timeSlot} className="border-b border-gray-700 h-16">
-                        <td className="p-2 text-sm text-gray-400 sticky left-0 bg-gray-800 border-r border-gray-700">
-                          {timeSlot}
-                        </td>
-                        {days.map((day) => {
-                          const courses = getCoursesForSlot(day, timeSlot);
-                          return (
-                            <td key={`${day}-${timeSlot}`} className="p-1 align-top">
-                              {courses.map((course, index) => (
-                                <div
-                                  key={`${course.course_id}-${index}`}
-                                  className={`text-xs p-2 rounded border mb-1 ${getCourseColor(course.semester)}`}
-                                >
-                                  <div className="font-medium truncate" title={course.course_name}>
-                                    {getBaseCourse(course.course_name)}
-                                  </div>
-                                  <div className="flex items-center gap-1 mt-1">
-                                    <MapPin className="h-3 w-3" />
-                                    <span>{course.room}</span>
-                                  </div>
-                                  <div className="flex items-center gap-1">
-                                    <User className="h-3 w-3" />
-                                    <span className="truncate">{course.lecturer}</span>
-                                  </div>
-                                </div>
-                              ))}
-                            </td>
-                          );
-                        })}
+                        {days.map((day) => (
+                          <th key={day} className="p-2 text-center text-gray-400 min-w-[150px]">
+                            {day}
+                          </th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {timeSlots.map((timeSlot) => (
+                        <tr key={timeSlot} className="border-b border-gray-700 h-16">
+                          <td className="p-2 text-sm text-gray-400 sticky left-0 bg-gray-800 border-r border-gray-700">
+                            {timeSlot}
+                          </td>
+                          {days.map((day) => {
+                            const courses = getCoursesForSlot(day, timeSlot);
+                            return (
+                              <td key={`${day}-${timeSlot}`} className="p-1 align-top">
+                                {courses.map((course, index) => (
+                                  <div
+                                    key={`${course.course_id}-${index}`}
+                                    className={`text-xs p-2 rounded border mb-1 ${getCourseColor(course.semester)}`}
+                                  >
+                                    <div className="font-medium truncate" title={course.course_name}>
+                                      {getBaseCourse(course.course_name)}
+                                    </div>
+                                    <div className="flex items-center gap-1 mt-1">
+                                      <MapPin className="h-3 w-3" />
+                                      <span>{course.room}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <User className="h-3 w-3" />
+                                      <span className="truncate">{course.lecturer}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Tabbed Timetable for smaller screens */}
+          <div className="lg:hidden">
+            <div className="mb-4">
+              <div className="border-b border-gray-700">
+                <nav className="-mb-px flex space-x-4" aria-label="Tabs">
+                  {days.map((day) => (
+                    <button
+                      key={day}
+                      onClick={() => setActiveDay(day)}
+                      className={`${
+                        activeDay === day
+                          ? 'border-blue-500 text-blue-400'
+                          : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
+                      } whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </nav>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            <div>
+              {timeSlots.map((timeSlot) => {
+                const courses = getCoursesForSlot(activeDay, timeSlot);
+                if (courses.length === 0) return null;
+                return (
+                  <div key={timeSlot} className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-300 mb-2">{timeSlot}</h3>
+                    {courses.map((course, index) => (
+                      <div
+                        key={`${course.course_id}-${index}`}
+                        className={`p-3 rounded border mb-2 ${getCourseColor(course.semester)}`}
+                      >
+                        <div className="font-bold text-base" title={course.course_name}>
+                          {getBaseCourse(course.course_name)}
+                        </div>
+                        <div className="flex items-center gap-2 mt-2 text-sm">
+                          <MapPin className="h-4 w-4" />
+                          <span>{course.room}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1 text-sm">
+                          <User className="h-4 w-4" />
+                          <span className="truncate">{course.lecturer}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
 
           {/* Course List */}
           <Card className="bg-gray-800 border-gray-700 text-white mt-6">
