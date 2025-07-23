@@ -48,6 +48,10 @@ jobs:
       - name: Test /api/courses endpoint
         run: curl --fail http://localhost:8000/api/courses | jq .
 
+      - name: Test /api/profile endpoint
+        run: response=$(curl --fail -s http://localhost:8000/api/profile)
+          echo "$response" | jq -e '.sdi == 2400120'
+          
       - name: Update course status
         run: |
           curl --fail -X PUT \
