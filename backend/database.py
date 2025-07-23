@@ -184,7 +184,7 @@ def init_database():
         for sdi, first_name, last_name, current_semester, direction in profile:
             cursor.execute(
                 '''INSERT OR IGNORE INTO profile (sdi, first_name, last_name, current_semester, direction)
-                VALUES (?, ?, ?, ?, ?)''',  # Added missing ? for direction
+                VALUES (?, ?, ?, ?, ?)''',
                 (sdi, first_name, last_name, current_semester, direction)
             )
         conn.commit()
