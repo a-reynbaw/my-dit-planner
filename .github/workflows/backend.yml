@@ -40,7 +40,7 @@ jobs:
       - name: Wait for server to be ready
         run: |
           echo "Waiting for server..."
-          while ! curl -s http://localhost:8000/api/courses > /dev/null; do
+          while ! curl -s http://localhost:8000/health > /dev/null; do
             sleep 1
           done
           echo "Server is up!"
@@ -48,11 +48,29 @@ jobs:
       - name: Test /api/courses endpoint
         run: curl --fail http://localhost:8000/api/courses | jq .
 
-      - name: Test /api/profile endpoint
+      - name: Test /api/profile/sdi endpoint
         run: |
-          response=$(curl --fail -s http://localhost:8000/api/profile)
-          echo "Profile response: $response"
+          response=$(curl --fail -s http://localhost:8000/api/profile/sdi)
+          echo "SDI response: $response"
           echo "$response" | jq -e '.sdi == 2400120'
+
+      - name: Test getting initial direction
+        run: |
+          response=$(curl --fail -s http://localhost:8000/api/profile/direction)
+          echo "Initial direction response: $response"
+          
+          echo "$response" | jq -e '.direction == null'
+
+      - name: Test updating direction
+        run: |
+          curl --fail -X PUT \
+            -H "Content-Type: application/json" \
+            -d '{"direction": "CS"}' \
+            http://localhost:8000/api/profile/direction
+
+          response=$(curl --fail -s http://localhost:8000/api/profile/direction)
+          echo "Updated direction response: $response"
+          echo "$response" | jq -e '.direction == "CS"'
           
       - name: Update course status
         run: |
