@@ -188,7 +188,7 @@ function Dashboard({ courses }) {
                           {course.code} • {course.ects} ECTS
                         </p>
                       </div>
-                      <Badge variant="outline">{course.type}</Badge>
+                      <Badge variant="secondary">{course.type}</Badge>
                     </li>
                   ))}
                   {currentSemesterCourses.length > 5 && (
