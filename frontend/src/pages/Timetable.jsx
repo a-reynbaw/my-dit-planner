@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Import the timetable data directly
-import timetableData from '../assets/spring2025_timetable.json';
+import timetableData from '../data/spring2025_timetable.json';
 
 function Timetable() {
   const navigate = useNavigate();
@@ -57,6 +57,56 @@ function Timetable() {
       });
   }, []);
 
+  // Function to get courses for a specific day and time slot
+  const getCoursesForSlot = (day, timeSlot) => {
+    return myTimetable.filter((entry) => {
+      const entryTimeSlot = `${entry.start_time}-${entry.end_time}`;
+      return entry.day === day && entryTimeSlot === timeSlot;
+    });
+  };
+
+  // Replace the current debug useEffect with this version:
+  useEffect(() => {
+    if (myTimetable.length > 0) {
+      console.log('=== DEBUGGING OVERLAPS ===');
+      console.log('My timetable entries:', myTimetable.length);
+
+      // Log each timetable entry first
+      myTimetable.forEach((entry, index) => {
+        console.log(
+          `[${index}] ${entry.course_name} - ${entry.day} ${entry.start_time}-${entry.end_time}`
+        );
+      });
+
+      // Then check for overlaps WITHOUT calling getCoursesForSlot to avoid the recursive logging
+      timeSlots.forEach((timeSlot) => {
+        days.forEach((day) => {
+          // Inline the filtering logic here to avoid recursive calls
+          const coursesInSlot = myTimetable.filter((entry) => {
+            const entryTimeSlot = `${entry.start_time}-${entry.end_time}`;
+            return entry.day === day && entryTimeSlot === timeSlot;
+          });
+
+          if (coursesInSlot.length > 0) {
+            console.log(`${day} ${timeSlot}: ${coursesInSlot.length} course(s)`);
+            coursesInSlot.forEach((course, index) => {
+              console.log(
+                `  [${index}] ${course.course_name} (${course.start_time}-${course.end_time})`
+              );
+            });
+          }
+
+          if (coursesInSlot.length > 1) {
+            console.log(
+              `🔴 OVERLAP DETECTED at ${day} ${timeSlot}:`,
+              coursesInSlot.map((c) => c.course_name)
+            );
+          }
+        });
+      });
+    }
+  }, [myTimetable]);
+
   // Function to determine if a course should be shown based on SDI
   const shouldShowCourse = (courseName, userSDI) => {
     const isSDIEven = userSDI % 2 === 0;
@@ -85,6 +135,32 @@ function Timetable() {
     return hasOddIndicator;
   };
 
+  // Function to normalize text for comparison (handles Greek/English character mixing)
+  const normalizeText = (text) => {
+    return (
+      text
+        .toLowerCase()
+        .trim()
+        // Replace Greek letters with Latin equivalents
+        .replace(/ι/g, 'i') // Greek iota → Latin i
+        .replace(/ο/g, 'o') // Greek omicron → Latin o
+        .replace(/α/g, 'a') // Greek alpha → Latin a
+        .replace(/ε/g, 'e') // Greek epsilon → Latin e
+        .replace(/η/g, 'h') // Greek eta → Latin h
+        .replace(/κ/g, 'k') // Greek kappa → Latin k
+        .replace(/μ/g, 'm') // Greek mu → Latin m
+        .replace(/ν/g, 'n') // Greek nu → Latin n
+        .replace(/π/g, 'p') // Greek pi → Latin p
+        .replace(/ρ/g, 'r') // Greek rho → Latin r
+        .replace(/τ/g, 't') // Greek tau → Latin t
+        .replace(/υ/g, 'y') // Greek upsilon → Latin y
+        .replace(/χ/g, 'x') // Greek chi → Latin x
+        // Also handle the reverse (Latin → Greek) in case database has Latin
+        .replace(/i/g, 'i') // Ensure consistent Latin i
+        .replace(/\s+/g, ' ')
+    ); // Normalize whitespace
+  };
+
   // Function to get the base course name without even/odd indicators
   const getBaseCourse = (courseName) => {
     return courseName
@@ -110,13 +186,15 @@ function Timetable() {
           return false;
         }
 
-        const cleanCourseName = getBaseCourse(course.name).trim().toLowerCase();
-        const cleanTimetableName = getBaseCourse(entry.course_name).trim().toLowerCase();
+        const cleanCourseName = normalizeText(getBaseCourse(course.name));
+        const cleanTimetableName = normalizeText(getBaseCourse(entry.course_name));
 
+        // Direct match after normalization
         if (cleanCourseName === cleanTimetableName) {
           return true;
         }
 
+        // Substring matching
         if (
           cleanCourseName.includes(cleanTimetableName) ||
           cleanTimetableName.includes(cleanCourseName)
@@ -124,6 +202,7 @@ function Timetable() {
           return true;
         }
 
+        // Word-based matching
         const courseWords = cleanCourseName.split(' ').filter((w) => w.length > 3);
         const timetableWords = cleanTimetableName.split(' ').filter((w) => w.length > 3);
 
@@ -160,23 +239,30 @@ function Timetable() {
     return matched;
   };
 
-  // Function to get courses for a specific day and time slot
-  const getCoursesForSlot = (day, timeSlot) => {
-    return myTimetable.filter((entry) => {
-      const entryTimeSlot = `${entry.start_time}-${entry.end_time}`;
-      return entry.day === day && entryTimeSlot === timeSlot;
-    });
-  };
-
   // Function to get color for a course based on its semester
   const getCourseColor = (semester) => {
+    const semesterNum = parseInt(semester) || semester;
     const colors = {
+      1: 'bg-gray-100 border-gray-300 text-gray-800',
       2: 'bg-green-100 border-green-300 text-green-800',
+      3: 'bg-yellow-100 border-yellow-300 text-yellow-800',
       4: 'bg-blue-100 border-blue-300 text-blue-800',
+      5: 'bg-orange-100 border-orange-300 text-orange-800',
       6: 'bg-purple-100 border-purple-300 text-purple-800',
+      7: 'bg-pink-100 border-pink-300 text-pink-800',
       8: 'bg-red-100 border-red-300 text-red-800',
     };
-    return colors[semester] || 'bg-gray-100 border-gray-300 text-gray-800';
+    return colors[semesterNum] || 'bg-gray-100 border-gray-300 text-gray-800';
+  };
+
+  // Function to calculate dynamic row height based on number of courses
+  const getRowHeight = (day, timeSlot) => {
+    const courses = getCoursesForSlot(day, timeSlot);
+    if (courses.length === 0) return 'h-16';
+    if (courses.length === 1) return 'h-20';
+    if (courses.length === 2) return 'h-28';
+    if (courses.length === 3) return 'h-36';
+    return 'h-44'; // For 4+ courses
   };
 
   if (loading) {
@@ -338,48 +424,73 @@ function Timetable() {
                           Time
                         </th>
                         {days.map((day) => (
-                          <th key={day} className="p-2 text-center text-gray-400 min-w-[150px]">
+                          <th key={day} className="p-2 text-center text-gray-400 min-w-[200px]">
                             {day}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {timeSlots.map((timeSlot) => (
-                        <tr key={timeSlot} className="border-b border-gray-700 h-16">
-                          <td className="p-2 text-sm text-gray-400 sticky left-0 bg-gray-800 border-r border-gray-700">
-                            {timeSlot}
-                          </td>
-                          {days.map((day) => {
-                            const courses = getCoursesForSlot(day, timeSlot);
-                            return (
-                              <td key={`${day}-${timeSlot}`} className="p-1 align-top">
-                                {courses.map((course, index) => (
-                                  <div
-                                    key={`${course.course_id}-${index}`}
-                                    className={`text-xs p-2 rounded border mb-1 ${getCourseColor(course.semester)}`}
-                                  >
-                                    <div
-                                      className="font-medium truncate"
-                                      title={course.course_name}
-                                    >
-                                      {getBaseCourse(course.course_name)}
-                                    </div>
-                                    <div className="flex items-center gap-1 mt-1">
-                                      <MapPin className="h-3 w-3" />
-                                      <span>{course.room}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                      <User className="h-3 w-3" />
-                                      <span className="truncate">{course.lecturer}</span>
-                                    </div>
+                      {timeSlots.map((timeSlot) => {
+                        // Calculate the maximum courses for this time slot across all days
+                        const maxCoursesInSlot = Math.max(
+                          ...days.map((day) => getCoursesForSlot(day, timeSlot).length),
+                          1
+                        );
+
+                        return (
+                          <tr key={timeSlot} className="border-b border-gray-700">
+                            <td
+                              className="p-2 text-sm text-gray-400 sticky left-0 bg-gray-800 border-r border-gray-700 align-top"
+                              style={{ height: `${Math.max(64, maxCoursesInSlot * 56)}px` }}
+                            >
+                              {timeSlot}
+                            </td>
+                            {days.map((day) => {
+                              const courses = getCoursesForSlot(day, timeSlot);
+                              return (
+                                <td key={`${day}-${timeSlot}`} className="p-1 align-top">
+                                  <div className="space-y-1 h-full">
+                                    {courses.map((course, index) => (
+                                      <div
+                                        key={`${course.course_id}-${index}`}
+                                        className={`text-xs p-2 rounded border ${getCourseColor(course.semester)} transition-all hover:shadow-md`}
+                                        style={{
+                                          minHeight: '50px',
+                                          marginBottom: courses.length > 1 ? '2px' : '0',
+                                        }}
+                                      >
+                                        <div
+                                          className="font-medium text-xs leading-tight mb-1"
+                                          title={course.course_name}
+                                        >
+                                          {getBaseCourse(course.course_name)}
+                                        </div>
+                                        <div className="flex items-center gap-1 text-xs opacity-80">
+                                          <MapPin className="h-3 w-3 flex-shrink-0" />
+                                          <span className="truncate">{course.room}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 text-xs opacity-80">
+                                          <User className="h-3 w-3 flex-shrink-0" />
+                                          <span className="truncate">{course.lecturer}</span>
+                                        </div>
+                                        {courses.length > 1 && (
+                                          <div className="text-xs font-medium mt-1 opacity-60">
+                                            #{index + 1} of {courses.length}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                    {courses.length === 0 && (
+                                      <div className="h-12"></div> // Empty placeholder
+                                    )}
                                   </div>
-                                ))}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -414,35 +525,64 @@ function Timetable() {
                 if (courses.length === 0) return null;
                 return (
                   <div key={timeSlot} className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-300 mb-2">{timeSlot}</h3>
-                    {courses.map((course, index) => (
-                      <div
-                        key={`${course.course_id}-${index}`}
-                        className={`p-3 rounded border mb-2 ${getCourseColor(course.semester)}`}
-                      >
-                        <div className="font-bold text-base" title={course.course_name}>
-                          {getBaseCourse(course.course_name)}
+                    <h3 className="text-lg font-semibold text-gray-300 mb-2">
+                      {timeSlot}
+                      {courses.length > 1 && (
+                        <span className="text-sm text-yellow-400 ml-2">
+                          ({courses.length} overlapping courses)
+                        </span>
+                      )}
+                    </h3>
+                    <div className="space-y-2">
+                      {courses.map((course, index) => (
+                        <div
+                          key={`${course.course_id}-${index}`}
+                          className={`p-3 rounded border ${getCourseColor(course.semester)} relative`}
+                        >
+                          {courses.length > 1 && (
+                            <div className="absolute top-2 right-2 bg-white bg-opacity-20 rounded-full px-2 py-1 text-xs font-bold">
+                              {index + 1}/{courses.length}
+                            </div>
+                          )}
+                          <div className="font-bold text-base pr-12" title={course.course_name}>
+                            {getBaseCourse(course.course_name)}
+                          </div>
+                          <div className="flex items-center gap-2 mt-2 text-sm">
+                            <MapPin className="h-4 w-4" />
+                            <span>{course.room}</span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-1 text-sm">
+                            <User className="h-4 w-4" />
+                            <span className="truncate">{course.lecturer}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 mt-2 text-sm">
-                          <MapPin className="h-4 w-4" />
-                          <span>{course.room}</span>
-                        </div>
-                        <div className="flex items-center gap-2 mt-1 text-sm">
-                          <User className="h-4 w-4" />
-                          <span className="truncate">{course.lecturer}</span>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Course List */}
+          {/* Course List - Show conflicts */}
           <Card className="bg-gray-800 border-gray-700 text-white mt-6">
             <CardHeader>
-              <CardTitle>Enrolled Courses</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                Enrolled Courses
+                {/* Show warning if there are time conflicts */}
+                {(() => {
+                  const conflicts = timeSlots.some((timeSlot) =>
+                    days.some((day) => getCoursesForSlot(day, timeSlot).length > 1)
+                  );
+                  return (
+                    conflicts && (
+                      <span className="text-yellow-400 text-sm bg-yellow-900 bg-opacity-30 px-2 py-1 rounded">
+                        ⚠️ Schedule conflicts detected
+                      </span>
+                    )
+                  );
+                })()}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -450,25 +590,54 @@ function Timetable() {
                   const timetableEntries = myTimetable.filter(
                     (entry) => entry.course_id === course.id
                   );
+
+                  // Check if this course has conflicts
+                  const hasConflicts = timetableEntries.some((entry) => {
+                    const timeSlot = `${entry.start_time}-${entry.end_time}`;
+                    const coursesInSlot = getCoursesForSlot(entry.day, timeSlot);
+                    return coursesInSlot.length > 1;
+                  });
+
                   return (
                     <div
                       key={course.id}
-                      className={`p-4 rounded border ${getCourseColor(course.semester)}`}
+                      className={`p-4 rounded border ${getCourseColor(course.semester)} ${
+                        hasConflicts ? 'ring-2 ring-yellow-400 ring-opacity-50' : ''
+                      }`}
                     >
-                      <h3 className="font-semibold mb-1">{course.name}</h3>
+                      <div className="flex items-start justify-between">
+                        <h3 className="font-semibold mb-1">{course.name}</h3>
+                        {hasConflicts && (
+                          <span className="text-yellow-600 text-xs bg-yellow-200 px-1 rounded">
+                            ⚠️
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm opacity-75 mb-2">
                         {course.code} • {course.ects} ECTS
                       </p>
                       {timetableEntries.length > 0 && (
                         <div className="text-xs space-y-1">
-                          {timetableEntries.map((entry, index) => (
-                            <div key={index} className="flex justify-between">
-                              <span>
-                                {entry.day} {entry.start_time}-{entry.end_time}
-                              </span>
-                              <span>{entry.room}</span>
-                            </div>
-                          ))}
+                          {timetableEntries.map((entry, index) => {
+                            const timeSlot = `${entry.start_time}-${entry.end_time}`;
+                            const coursesInSlot = getCoursesForSlot(entry.day, timeSlot);
+                            const isConflicted = coursesInSlot.length > 1;
+
+                            return (
+                              <div
+                                key={index}
+                                className={`flex justify-between ${
+                                  isConflicted ? 'text-yellow-600 font-medium' : ''
+                                }`}
+                              >
+                                <span>
+                                  {entry.day} {entry.start_time}-{entry.end_time}
+                                  {isConflicted && ` (${coursesInSlot.length} courses)`}
+                                </span>
+                                <span>{entry.room}</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                       {timetableEntries.length === 0 && (

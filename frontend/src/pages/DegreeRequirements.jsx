@@ -16,7 +16,8 @@ function DegreeRequirements() {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userDirection, setUserDirection] = useState('CS'); // Default to CS
+  const [userDirection, setUserDirection] = useState(null); // Start with null
+  const [userSDI, setUserSDI] = useState(null);
 
   // Direction options
   const directions = [
@@ -25,29 +26,43 @@ function DegreeRequirements() {
   ];
 
   useEffect(() => {
-    fetch('/api/courses')
-      .then((res) => res.json())
-      .then((data) => {
-        setCourses(data);
+    // Fetch courses, SDI, and direction using separate endpoints
+    Promise.all([
+      fetch('/api/courses').then((res) => res.json()),
+      fetch('/api/profile/sdi').then((res) => res.json()),
+      fetch('/api/profile/direction').then((res) => res.json()),
+    ])
+      .then(([coursesData, sdiData, directionData]) => {
+        setCourses(coursesData);
+        setUserSDI(sdiData.sdi);
+        setUserDirection(directionData.direction); // This could be null
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching courses:', error);
+        console.error('Error fetching data:', error);
         setLoading(false);
       });
   }, []);
 
-  // Load direction from localStorage on component mount
-  useEffect(() => {
-    const savedDirection = localStorage.getItem('userDirection');
-    if (savedDirection && ['CS', 'CET'].includes(savedDirection)) {
-      setUserDirection(savedDirection);
-    }
-  }, []);
+  const handleDirectionChange = async (newDirection) => {
+    try {
+      // Update direction in backend
+      const response = await fetch('/api/profile/direction', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ direction: newDirection }),
+      });
 
-  const handleDirectionChange = (newDirection) => {
-    setUserDirection(newDirection);
-    localStorage.setItem('userDirection', newDirection);
+      if (response.ok) {
+        setUserDirection(newDirection);
+      } else {
+        console.error('Failed to update direction');
+      }
+    } catch (error) {
+      console.error('Error updating direction:', error);
+    }
   };
 
   if (loading) {
@@ -56,6 +71,77 @@ function DegreeRequirements() {
         <div className="text-center py-10">
           <p className="text-xl text-gray-400">Loading degree requirements...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Show direction selection if no direction is set
+  if (!userDirection) {
+    return (
+      <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
+        <header className="flex items-center justify-between mb-10">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">Choose Your Direction</h1>
+            <p className="text-lg text-gray-400">
+              Please select your academic direction to view degree requirements
+            </p>
+            {userSDI && (
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-sm text-gray-400">SDI: {userSDI}</span>
+              </div>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigate('/')}
+            className="bg-gray-800 border-gray-700 hover:bg-gray-700"
+          >
+            <Home className="h-5 w-5" />
+          </Button>
+        </header>
+
+        <Card className="bg-gray-800 border-gray-700 text-white max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="text-center text-2xl text-blue-400">
+              Select Your Academic Direction
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-gray-300 text-center">
+              Choose your direction to see personalized degree requirements and track your progress.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {directions.map((direction) => (
+                <Card
+                  key={direction.value}
+                  className="bg-gray-700 border-gray-600 hover:border-blue-500 transition-colors cursor-pointer"
+                  onClick={() => handleDirectionChange(direction.value)}
+                >
+                  <CardContent className="p-6 text-center">
+                    <h3 className="text-lg font-semibold text-white mb-2">{direction.label}</h3>
+                    <Button
+                      className="mt-4 bg-blue-600 hover:bg-blue-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDirectionChange(direction.value);
+                      }}
+                    >
+                      Select {direction.value}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <p className="text-sm text-gray-400">
+                You can change your direction later in the settings.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -192,6 +278,13 @@ function DegreeRequirements() {
           <p className="text-lg text-gray-400">
             Track your progress towards graduation requirements
           </p>
+          {userSDI && (
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-sm text-gray-400">
+                SDI: {userSDI} • Direction: {selectedDirectionLabel}
+              </span>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">

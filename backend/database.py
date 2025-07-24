@@ -241,6 +241,12 @@ def get_sdi_with_id(profile_id):
         cursor.execute('SELECT sdi FROM profile WHERE id = ?', (profile_id,))
         return cursor.fetchall()
 
+def get_direction_with_id(profile_id):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT direction FROM profile WHERE id = ?', (profile_id,))  # Fixed missing comma
+        return cursor.fetchall()
+
 def update_course_status(course_id, new_status):
     """Update the status of a course"""
     with get_db_connection() as conn:
@@ -262,12 +268,12 @@ def update_course_planned_semester(course_id, new_semester):
         cursor.execute('UPDATE courses SET planned_semester = ? WHERE id = ?', (new_semester, course_id))
         conn.commit()
 
-# def update_direction(profile_id, new_direction):
-#     """Update the direction of a user"""
-#     with get_db_connection() as conn:
-#         cursor = conn.cursor()
-#         cursor.execute('UPDATE profile SET direction = ? WHERE id = ?', (new_direction, profile_id))
-#         conn.commit()
+def update_direction(profile_id, new_direction):
+    """Update the direction of a user"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE profile SET direction = ? WHERE id = ?', (new_direction, profile_id))
+        conn.commit()
 
 # def update_current_semester(profile_id, new_semester):
 #     """Update the current semester of a user"""

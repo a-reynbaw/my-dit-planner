@@ -4,12 +4,13 @@ from pydantic import BaseModel
 from typing import List, Optional
 from database import (
     get_sdi_with_id,
+    get_direction_with_id,  # Add this import
+    update_direction,       # Add this import
     init_database,
     get_all_courses,
-    # get_degree_requirements,
     update_course_status,
     update_course_grade,
-    update_course_planned_semester, # Make sure to import the new function
+    update_course_planned_semester,
     DATABASE_PATH
 )
 import os
@@ -45,7 +46,8 @@ class CourseStatusUpdate(BaseModel):
     status: str
 class CoursePlannedSemesterUpdate(BaseModel):
     planned_semester: int
-
+class DirectionUpdate(BaseModel):   # Add this model
+    direction: str
 
 # API Endpoints
 
@@ -57,17 +59,37 @@ def api_get_courses():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading courses: {str(e)}")
     
-@app.get("/api/profile") 
+@app.get("/api/profile/sdi") 
 def api_get_sdi():
     try:
-        # Use profile_id = 1 instead of 0 (assuming the first profile has id=1)
         result = get_sdi_with_id(1)
         if result and len(result) > 0:
-            return {"sdi": result[0][0]}  # Extract the SDI value and return in expected format
+            return {"sdi": result[0][0]}
         else:
             raise HTTPException(status_code=404, detail="User profile not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading sdi: {str(e)}")
+
+@app.get("/api/profile/direction")
+def api_get_direction():
+    try:
+        result = get_direction_with_id(1)
+        if result and len(result) > 0:
+            direction = result[0][0]  # Extract the direction value
+            return {"direction": direction}
+        else:
+            # Return null if no direction is set
+            return {"direction": None}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading direction: {str(e)}")
+
+@app.put("/api/profile/direction")
+def api_update_direction(update: DirectionUpdate):
+    try:
+        update_direction(1, update.direction)
+        return {"message": "Direction updated"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating direction: {str(e)}")
 
 @app.put("/api/courses/{course_id}/status")
 def api_update_course_status(course_id: int, update: CourseStatusUpdate):
