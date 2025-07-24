@@ -105,8 +105,7 @@ function Dashboard({ courses }) {
       ? (
           passedCourses
             .filter((c) => c.grade != null)
-            .reduce((acc, c) => acc + Number(c.grade) * c.ects, 0) /
-          (completedECTS || 1)
+            .reduce((acc, c) => acc + Number(c.grade) * c.ects, 0) / (completedECTS || 1)
         ).toFixed(2)
       : 'N/A';
 
@@ -198,7 +197,9 @@ function Dashboard({ courses }) {
                   )}
                 </ul>
               ) : (
-                <p className="text-center py-6 text-gray-400">No courses for the current semester.</p>
+                <p className="text-center py-6 text-gray-400">
+                  No courses for the current semester.
+                </p>
               )}
               <Button
                 onClick={() => navigate('/current-courses')}
