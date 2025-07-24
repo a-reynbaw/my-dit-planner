@@ -71,8 +71,8 @@ sudo docker-compose down -v --rmi all
 ```
 
 ## To-Do List
-- [ ] add two tests to the backend for getting and updating the direction
-- [ ] re-make the main page to make more sense given the current features
+- [X] add two tests to the backend for getting and updating the direction
+- [X] re-make the main page to make more sense given the current features
 - [ ] add specialty progress to the requirements
 - [ ] potential (one) new page: profile/info/setting/stats etc
 - [ ] links for usefull resources like delos, dit page, eclass, dit lab

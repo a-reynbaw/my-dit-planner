@@ -35,7 +35,7 @@ function Timetable() {
     // Fetch both courses and user SDI using the existing endpoint
     Promise.all([
       fetch('/api/courses').then((res) => res.json()),
-      fetch('/api/profile').then((res) => res.json()), // Use existing endpoint
+      fetch('/api/profile/sdi').then((res) => res.json()), // Use existing endpoint
     ])
       .then(([coursesData, profileData]) => {
         const current = coursesData.filter((course) => course.status === 'Current Semester');
