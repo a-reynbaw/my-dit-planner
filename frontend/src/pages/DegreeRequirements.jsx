@@ -273,7 +273,9 @@ function DegreeRequirements() {
   // Speciality calculations
   const calculateSpecialityProgress = (specialityColumn) => {
     const specialityCourses = courses.filter((course) => course[specialityColumn]);
-    const passedSpecialityCourses = specialityCourses.filter((course) => course.status === 'Passed');
+    const passedSpecialityCourses = specialityCourses.filter(
+      (course) => course.status === 'Passed'
+    );
 
     // Count compulsory direction courses (ΚΜ type with 'Υ' value)
     const compulsorySpeciality = passedSpecialityCourses.filter(
@@ -531,7 +533,7 @@ function DegreeRequirements() {
                 <span>Final Courses (2 required):</span>
                 <span className="text-cyan-400">{completedFinalCourses.length}</span>
               </div>
-              
+
               {/* Add Specialities section */}
               {userDirection && availableSpecialities.length > 0 && (
                 <>
@@ -540,15 +542,17 @@ function DegreeRequirements() {
                     <span>Specialities (0-2 optional):</span>
                     <span className="text-purple-400">{completedSpecialities.length}/2</span>
                   </div>
-                  {completedSpecialities.map(spec => (
+                  {completedSpecialities.map((spec) => (
                     <div key={spec} className="flex justify-between text-sm text-gray-300 ml-4">
-                      <span>• {spec} - {specialityNames[spec]}:</span>
+                      <span>
+                        • {spec} - {specialityNames[spec]}:
+                      </span>
                       <CheckCircle2 className="h-4 w-4 text-green-400" />
                     </div>
                   ))}
                 </>
               )}
-              
+
               <hr className="border-gray-600" />
               <div className="flex justify-between font-semibold">
                 <span>Total ECTS:</span>
@@ -618,8 +622,8 @@ function DegreeRequirements() {
           <CardContent>
             <div className="mb-4">
               <p className="text-sm text-gray-400 mb-2">
-                You can obtain up to 2 out of 3 available specialities for your direction.
-                Each speciality requires 2 compulsory direction courses (ΚΜ) and 4 basic courses.
+                You can obtain up to 2 out of 3 available specialities for your direction. Each
+                speciality requires 2 compulsory direction courses (ΚΜ) and 4 basic courses.
               </p>
             </div>
 
@@ -627,11 +631,11 @@ function DegreeRequirements() {
               {availableSpecialities.map((spec) => {
                 const progress = specialityProgress[spec];
                 return (
-                  <Card 
-                    key={spec} 
+                  <Card
+                    key={spec}
                     className={`border transition-all ${
-                      progress.isCompleted 
-                        ? 'bg-green-900/30 border-green-500/50' 
+                      progress.isCompleted
+                        ? 'bg-green-900/30 border-green-500/50'
                         : 'bg-gray-700/50 border-gray-600'
                     }`}
                   >
@@ -645,27 +649,29 @@ function DegreeRequirements() {
                           )}
                           {spec}
                         </CardTitle>
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          progress.isCompleted 
-                            ? 'bg-green-700 text-green-200' 
-                            : 'bg-gray-600 text-gray-300'
-                        }`}>
+                        <span
+                          className={`text-xs px-2 py-1 rounded ${
+                            progress.isCompleted
+                              ? 'bg-green-700 text-green-200'
+                              : 'bg-gray-600 text-gray-300'
+                          }`}
+                        >
                           {progress.isCompleted ? 'Completed' : 'In Progress'}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {specialityNames[spec]}
-                      </p>
+                      <p className="text-xs text-gray-400 mt-1">{specialityNames[spec]}</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       {/* Compulsory Direction Courses Progress */}
                       <div>
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
                           <span>Direction Courses (ΚΜ)</span>
-                          <span>{progress.compulsoryCompleted}/{progress.compulsoryTotal}</span>
+                          <span>
+                            {progress.compulsoryCompleted}/{progress.compulsoryTotal}
+                          </span>
                         </div>
-                        <Progress 
-                          value={progress.compulsoryProgress} 
+                        <Progress
+                          value={progress.compulsoryProgress}
                           className="w-full h-1.5 bg-gray-600"
                         />
                         <div className="text-xs text-gray-500 mt-1">
@@ -677,10 +683,12 @@ function DegreeRequirements() {
                       <div>
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
                           <span>Basic Courses</span>
-                          <span>{progress.basicCompleted}/{progress.basicTotal}</span>
+                          <span>
+                            {progress.basicCompleted}/{progress.basicTotal}
+                          </span>
                         </div>
-                        <Progress 
-                          value={progress.basicProgress} 
+                        <Progress
+                          value={progress.basicProgress}
                           className="w-full h-1.5 bg-gray-600"
                         />
                         <div className="text-xs text-gray-500 mt-1">
@@ -692,19 +700,22 @@ function DegreeRequirements() {
                       <div className="pt-2 border-t border-gray-600">
                         <div className="flex justify-between text-xs font-medium mb-1">
                           <span className="text-gray-300">Overall Progress</span>
-                          <span className={progress.isCompleted ? 'text-green-400' : 'text-orange-400'}>
+                          <span
+                            className={progress.isCompleted ? 'text-green-400' : 'text-orange-400'}
+                          >
                             {progress.overallProgress.toFixed(0)}%
                           </span>
                         </div>
-                        <Progress 
-                          value={progress.overallProgress} 
+                        <Progress
+                          value={progress.overallProgress}
                           className="w-full h-2 bg-gray-600"
                         />
                       </div>
 
                       {/* Course counts */}
                       <div className="text-xs text-gray-500 pt-1">
-                        {progress.totalCourses} passed / {progress.availableCourses} available courses
+                        {progress.totalCourses} passed / {progress.availableCourses} available
+                        courses
                       </div>
                     </CardContent>
                   </Card>
@@ -735,13 +746,13 @@ function DegreeRequirements() {
                   </span>
                 </div>
               </div>
-              
+
               {completedSpecialities.length > 0 && (
                 <div className="mt-3">
                   <span className="text-gray-400 text-sm">Completed Specialities:</span>
                   <div className="flex flex-wrap gap-2 mt-1">
-                    {completedSpecialities.map(spec => (
-                      <span 
+                    {completedSpecialities.map((spec) => (
+                      <span
                         key={spec}
                         className="px-2 py-1 bg-green-700 text-green-200 rounded text-xs"
                       >
