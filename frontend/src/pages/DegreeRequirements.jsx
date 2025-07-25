@@ -270,6 +270,75 @@ function DegreeRequirements() {
     });
   }
 
+  // Speciality calculations
+  const calculateSpecialityProgress = (specialityColumn) => {
+    const specialityCourses = courses.filter((course) => course[specialityColumn]);
+    const passedSpecialityCourses = specialityCourses.filter((course) => course.status === 'Passed');
+
+    // Count compulsory direction courses (ΚΜ type with 'Υ' value)
+    const compulsorySpeciality = passedSpecialityCourses.filter(
+      (course) => course.type === 'ΚΜ' && course[specialityColumn] === 'Υ'
+    );
+
+    // Count basic courses (any type with 'B' value)
+    const basicSpeciality = passedSpecialityCourses.filter(
+      (course) => course[specialityColumn] === 'B'
+    );
+
+    const compulsoryProgress = Math.min(compulsorySpeciality.length / 2, 1) * 100; // 2/4 required
+    const basicProgress = Math.min(basicSpeciality.length / 4, 1) * 100; // 4/8 required
+
+    // Overall progress (both requirements must be met)
+    const overallProgress = Math.min(compulsoryProgress, basicProgress);
+    const isCompleted = compulsorySpeciality.length >= 2 && basicSpeciality.length >= 4;
+
+    return {
+      compulsoryCompleted: compulsorySpeciality.length,
+      compulsoryTotal: 2,
+      compulsoryProgress,
+      basicCompleted: basicSpeciality.length,
+      basicTotal: 4,
+      basicProgress,
+      overallProgress,
+      isCompleted,
+      totalCourses: passedSpecialityCourses.length,
+      availableCourses: specialityCourses.length,
+    };
+  };
+
+  // Define speciality names
+  const specialityNames = {
+    S1: 'Αλγόριθμοι, Προγραμματισμός και Λογικής',
+    S2: 'Επιστήμη Δεδομένων και Μηχανική Μάθηση',
+    S3: 'Συστήματα Υπολογιστών και Λογισμικό',
+    S4: 'Τηλεπικοινωνίες και Δίκτυα',
+    S5: 'Ηλεκτρονική και Αρχιτεκτονική Υπολογιστών',
+    S6: 'Επεξεργασία Σήματος και Εικόνας',
+  };
+
+  // Get available specialities based on direction
+  const getAvailableSpecialities = (direction) => {
+    if (direction === 'CS') {
+      return ['S1', 'S2', 'S3'];
+    } else if (direction === 'CET') {
+      return ['S4', 'S5', 'S6'];
+    }
+    return [];
+  };
+
+  const availableSpecialities = getAvailableSpecialities(userDirection);
+  const specialityProgress = {};
+
+  // Calculate progress for available specialities
+  availableSpecialities.forEach((spec) => {
+    specialityProgress[spec] = calculateSpecialityProgress(spec);
+  });
+
+  // Count completed specialities (max 2 allowed)
+  const completedSpecialities = availableSpecialities.filter(
+    (spec) => specialityProgress[spec].isCompleted
+  );
+
   return (
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
       <header className="flex items-center justify-between mb-10">
@@ -429,7 +498,7 @@ function DegreeRequirements() {
       </div>
 
       {/* Detailed breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
         <Card className="bg-gray-800 border-gray-700 text-white">
           <CardHeader>
             <CardTitle className="text-green-400">Completed Requirements</CardTitle>
@@ -462,6 +531,24 @@ function DegreeRequirements() {
                 <span>Final Courses (2 required):</span>
                 <span className="text-cyan-400">{completedFinalCourses.length}</span>
               </div>
+              
+              {/* Add Specialities section */}
+              {userDirection && availableSpecialities.length > 0 && (
+                <>
+                  <hr className="border-gray-600" />
+                  <div className="flex justify-between">
+                    <span>Specialities (0-2 optional):</span>
+                    <span className="text-purple-400">{completedSpecialities.length}/2</span>
+                  </div>
+                  {completedSpecialities.map(spec => (
+                    <div key={spec} className="flex justify-between text-sm text-gray-300 ml-4">
+                      <span>• {spec} - {specialityNames[spec]}:</span>
+                      <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    </div>
+                  ))}
+                </>
+              )}
+              
               <hr className="border-gray-600" />
               <div className="flex justify-between font-semibold">
                 <span>Total ECTS:</span>
@@ -515,6 +602,159 @@ function DegreeRequirements() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Specialities Progress Section */}
+      {userDirection && availableSpecialities.length > 0 && (
+        <Card className="bg-gray-800 border-gray-700 text-white mt-10">
+          <CardHeader>
+            <CardTitle className="text-purple-400 flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Specialities Progress ({selectedDirectionLabel})
+              <span className="text-sm text-gray-400 ml-2">
+                ({completedSpecialities.length}/2 completed - Optional)
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4">
+              <p className="text-sm text-gray-400 mb-2">
+                You can obtain up to 2 out of 3 available specialities for your direction.
+                Each speciality requires 2 compulsory direction courses (ΚΜ) and 4 basic courses.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {availableSpecialities.map((spec) => {
+                const progress = specialityProgress[spec];
+                return (
+                  <Card 
+                    key={spec} 
+                    className={`border transition-all ${
+                      progress.isCompleted 
+                        ? 'bg-green-900/30 border-green-500/50' 
+                        : 'bg-gray-700/50 border-gray-600'
+                    }`}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm text-gray-200 flex items-center gap-2">
+                          {progress.isCompleted ? (
+                            <CheckCircle2 className="h-4 w-4 text-green-400" />
+                          ) : (
+                            <Clock className="h-4 w-4 text-orange-400" />
+                          )}
+                          {spec}
+                        </CardTitle>
+                        <span className={`text-xs px-2 py-1 rounded ${
+                          progress.isCompleted 
+                            ? 'bg-green-700 text-green-200' 
+                            : 'bg-gray-600 text-gray-300'
+                        }`}>
+                          {progress.isCompleted ? 'Completed' : 'In Progress'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {specialityNames[spec]}
+                      </p>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {/* Compulsory Direction Courses Progress */}
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-400 mb-1">
+                          <span>Direction Courses (ΚΜ)</span>
+                          <span>{progress.compulsoryCompleted}/{progress.compulsoryTotal}</span>
+                        </div>
+                        <Progress 
+                          value={progress.compulsoryProgress} 
+                          className="w-full h-1.5 bg-gray-600"
+                        />
+                        <div className="text-xs text-gray-500 mt-1">
+                          {progress.compulsoryProgress.toFixed(0)}% Complete
+                        </div>
+                      </div>
+
+                      {/* Basic Courses Progress */}
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-400 mb-1">
+                          <span>Basic Courses</span>
+                          <span>{progress.basicCompleted}/{progress.basicTotal}</span>
+                        </div>
+                        <Progress 
+                          value={progress.basicProgress} 
+                          className="w-full h-1.5 bg-gray-600"
+                        />
+                        <div className="text-xs text-gray-500 mt-1">
+                          {progress.basicProgress.toFixed(0)}% Complete
+                        </div>
+                      </div>
+
+                      {/* Overall Progress */}
+                      <div className="pt-2 border-t border-gray-600">
+                        <div className="flex justify-between text-xs font-medium mb-1">
+                          <span className="text-gray-300">Overall Progress</span>
+                          <span className={progress.isCompleted ? 'text-green-400' : 'text-orange-400'}>
+                            {progress.overallProgress.toFixed(0)}%
+                          </span>
+                        </div>
+                        <Progress 
+                          value={progress.overallProgress} 
+                          className="w-full h-2 bg-gray-600"
+                        />
+                      </div>
+
+                      {/* Course counts */}
+                      <div className="text-xs text-gray-500 pt-1">
+                        {progress.totalCourses} passed / {progress.availableCourses} available courses
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+
+            {/* Specialities Summary */}
+            <div className="mt-6 p-4 bg-gray-700/50 rounded-lg">
+              <h4 className="text-sm font-medium text-gray-300 mb-2">Specialities Summary</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-400">Completed:</span>
+                  <span className="text-green-400 ml-2 font-medium">
+                    {completedSpecialities.length}/2
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-400">Available:</span>
+                  <span className="text-blue-400 ml-2 font-medium">
+                    {availableSpecialities.length}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-400">Remaining:</span>
+                  <span className="text-orange-400 ml-2 font-medium">
+                    {Math.max(0, 2 - completedSpecialities.length)}
+                  </span>
+                </div>
+              </div>
+              
+              {completedSpecialities.length > 0 && (
+                <div className="mt-3">
+                  <span className="text-gray-400 text-sm">Completed Specialities:</span>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {completedSpecialities.map(spec => (
+                      <span 
+                        key={spec}
+                        className="px-2 py-1 bg-green-700 text-green-200 rounded text-xs"
+                      >
+                        {spec}: {specialityNames[spec]}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

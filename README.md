@@ -76,3 +76,6 @@ sudo docker-compose down -v --rmi all
 - [ ] add specialty progress to the requirements
 - [ ] potential (one) new page: profile/info/setting/stats etc
 - [ ] links for usefull resources like delos, dit page, eclass, dit lab
+- [ ] add free courses
+- [ ] make the direction selection box a little wider (Degree Requirements)
+- [ ] add endpoints for S1,...,S6
