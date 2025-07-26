@@ -448,62 +448,62 @@ function DegreeRequirements() {
   }
 
   // Speciality calculations
-  const calculateSpecialityProgress = (specialityColumn) => {
-    const specialityCourses = courses.filter((course) => course[specialityColumn]);
-    const passedSpecialityCourses = specialityCourses.filter(
-      (course) => course.status === 'Passed'
-    );
+  // const calculateSpecialityProgress = (specialityColumn) => {
+  //   const specialityCourses = courses.filter((course) => course[specialityColumn]);
+  //   const passedSpecialityCourses = specialityCourses.filter(
+  //     (course) => course.status === 'Passed'
+  //   );
 
-    // Count compulsory direction courses (ΚΜ type with 'Υ' value)
-    const compulsorySpeciality = passedSpecialityCourses.filter(
-      (course) => course.type === 'ΚΜ' && course[specialityColumn] === 'Υ'
-    );
+  //   // Count compulsory direction courses (ΚΜ type with 'Υ' value)
+  //   const compulsorySpeciality = passedSpecialityCourses.filter(
+  //     (course) => course.type === 'ΚΜ' && course[specialityColumn] === 'Υ'
+  //   );
 
-    // Count basic courses (any type with 'B' value)
-    const basicSpeciality = passedSpecialityCourses.filter(
-      (course) => course[specialityColumn] === 'B'
-    );
+  //   // Count basic courses (any type with 'B' value)
+  //   const basicSpeciality = passedSpecialityCourses.filter(
+  //     (course) => course[specialityColumn] === 'B'
+  //   );
 
-    const compulsoryProgress = Math.min(compulsorySpeciality.length / 2, 1) * 100; // 2/4 required
-    const basicProgress = Math.min(basicSpeciality.length / 4, 1) * 100; // 4/8 required
+  //   const compulsoryProgress = Math.min(compulsorySpeciality.length / 2, 1) * 100; // 2/4 required
+  //   const basicProgress = Math.min(basicSpeciality.length / 4, 1) * 100; // 4/8 required
 
-    // Overall progress (both requirements must be met)
-    const overallProgress = Math.min(compulsoryProgress, basicProgress);
-    const isCompleted = compulsorySpeciality.length >= 2 && basicSpeciality.length >= 4;
+  //   // Overall progress (both requirements must be met)
+  //   const overallProgress = Math.min(compulsoryProgress, basicProgress);
+  //   const isCompleted = compulsorySpeciality.length >= 2 && basicSpeciality.length >= 4;
 
-    return {
-      compulsoryCompleted: compulsorySpeciality.length,
-      compulsoryTotal: 2,
-      compulsoryProgress,
-      basicCompleted: basicSpeciality.length,
-      basicTotal: 4,
-      basicProgress,
-      overallProgress,
-      isCompleted,
-      totalCourses: passedSpecialityCourses.length,
-      availableCourses: specialityCourses.length,
-    };
-  };
+  //   return {
+  //     compulsoryCompleted: compulsorySpeciality.length,
+  //     compulsoryTotal: 2,
+  //     compulsoryProgress,
+  //     basicCompleted: basicSpeciality.length,
+  //     basicTotal: 4,
+  //     basicProgress,
+  //     overallProgress,
+  //     isCompleted,
+  //     totalCourses: passedSpecialityCourses.length,
+  //     availableCourses: specialityCourses.length,
+  //   };
+  // };
 
   // Define speciality names
-  const specialityNames = {
-    S1: 'Αλγόριθμοι, Προγραμματισμός και Λογικής',
-    S2: 'Επιστήμη Δεδομένων και Μηχανική Μάθηση',
-    S3: 'Συστήματα Υπολογιστών και Λογισμικό',
-    S4: 'Τηλεπικοινωνίες και Δίκτυα',
-    S5: 'Ηλεκτρονική και Αρχιτεκτονική Υπολογιστών',
-    S6: 'Επεξεργασία Σήματος και Εικόνας',
-  };
+  // const specialityNames = {
+  //   S1: 'Αλγόριθμοι, Προγραμματισμός και Λογικής',
+  //   S2: 'Επιστήμη Δεδομένων και Μηχανική Μάθηση',
+  //   S3: 'Συστήματα Υπολογιστών και Λογισμικό',
+  //   S4: 'Τηλεπικοινωνίες και Δίκτυα',
+  //   S5: 'Ηλεκτρονική και Αρχιτεκτονική Υπολογιστών',
+  //   S6: 'Επεξεργασία Σήματος και Εικόνας',
+  // };
 
   // Get available specialities based on direction
-  const getAvailableSpecialities = (direction) => {
-    if (direction === 'CS') {
-      return ['S1', 'S2', 'S3'];
-    } else if (direction === 'CET') {
-      return ['S4', 'S5', 'S6'];
-    }
-    return [];
-  };
+  // const getAvailableSpecialities = (direction) => {
+  //   if (direction === 'CS') {
+  //     return ['S1', 'S2', 'S3'];
+  //   } else if (direction === 'CET') {
+  //     return ['S4', 'S5', 'S6'];
+  //   }
+  //   return [];
+  // };
 
   const availableSpecialities = getAvailableSpecialities(userDirection);
   const completedSpecialities = availableSpecialities.filter(
