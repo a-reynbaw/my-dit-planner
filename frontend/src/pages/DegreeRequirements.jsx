@@ -434,6 +434,77 @@ function DegreeRequirements() {
     },
   ];
 
+  // Add CS-specific requirement if CS is selected
+  if (userDirection === 'CS') {
+    requirements.splice(4, 0, {
+      title: 'CS Required Courses',
+      completed: csRequiredCompleted,
+      total: 3,
+      progress: csRequiredProgress,
+      icon: Target,
+      color: 'text-red-400',
+      description: 'CS direction requires 3 specific courses',
+    });
+  }
+
+  // Speciality calculations
+  const calculateSpecialityProgress = (specialityColumn) => {
+    const specialityCourses = courses.filter((course) => course[specialityColumn]);
+    const passedSpecialityCourses = specialityCourses.filter(
+      (course) => course.status === 'Passed'
+    );
+
+    // Count compulsory direction courses (ΚΜ type with 'Υ' value)
+    const compulsorySpeciality = passedSpecialityCourses.filter(
+      (course) => course.type === 'ΚΜ' && course[specialityColumn] === 'Υ'
+    );
+
+    // Count basic courses (any type with 'B' value)
+    const basicSpeciality = passedSpecialityCourses.filter(
+      (course) => course[specialityColumn] === 'B'
+    );
+
+    const compulsoryProgress = Math.min(compulsorySpeciality.length / 2, 1) * 100; // 2/4 required
+    const basicProgress = Math.min(basicSpeciality.length / 4, 1) * 100; // 4/8 required
+
+    // Overall progress (both requirements must be met)
+    const overallProgress = Math.min(compulsoryProgress, basicProgress);
+    const isCompleted = compulsorySpeciality.length >= 2 && basicSpeciality.length >= 4;
+
+    return {
+      compulsoryCompleted: compulsorySpeciality.length,
+      compulsoryTotal: 2,
+      compulsoryProgress,
+      basicCompleted: basicSpeciality.length,
+      basicTotal: 4,
+      basicProgress,
+      overallProgress,
+      isCompleted,
+      totalCourses: passedSpecialityCourses.length,
+      availableCourses: specialityCourses.length,
+    };
+  };
+
+  // Define speciality names
+  const specialityNames = {
+    S1: 'Αλγόριθμοι, Προγραμματισμός και Λογικής',
+    S2: 'Επιστήμη Δεδομένων και Μηχανική Μάθηση',
+    S3: 'Συστήματα Υπολογιστών και Λογισμικό',
+    S4: 'Τηλεπικοινωνίες και Δίκτυα',
+    S5: 'Ηλεκτρονική και Αρχιτεκτονική Υπολογιστών',
+    S6: 'Επεξεργασία Σήματος και Εικόνας',
+  };
+
+  // Get available specialities based on direction
+  const getAvailableSpecialities = (direction) => {
+    if (direction === 'CS') {
+      return ['S1', 'S2', 'S3'];
+    } else if (direction === 'CET') {
+      return ['S4', 'S5', 'S6'];
+    }
+    return [];
+  };
+
   const availableSpecialities = getAvailableSpecialities(userDirection);
   const completedSpecialities = availableSpecialities.filter(
     (spec) => specialityProgress[spec]?.isCompleted === true
@@ -657,7 +728,7 @@ function DegreeRequirements() {
                   {completedSpecialities.map((spec) => (
                     <div key={spec} className="flex justify-between text-sm text-gray-300 ml-4">
                       <span>
-                        • {spec} - {specialityNames[spec] || 'Loading...'}:
+                        • {spec} - {specialityNames[spec]}:
                       </span>
                       <CheckCircle2 className="h-4 w-4 text-green-400" />
                     </div>
@@ -783,7 +854,7 @@ function DegreeRequirements() {
                           {progress.isCompleted ? 'Completed' : 'In Progress'}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">{specialityNames[spec] || spec}</p>
+                      <p className="text-xs text-gray-400 mt-1">{specialityNames[spec]}</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       {/* Compulsory Direction Courses Progress */}
