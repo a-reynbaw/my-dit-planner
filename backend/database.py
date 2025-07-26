@@ -226,6 +226,19 @@ def get_courses_by_status(status):
         cursor.execute('SELECT * FROM courses WHERE status = ? ORDER BY semester, id', (status,))
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
+    
+def get_info_by_s_and_name(s_no, name):
+    # Validate the column name to prevent SQL injection
+    valid_columns = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6']
+    if s_no not in valid_columns:
+        raise ValueError(f"Invalid column name: {s_no}. Must be one of {valid_columns}")
+    
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        # Use string formatting for column name (after validation)
+        query = f'SELECT {s_no} FROM courses WHERE name = ?'
+        cursor.execute(query, (name,))
+        return cursor.fetchall()
 
 def get_courses_by_planned_semester(p_s):
     """Return all courses for a specific planned semester"""

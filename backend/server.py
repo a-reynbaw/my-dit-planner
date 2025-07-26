@@ -4,10 +4,11 @@ from pydantic import BaseModel
 from typing import List, Optional
 from database import (
     get_sdi_with_id,
-    get_direction_with_id,  # Add this import
-    update_direction,       # Add this import
+    get_direction_with_id,  
+    update_direction,       
     init_database,
     get_all_courses,
+    get_info_by_s_and_name,
     update_course_status,
     update_course_grade,
     update_course_planned_semester,
@@ -82,6 +83,21 @@ def api_get_direction():
             return {"direction": None}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading direction: {str(e)}")
+    
+@app.get("/api/courses/{course_name}/speciality/{s_no}")
+def api_get_course_speciality_info(course_name: str, s_no: str):
+    """Get speciality information for a specific course"""
+    try:
+        result = get_info_by_s_and_name(s_no, course_name)
+        if result and len(result) > 0:
+            return {"course_name": course_name, "speciality": s_no, "value": result[0][0]}
+        else:
+            return {"course_name": course_name, "speciality": s_no, "value": None}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting speciality info: {str(e)}")
+
 
 @app.put("/api/profile/direction")
 def api_update_direction(update: DirectionUpdate):

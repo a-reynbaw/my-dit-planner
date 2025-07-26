@@ -16,8 +16,12 @@ function DegreeRequirements() {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userDirection, setUserDirection] = useState(null); // Start with null
+  const [userDirection, setUserDirection] = useState(null);
   const [userSDI, setUserSDI] = useState(null);
+  const [specialityProgress, setSpecialityProgress] = useState({});
+  const [directionCourses, setDirectionCourses] = useState([]);
+  const [completedDirection, setCompletedDirection] = useState([]);
+  const [specialityNames, setSpecialityNames] = useState({}); // Change this line
 
   // Direction options
   const directions = [
@@ -25,6 +29,154 @@ function DegreeRequirements() {
     { value: 'CET', label: 'Computer Engineering & Telecommunications (CET)' },
   ];
 
+  // Remove the hardcoded specialityNames object and replace with useEffect
+  useEffect(() => {
+    fetch('/api/specialities')
+      .then((res) => res.json())
+      .then((data) => setSpecialityNames(data))
+      .catch((error) => {
+        console.error('Error fetching speciality names:', error);
+        // Fallback to prevent crashes
+        setSpecialityNames({});
+      });
+  }, []);
+
+  // Define speciality names
+  // const specialityNames = {
+  //   S1: 'Αλγόριθμοι, Προγραμματισμός και Λογικής',
+  //   S2: 'Επιστήμη Δεδομένων και Μηχανική Μάθηση',
+  //   S3: 'Συστήματα Υπολογιστών και Λογισμικό',
+  //   S4: 'Τηλεπικοινωνίες και Δίκτυα',
+  //   S5: 'Ηλεκτρονική και Αρχιτεκτονική Υπολογιστών',
+  //   S6: 'Επεξεργασία Σήματος και Εικόνας'
+  // };
+
+  // Add the getAvailableSpecialities function
+  const getAvailableSpecialities = (direction) => {
+    if (direction === 'CS') {
+      return ['S1', 'S2', 'S3'];
+    } else if (direction === 'CET') {
+      return ['S4', 'S5', 'S6'];
+    }
+    return [];
+  };
+
+  // Move these functions BEFORE the useEffect that calls them
+  const getDirectionCourses = async (direction) => {
+    if (!direction) return [];
+
+    try {
+      const specialities = direction === 'CS' ? ['S1', 'S2', 'S3'] : ['S4', 'S5', 'S6'];
+
+      // Get all direction courses (ΚΜ type)
+      const directionCourses = courses.filter((c) => c.type === 'ΚΜ');
+
+      // Check which ones belong to the direction's specialities
+      const directionCoursesPromises = directionCourses.map(async (course) => {
+        try {
+          // Check if course belongs to any of the direction's specialities
+          const specialityPromises = specialities.map(async (spec) => {
+            const response = await fetch(
+              `/api/courses/${encodeURIComponent(course.name)}/speciality/${spec}`
+            );
+            const data = await response.json();
+            return data.value ? true : false;
+          });
+
+          const hasAnySpeciality = await Promise.all(specialityPromises);
+          const belongsToDirection = hasAnySpeciality.some(Boolean);
+
+          return belongsToDirection ? course : null;
+        } catch (error) {
+          console.error(`Error checking direction for ${course.name}:`, error);
+          return null;
+        }
+      });
+
+      const results = await Promise.all(directionCoursesPromises);
+      return results.filter((course) => course !== null);
+    } catch (error) {
+      console.error('Error getting direction courses:', error);
+      return [];
+    }
+  };
+
+  const calculateSpecialityProgress = async (specialityColumn) => {
+    try {
+      // Get all courses that belong to this speciality
+      const specialityCoursesPromises = courses.map(async (course) => {
+        try {
+          const response = await fetch(
+            `/api/courses/${encodeURIComponent(course.name)}/speciality/${specialityColumn}`
+          );
+          const data = await response.json();
+
+          if (data.value) {
+            return {
+              ...course,
+              specialityValue: data.value,
+            };
+          }
+          return null;
+        } catch (error) {
+          console.error(`Error fetching speciality info for ${course.name}:`, error);
+          return null;
+        }
+      });
+
+      const specialityCoursesResults = await Promise.all(specialityCoursesPromises);
+      const specialityCourses = specialityCoursesResults.filter((course) => course !== null);
+      const passedSpecialityCourses = specialityCourses.filter(
+        (course) => course.status === 'Passed'
+      );
+
+      // Count compulsory direction courses (ΚΜ type with 'Υ' value)
+      const compulsorySpeciality = passedSpecialityCourses.filter(
+        (course) => course.type === 'ΚΜ' && course.specialityValue === 'Υ'
+      );
+
+      // Count basic courses (any type with 'B' value)
+      const basicSpeciality = passedSpecialityCourses.filter(
+        (course) => course.specialityValue === 'B'
+      );
+
+      const compulsoryProgress = Math.min(compulsorySpeciality.length / 2, 1) * 100; // 2/4 required
+      const basicProgress = Math.min(basicSpeciality.length / 4, 1) * 100; // 4/8 required
+
+      // Overall progress (both requirements must be met)
+      const overallProgress = Math.min(compulsoryProgress, basicProgress);
+      const isCompleted = compulsorySpeciality.length >= 2 && basicSpeciality.length >= 4;
+
+      return {
+        compulsoryCompleted: compulsorySpeciality.length,
+        compulsoryTotal: 2,
+        compulsoryProgress,
+        basicCompleted: basicSpeciality.length,
+        basicTotal: 4,
+        basicProgress,
+        overallProgress,
+        isCompleted,
+        totalCourses: passedSpecialityCourses.length,
+        availableCourses: specialityCourses.length,
+      };
+    } catch (error) {
+      console.error(`Error calculating speciality progress for ${specialityColumn}:`, error);
+      return {
+        compulsoryCompleted: 0,
+        compulsoryTotal: 2,
+        compulsoryProgress: 0,
+        basicCompleted: 0,
+        basicTotal: 4,
+        basicProgress: 0,
+        overallProgress: 0,
+        isCompleted: false,
+        totalCourses: 0,
+        availableCourses: 0,
+      };
+    }
+  };
+
+  // NOW the useEffect that calls these functions
   useEffect(() => {
     // Fetch courses, SDI, and direction using separate endpoints
     Promise.all([
@@ -35,7 +187,7 @@ function DegreeRequirements() {
       .then(([coursesData, sdiData, directionData]) => {
         setCourses(coursesData);
         setUserSDI(sdiData.sdi);
-        setUserDirection(directionData.direction); // This could be null
+        setUserDirection(directionData.direction);
         setLoading(false);
       })
       .catch((error) => {
@@ -43,6 +195,33 @@ function DegreeRequirements() {
         setLoading(false);
       });
   }, []);
+
+  // Effect to calculate direction courses and speciality progress when data changes
+  useEffect(() => {
+    if (courses.length > 0 && userDirection) {
+      const calculateData = async () => {
+        // Calculate direction courses
+        const dirCourses = await getDirectionCourses(userDirection);
+        const completedDir = dirCourses.filter((c) => c.status === 'Passed');
+
+        setDirectionCourses(dirCourses);
+        setCompletedDirection(completedDir);
+
+        // Calculate speciality progress
+        const availableSpecs = getAvailableSpecialities(userDirection);
+        const progressPromises = availableSpecs.map(async (spec) => {
+          const progress = await calculateSpecialityProgress(spec);
+          return [spec, progress];
+        });
+
+        const progressResults = await Promise.all(progressPromises);
+        const progressObj = Object.fromEntries(progressResults);
+        setSpecialityProgress(progressObj);
+      };
+
+      calculateData();
+    }
+  }, [courses, userDirection]);
 
   const handleDirectionChange = async (newDirection) => {
     try {
@@ -146,7 +325,7 @@ function DegreeRequirements() {
     );
   }
 
-  // Calculate degree requirements
+  // Calculate degree requirements (update to use state values)
   const totalECTS = 240;
   const passedCourses = courses.filter((c) => c.status === 'Passed');
   const completedECTS = passedCourses.reduce((sum, course) => sum + course.ects, 0);
@@ -160,9 +339,7 @@ function DegreeRequirements() {
   const completedGE = generalEducationCourses.filter((c) => c.status === 'Passed');
   const geProgress = (completedGE.length / 3) * 100; // 3 general education required
 
-  // Direction courses (ΚΜ)
-  const directionCourses = courses.filter((c) => c.type === 'ΚΜ');
-  const completedDirection = directionCourses.filter((c) => c.status === 'Passed');
+  // Use state values for direction courses
   const directionProgress = (completedDirection.length / 4) * 100; // 4 direction courses required
 
   // Direction project (should be a specific course type or identifiable by name)
@@ -177,18 +354,18 @@ function DegreeRequirements() {
   const completedFinalCourses = finalCourses.filter((c) => c.status === 'Passed');
   const finalCoursesProgress = (completedFinalCourses.length / 2) * 100; // 2 out of 4 required
 
-  // CS-specific required courses
+  // CS-specific required courses (restrictions on direction courses)
   const csRequiredCourses = [
     'Θεωρία Υπολογισμού',
     'Υλοποίηση Συστημάτων Βάσεων Δεδομένων',
     'Αριθμητική Ανάλυση',
   ];
 
-  // Check CS-specific requirements
+  // Check CS-specific requirements (these are just restrictions, not additional requirements)
   const csRequiredCompleted =
     userDirection === 'CS'
       ? csRequiredCourses.filter((courseName) =>
-          courses.some((course) => course.name === courseName && course.status === 'Passed')
+          completedDirection.some((course) => course.name === courseName)
         ).length
       : 0;
 
@@ -235,7 +412,7 @@ function DegreeRequirements() {
       progress: directionProgress,
       icon: Target,
       color: 'text-orange-400',
-      description: '4 direction courses required',
+      description: `4 direction courses required for ${selectedDirectionLabel}`,
     },
     {
       title: 'Direction Project',
@@ -257,86 +434,9 @@ function DegreeRequirements() {
     },
   ];
 
-  // Add CS-specific requirement if CS is selected
-  if (userDirection === 'CS') {
-    requirements.splice(4, 0, {
-      title: 'CS Required Courses',
-      completed: csRequiredCompleted,
-      total: 3,
-      progress: csRequiredProgress,
-      icon: Target,
-      color: 'text-red-400',
-      description: 'CS direction requires 3 specific courses',
-    });
-  }
-
-  // Speciality calculations
-  const calculateSpecialityProgress = (specialityColumn) => {
-    const specialityCourses = courses.filter((course) => course[specialityColumn]);
-    const passedSpecialityCourses = specialityCourses.filter((course) => course.status === 'Passed');
-
-    // Count compulsory direction courses (ΚΜ type with 'Υ' value)
-    const compulsorySpeciality = passedSpecialityCourses.filter(
-      (course) => course.type === 'ΚΜ' && course[specialityColumn] === 'Υ'
-    );
-
-    // Count basic courses (any type with 'B' value)
-    const basicSpeciality = passedSpecialityCourses.filter(
-      (course) => course[specialityColumn] === 'B'
-    );
-
-    const compulsoryProgress = Math.min(compulsorySpeciality.length / 2, 1) * 100; // 2/4 required
-    const basicProgress = Math.min(basicSpeciality.length / 4, 1) * 100; // 4/8 required
-
-    // Overall progress (both requirements must be met)
-    const overallProgress = Math.min(compulsoryProgress, basicProgress);
-    const isCompleted = compulsorySpeciality.length >= 2 && basicSpeciality.length >= 4;
-
-    return {
-      compulsoryCompleted: compulsorySpeciality.length,
-      compulsoryTotal: 2,
-      compulsoryProgress,
-      basicCompleted: basicSpeciality.length,
-      basicTotal: 4,
-      basicProgress,
-      overallProgress,
-      isCompleted,
-      totalCourses: passedSpecialityCourses.length,
-      availableCourses: specialityCourses.length,
-    };
-  };
-
-  // Define speciality names
-  const specialityNames = {
-    S1: 'Αλγόριθμοι, Προγραμματισμός και Λογικής',
-    S2: 'Επιστήμη Δεδομένων και Μηχανική Μάθηση',
-    S3: 'Συστήματα Υπολογιστών και Λογισμικό',
-    S4: 'Τηλεπικοινωνίες και Δίκτυα',
-    S5: 'Ηλεκτρονική και Αρχιτεκτονική Υπολογιστών',
-    S6: 'Επεξεργασία Σήματος και Εικόνας',
-  };
-
-  // Get available specialities based on direction
-  const getAvailableSpecialities = (direction) => {
-    if (direction === 'CS') {
-      return ['S1', 'S2', 'S3'];
-    } else if (direction === 'CET') {
-      return ['S4', 'S5', 'S6'];
-    }
-    return [];
-  };
-
   const availableSpecialities = getAvailableSpecialities(userDirection);
-  const specialityProgress = {};
-
-  // Calculate progress for available specialities
-  availableSpecialities.forEach((spec) => {
-    specialityProgress[spec] = calculateSpecialityProgress(spec);
-  });
-
-  // Count completed specialities (max 2 allowed)
   const completedSpecialities = availableSpecialities.filter(
-    (spec) => specialityProgress[spec].isCompleted
+    (spec) => specialityProgress[spec]?.isCompleted === true
   );
 
   return (
@@ -411,11 +511,13 @@ function DegreeRequirements() {
 
           {userDirection === 'CS' && (
             <div className="mt-4">
-              <p className="text-sm text-gray-400 mb-2">CS Required Courses (3 mandatory):</p>
+              <p className="text-sm text-gray-400 mb-2">
+                CS Direction Restrictions (3 of your 4 direction courses must include):
+              </p>
               <div className="space-y-2">
                 {csRequiredCourses.map((courseName, index) => {
-                  const isCompleted = courses.some(
-                    (course) => course.name === courseName && course.status === 'Passed'
+                  const isCompleted = completedDirection.some(
+                    (course) => course.name === courseName
                   );
                   return (
                     <div key={index} className="flex items-center gap-2">
@@ -432,6 +534,16 @@ function DegreeRequirements() {
                     </div>
                   );
                 })}
+              </div>
+              <div className="mt-2">
+                <span
+                  className={`text-sm ${
+                    csRequiredCompleted >= 3 ? 'text-green-400' : 'text-orange-400'
+                  }`}
+                >
+                  {csRequiredCompleted}/3 required courses completed
+                  {csRequiredCompleted >= 3 ? ' ✓' : ''}
+                </span>
               </div>
             </div>
           )}
@@ -518,9 +630,11 @@ function DegreeRequirements() {
                 <span className="text-orange-400">{completedDirection.length}</span>
               </div>
               {userDirection === 'CS' && (
-                <div className="flex justify-between">
-                  <span>CS Required Courses (3 required):</span>
-                  <span className="text-red-400">{csRequiredCompleted}</span>
+                <div className="flex justify-between text-sm text-gray-300 ml-4">
+                  <span>• CS Required (3 of 4 direction courses):</span>
+                  <span className={csRequiredCompleted >= 3 ? 'text-green-400' : 'text-orange-400'}>
+                    {csRequiredCompleted}/3
+                  </span>
                 </div>
               )}
               <div className="flex justify-between">
@@ -531,7 +645,7 @@ function DegreeRequirements() {
                 <span>Final Courses (2 required):</span>
                 <span className="text-cyan-400">{completedFinalCourses.length}</span>
               </div>
-              
+
               {/* Add Specialities section */}
               {userDirection && availableSpecialities.length > 0 && (
                 <>
@@ -540,15 +654,17 @@ function DegreeRequirements() {
                     <span>Specialities (0-2 optional):</span>
                     <span className="text-purple-400">{completedSpecialities.length}/2</span>
                   </div>
-                  {completedSpecialities.map(spec => (
+                  {completedSpecialities.map((spec) => (
                     <div key={spec} className="flex justify-between text-sm text-gray-300 ml-4">
-                      <span>• {spec} - {specialityNames[spec]}:</span>
+                      <span>
+                        • {spec} - {specialityNames[spec] || 'Loading...'}:
+                      </span>
                       <CheckCircle2 className="h-4 w-4 text-green-400" />
                     </div>
                   ))}
                 </>
               )}
-              
+
               <hr className="border-gray-600" />
               <div className="flex justify-between font-semibold">
                 <span>Total ECTS:</span>
@@ -618,20 +734,32 @@ function DegreeRequirements() {
           <CardContent>
             <div className="mb-4">
               <p className="text-sm text-gray-400 mb-2">
-                You can obtain up to 2 out of 3 available specialities for your direction.
-                Each speciality requires 2 compulsory direction courses (ΚΜ) and 4 basic courses.
+                You can obtain up to 2 out of 3 available specialities for your direction. Each
+                speciality requires 2 compulsory direction courses (ΚΜ) and 4 basic courses.
               </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {availableSpecialities.map((spec) => {
-                const progress = specialityProgress[spec];
+                const progress = specialityProgress[spec] || {
+                  compulsoryCompleted: 0,
+                  compulsoryTotal: 2,
+                  compulsoryProgress: 0,
+                  basicCompleted: 0,
+                  basicTotal: 4,
+                  basicProgress: 0,
+                  overallProgress: 0,
+                  isCompleted: false,
+                  totalCourses: 0,
+                  availableCourses: 0,
+                };
+
                 return (
-                  <Card 
-                    key={spec} 
+                  <Card
+                    key={spec}
                     className={`border transition-all ${
-                      progress.isCompleted 
-                        ? 'bg-green-900/30 border-green-500/50' 
+                      progress.isCompleted
+                        ? 'bg-green-900/30 border-green-500/50'
                         : 'bg-gray-700/50 border-gray-600'
                     }`}
                   >
@@ -645,27 +773,29 @@ function DegreeRequirements() {
                           )}
                           {spec}
                         </CardTitle>
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          progress.isCompleted 
-                            ? 'bg-green-700 text-green-200' 
-                            : 'bg-gray-600 text-gray-300'
-                        }`}>
+                        <span
+                          className={`text-xs px-2 py-1 rounded ${
+                            progress.isCompleted
+                              ? 'bg-green-700 text-green-200'
+                              : 'bg-gray-600 text-gray-300'
+                          }`}
+                        >
                           {progress.isCompleted ? 'Completed' : 'In Progress'}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {specialityNames[spec]}
-                      </p>
+                      <p className="text-xs text-gray-400 mt-1">{specialityNames[spec] || spec}</p>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       {/* Compulsory Direction Courses Progress */}
                       <div>
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
                           <span>Direction Courses (ΚΜ)</span>
-                          <span>{progress.compulsoryCompleted}/{progress.compulsoryTotal}</span>
+                          <span>
+                            {progress.compulsoryCompleted}/{progress.compulsoryTotal}
+                          </span>
                         </div>
-                        <Progress 
-                          value={progress.compulsoryProgress} 
+                        <Progress
+                          value={progress.compulsoryProgress}
                           className="w-full h-1.5 bg-gray-600"
                         />
                         <div className="text-xs text-gray-500 mt-1">
@@ -677,10 +807,12 @@ function DegreeRequirements() {
                       <div>
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
                           <span>Basic Courses</span>
-                          <span>{progress.basicCompleted}/{progress.basicTotal}</span>
+                          <span>
+                            {progress.basicCompleted}/{progress.basicTotal}
+                          </span>
                         </div>
-                        <Progress 
-                          value={progress.basicProgress} 
+                        <Progress
+                          value={progress.basicProgress}
                           className="w-full h-1.5 bg-gray-600"
                         />
                         <div className="text-xs text-gray-500 mt-1">
@@ -692,19 +824,22 @@ function DegreeRequirements() {
                       <div className="pt-2 border-t border-gray-600">
                         <div className="flex justify-between text-xs font-medium mb-1">
                           <span className="text-gray-300">Overall Progress</span>
-                          <span className={progress.isCompleted ? 'text-green-400' : 'text-orange-400'}>
+                          <span
+                            className={progress.isCompleted ? 'text-green-400' : 'text-orange-400'}
+                          >
                             {progress.overallProgress.toFixed(0)}%
                           </span>
                         </div>
-                        <Progress 
-                          value={progress.overallProgress} 
+                        <Progress
+                          value={progress.overallProgress}
                           className="w-full h-2 bg-gray-600"
                         />
                       </div>
 
                       {/* Course counts */}
                       <div className="text-xs text-gray-500 pt-1">
-                        {progress.totalCourses} passed / {progress.availableCourses} available courses
+                        {progress.totalCourses} passed / {progress.availableCourses} available
+                        courses
                       </div>
                     </CardContent>
                   </Card>
@@ -735,17 +870,17 @@ function DegreeRequirements() {
                   </span>
                 </div>
               </div>
-              
+
               {completedSpecialities.length > 0 && (
                 <div className="mt-3">
                   <span className="text-gray-400 text-sm">Completed Specialities:</span>
                   <div className="flex flex-wrap gap-2 mt-1">
-                    {completedSpecialities.map(spec => (
-                      <span 
+                    {completedSpecialities.map((spec) => (
+                      <span
                         key={spec}
                         className="px-2 py-1 bg-green-700 text-green-200 rounded text-xs"
                       >
-                        {spec}: {specialityNames[spec]}
+                        {spec}: {specialityNames[spec] || 'Loading...'}
                       </span>
                     ))}
                   </div>
