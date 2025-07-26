@@ -115,3 +115,28 @@ jobs:
       - name: Verify course status was reset
         run: |
           curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .status == "Not Taken"'
+      
+      - name: Test /api/specialities endpoint
+        run: |
+          response=$(curl --fail -s http://localhost:8000/api/specialities)
+          echo "Specialities response: $response"
+          echo "$response" | jq -e '.S1 == "Αλγόριθμοι, Προγραμματισμός και Λογικής"'
+          echo "$response" | jq -e '.S6 == "Επεξεργασία Σήματος και Εικόνας"'
+      
+      - name: Test /api/specialities/{s_id} endpoint
+        run: |
+          response=$(curl --fail -s http://localhost:8000/api/specialities/S1)
+          echo "Courses for S1: $response"
+
+          echo "$response" | jq -e 'type == "array" and length > 0 and all(.[]; .S1 != null)'
+
+      - name: Test /api/courses/{course_name}/speciality/{s_no} endpoint
+        run: |
+          
+          response=$(curl --fail -s "http://localhost:8000/api/courses/Αριθμητική Ανάλυση/speciality/S1")
+          echo "Speciality info for 'Αριθμητική Ανάλυση': $response"
+          echo "$response" | jq -e '.value == "Υ"'
+
+          response=$(curl --fail -s "http://localhost:8000/api/courses/Αρχές Γλωσσών Προγραμματισμού/speciality/S2")
+          echo "Speciality info for 'Αρχές Γλωσσών Προγραμματισμού': $response"
+          echo "$response" | jq -e '.value == "B"'

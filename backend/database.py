@@ -291,6 +291,19 @@ def update_direction(profile_id, new_direction):
 # def update_current_semester(profile_id, new_semester):
 #     """Update the current semester of a user"""
 
+def get_courses_by_speciality(s_no):
+    """Return all courses belonging to a specific speciality"""
+    valid_columns = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6']
+    if s_no not in valid_columns:
+        raise ValueError(f"Invalid speciality: {s_no}. Must be one of {valid_columns}")
+    
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        query = f'SELECT * FROM courses WHERE {s_no} IS NOT NULL ORDER BY semester, id'
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+
 def get_completed_courses():
     """Return all courses with status 'Completed'"""
     return get_courses_by_status('Completed')

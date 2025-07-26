@@ -66,11 +66,11 @@ function Sidebar() {
 }
 
 // A smaller, more focused StatCard
-function SummaryCard({ title, value, icon: Icon, color, onClick, cta }) {
+function SummaryCard({ title, value, icon: Icon, color, onClick, cta, showArrow }) {
   const isClickable = !!onClick;
   return (
     <Card
-      className={`bg-gray-800 border-gray-700 text-white hover:border-blue-500/80 transition-colors duration-300 group ${
+      className={`relative bg-gray-800 border-gray-700 text-white hover:border-blue-500/80 transition-colors duration-300 group ${
         isClickable ? 'cursor-pointer' : ''
       }`}
       onClick={onClick}
@@ -83,6 +83,9 @@ function SummaryCard({ title, value, icon: Icon, color, onClick, cta }) {
         <div className="text-2xl font-bold">{value}</div>
         {cta && <p className="text-xs text-gray-400 mt-1">{cta}</p>}
       </CardContent>
+      {showArrow && (
+        <ArrowRight className="absolute bottom-3 right-3 h-5 w-5 text-gray-400 transition-opacity md:opacity-0 md:group-hover:opacity-100" />
+      )}
     </Card>
   );
 }
@@ -151,6 +154,7 @@ function Dashboard({ courses }) {
           color="text-yellow-400"
           cta="Ready for future semesters"
           onClick={() => navigate('/plan-courses')}
+          showArrow={true}
         />
         <SummaryCard
           title="Degree Requirements"
@@ -159,6 +163,7 @@ function Dashboard({ courses }) {
           color="text-purple-400"
           cta="View your progress"
           onClick={() => navigate('/degree-requirements')}
+          showArrow={true}
         />
       </section>
 

@@ -29,7 +29,6 @@ function DegreeRequirements() {
     { value: 'CET', label: 'Computer Engineering & Telecommunications (CET)' },
   ];
 
-  // Remove the hardcoded specialityNames object and replace with useEffect
   useEffect(() => {
     fetch('/api/specialities')
       .then((res) => res.json())
@@ -62,7 +61,7 @@ function DegreeRequirements() {
   };
 
   // Move these functions BEFORE the useEffect that calls them
-  const getDirectionCourses = async (direction) => {
+  const getDirectionCourses = (direction) => {
     if (!direction) return [];
 
     try {
@@ -71,61 +70,29 @@ function DegreeRequirements() {
       // Get all direction courses (ΚΜ type)
       const directionCourses = courses.filter((c) => c.type === 'ΚΜ');
 
-      // Check which ones belong to the direction's specialities
-      const directionCoursesPromises = directionCourses.map(async (course) => {
-        try {
-          // Check if course belongs to any of the direction's specialities
-          const specialityPromises = specialities.map(async (spec) => {
-            const response = await fetch(
-              `/api/courses/${encodeURIComponent(course.name)}/speciality/${spec}`
-            );
-            const data = await response.json();
-            return data.value ? true : false;
-          });
-
-          const hasAnySpeciality = await Promise.all(specialityPromises);
-          const belongsToDirection = hasAnySpeciality.some(Boolean);
-
-          return belongsToDirection ? course : null;
-        } catch (error) {
-          console.error(`Error checking direction for ${course.name}:`, error);
-          return null;
-        }
+      // Check which ones belong to the direction's specialities by inspecting the course object
+      const results = directionCourses.filter((course) => {
+        const belongsToDirection = specialities.some((spec) => course[spec] != null);
+        return belongsToDirection;
       });
 
-      const results = await Promise.all(directionCoursesPromises);
-      return results.filter((course) => course !== null);
+      return results;
     } catch (error) {
       console.error('Error getting direction courses:', error);
       return [];
     }
   };
 
-  const calculateSpecialityProgress = async (specialityColumn) => {
+  const calculateSpecialityProgress = (specialityColumn) => {
     try {
-      // Get all courses that belong to this speciality
-      const specialityCoursesPromises = courses.map(async (course) => {
-        try {
-          const response = await fetch(
-            `/api/courses/${encodeURIComponent(course.name)}/speciality/${specialityColumn}`
-          );
-          const data = await response.json();
+      // Get all courses that belong to this speciality from the local state
+      const specialityCourses = courses
+        .filter((course) => course[specialityColumn] != null)
+        .map((course) => ({
+          ...course,
+          specialityValue: course[specialityColumn],
+        }));
 
-          if (data.value) {
-            return {
-              ...course,
-              specialityValue: data.value,
-            };
-          }
-          return null;
-        } catch (error) {
-          console.error(`Error fetching speciality info for ${course.name}:`, error);
-          return null;
-        }
-      });
-
-      const specialityCoursesResults = await Promise.all(specialityCoursesPromises);
-      const specialityCourses = specialityCoursesResults.filter((course) => course !== null);
       const passedSpecialityCourses = specialityCourses.filter(
         (course) => course.status === 'Passed'
       );
@@ -199,9 +166,9 @@ function DegreeRequirements() {
   // Effect to calculate direction courses and speciality progress when data changes
   useEffect(() => {
     if (courses.length > 0 && userDirection) {
-      const calculateData = async () => {
+      const calculateData = () => {
         // Calculate direction courses
-        const dirCourses = await getDirectionCourses(userDirection);
+        const dirCourses = getDirectionCourses(userDirection);
         const completedDir = dirCourses.filter((c) => c.status === 'Passed');
 
         setDirectionCourses(dirCourses);
@@ -209,12 +176,11 @@ function DegreeRequirements() {
 
         // Calculate speciality progress
         const availableSpecs = getAvailableSpecialities(userDirection);
-        const progressPromises = availableSpecs.map(async (spec) => {
-          const progress = await calculateSpecialityProgress(spec);
+        const progressResults = availableSpecs.map((spec) => {
+          const progress = calculateSpecialityProgress(spec);
           return [spec, progress];
         });
 
-        const progressResults = await Promise.all(progressPromises);
         const progressObj = Object.fromEntries(progressResults);
         setSpecialityProgress(progressObj);
       };
@@ -512,7 +478,7 @@ function DegreeRequirements() {
 
   return (
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
-      <header className="flex items-center justify-between mb-10">
+      <header className="flex flex-col md:flex-col md:items-center md:justify-between gap-6 mb-10">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">Degree Requirements</h1>
           <p className="text-lg text-gray-400">
@@ -526,12 +492,12 @@ function DegreeRequirements() {
             </div>
           )}
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
+          <div className="flex items-center gap-2 flex-grow">
             <Settings className="h-5 w-5 text-gray-400" />
-            <span className="text-sm text-gray-400">Direction:</span>
+            <span className="text-sm text-gray-400 shrink-0">Direction:</span>
             <Select value={userDirection} onValueChange={handleDirectionChange}>
-              <SelectTrigger className="w-[250px] bg-gray-800 border-gray-700 text-white">
+              <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-white">
                 <SelectValue placeholder="Select direction" />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700">

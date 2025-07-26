@@ -17,3 +17,5 @@ const NavBar = ({ setShowProfile }) => {
 };
 
 export default NavBar;
+
+// It's not used somewhere.

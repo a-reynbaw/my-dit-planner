@@ -12,6 +12,7 @@ from database import (
     update_course_status,
     update_course_grade,
     update_course_planned_semester,
+    get_courses_by_speciality,
     DATABASE_PATH
 )
 import os
@@ -84,6 +85,29 @@ def api_get_direction():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading direction: {str(e)}")
     
+@app.get("/api/specialities")
+def api_get_speciality_names():
+    speciality_names = {
+        'S1': 'Αλγόριθμοι, Προγραμματισμός και Λογικής',
+        'S2': 'Επιστήμη Δεδομένων και Μηχανική Μάθηση',
+        'S3': 'Συστήματα Υπολογιστών και Λογισμικό',
+        'S4': 'Τηλεπικοινωνίες και Δίκτυα',
+        'S5': 'Ηλεκτρονική και Αρχιτεκτονική Υπολογιστών',
+        'S6': 'Επεξεργασία Σήματος και Εικόνας'
+    }
+    return speciality_names
+
+@app.get("/api/specialities/{s_id}")
+def api_get_courses_by_speciality(s_id: str):
+    """Get all courses for a specific speciality"""
+    try:
+        courses = get_courses_by_speciality(s_id)
+        return courses
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting courses for speciality {s_id}: {str(e)}")
+
 @app.get("/api/courses/{course_name}/speciality/{s_no}")
 def api_get_course_speciality_info(course_name: str, s_no: str):
     """Get speciality information for a specific course"""
