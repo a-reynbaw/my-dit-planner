@@ -133,10 +133,10 @@ jobs:
       - name: Test /api/courses/{course_name}/speciality/{s_no} endpoint
         run: |
           
-          response=$(curl --fail -s "http://localhost:8000/api/courses/Αριθμητική Ανάλυση/speciality/S1")
+          response=$(curl --fail -s "http://localhost:8000/api/courses/Αριθμητική%20Ανάλυση/speciality/S1")
           echo "Speciality info for 'Αριθμητική Ανάλυση': $response"
           echo "$response" | jq -e '.value == "Υ"'
 
-          response=$(curl --fail -s "http://localhost:8000/api/courses/Αρχές Γλωσσών Προγραμματισμού/speciality/S2")
+          response=$(curl --fail -s "http://localhost:8000/api/courses/Αρχές%20Γλωσσών%20Προγραμματισμού/speciality/S2")
           echo "Speciality info for 'Αρχές Γλωσσών Προγραμματισμού': $response"
           echo "$response" | jq -e '.value == "B"'
