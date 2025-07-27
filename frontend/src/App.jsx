@@ -13,6 +13,7 @@ import {
   ListTree,
   ArrowRight,
   AlertTriangle,
+  Loader2,
 } from 'lucide-react';
 
 import AllCourses from '@/pages/AllCourses';
@@ -21,6 +22,8 @@ import FailedCourses from '@/pages/FailedCourses';
 import CurrentCourses from '@/pages/CurrentCourses';
 import DegreeRequirements from '@/pages/DegreeRequirements';
 import Timetable from '@/pages/Timetable';
+import Maintenance from '@/pages/Maintenance';
+import NotFound from '@/pages/NotFound';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -271,13 +274,44 @@ function Dashboard({ courses }) {
 
 function App() {
   const [courses, setCourses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isBackendDown, setIsBackendDown] = useState(false);
 
   useEffect(() => {
-    fetch('/api/courses')
+    // Health check first
+    fetch('/api/health')
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Backend is not responding');
+        }
+        // If health check is ok, fetch courses
+        return fetch('/api/courses');
+      })
       .then((res) => res.json())
-      .then((data) => setCourses(data))
-      .catch((error) => console.error('Error fetching courses:', error));
+      .then((data) => {
+        setCourses(data);
+        setIsBackendDown(false);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch data:', error);
+        setIsBackendDown(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+        <Loader2 className="h-12 w-12 animate-spin text-blue-400" />
+      </div>
+    );
+  }
+
+  if (isBackendDown) {
+    return <Maintenance />;
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-900">
@@ -291,6 +325,7 @@ function App() {
           <Route path="/current-courses" element={<CurrentCourses />} />
           <Route path="/degree-requirements" element={<DegreeRequirements />} />
           <Route path="/timetable" element={<Timetable />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>
