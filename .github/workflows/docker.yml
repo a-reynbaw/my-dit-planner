@@ -28,7 +28,7 @@ jobs:
         run: curl -f -k https://localhost/
 
       - name: Check backend service
-        run: curl -f http://localhost:8000/health
+        run: curl -f http://localhost:8000/api/health
 
       - name: Stop and remove containers
         if: always()
