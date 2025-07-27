@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Destructure setShowProfile from the props object
 const NavBar = ({ setShowProfile }) => {
   return (

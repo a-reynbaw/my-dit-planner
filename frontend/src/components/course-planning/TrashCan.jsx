@@ -1,5 +1,4 @@
 import { useDroppable } from '@dnd-kit/core';
-import { Trash2 } from 'lucide-react';
 
 function TrashCan() {
   const { setNodeRef, isOver } = useDroppable({

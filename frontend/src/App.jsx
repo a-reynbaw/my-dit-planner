@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -19,7 +19,7 @@ import {
 import AllCourses from '@/pages/AllCourses';
 import PlanCourses from '@/pages/PlanCourses';
 import FailedCourses from '@/pages/FailedCourses';
-import CurrentCourses from '@/pages/CurrentCourses';
+// import CurrentCourses from '@/pages/CurrentCourses';
 import DegreeRequirements from '@/pages/DegreeRequirements';
 import Timetable from '@/pages/Timetable';
 import Maintenance from '@/pages/Maintenance';
