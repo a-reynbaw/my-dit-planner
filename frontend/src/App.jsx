@@ -14,16 +14,18 @@ import {
   ArrowRight,
   AlertTriangle,
   Loader2,
+  User,
 } from 'lucide-react';
 
 import AllCourses from '@/pages/AllCourses';
 import PlanCourses from '@/pages/PlanCourses';
 import FailedCourses from '@/pages/FailedCourses';
-// import CurrentCourses from '@/pages/CurrentCourses';
+import CurrentCourses from '@/pages/CurrentCourses';
 import DegreeRequirements from '@/pages/DegreeRequirements';
 import Timetable from '@/pages/Timetable';
 import Maintenance from '@/pages/Maintenance';
 import NotFound from '@/pages/NotFound';
+import Profile from '@/pages/Profile';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -42,6 +44,7 @@ function Sidebar() {
     { title: 'Timetable', path: '/timetable', icon: CalendarClock },
     { title: 'Current Courses', path: '/current-courses', icon: BookOpen },
     { title: 'Failed Courses', path: '/failed-courses', icon: XCircle },
+    { title: 'Profile', path: '/profile', icon: User },
   ];
 
   return (
@@ -325,6 +328,7 @@ function App() {
           <Route path="/current-courses" element={<CurrentCourses />} />
           <Route path="/degree-requirements" element={<DegreeRequirements />} />
           <Route path="/timetable" element={<Timetable />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

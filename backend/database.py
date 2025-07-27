@@ -253,12 +253,41 @@ def get_sdi_with_id(profile_id):
         cursor = conn.cursor()
         cursor.execute('SELECT sdi FROM profile WHERE id = ?', (profile_id,))
         return cursor.fetchall()
-
+    
+def get_first_name_with_id(profile_id):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT first_name FROM profile WHERE id = ?', (profile_id,))  # Changed from 'firstname'
+        return cursor.fetchall()
+    
+def get_last_name_with_id(profile_id):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT last_name FROM profile WHERE id = ?', (profile_id,))  # Changed from 'lastname'
+        return cursor.fetchall()
+    
+def get_current_semester_with_id(profile_id):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT current_semester FROM profile WHERE id = ?', (profile_id,))  # Fixed missing comma
+        return cursor.fetchall()
+    
 def get_direction_with_id(profile_id):
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT direction FROM profile WHERE id = ?', (profile_id,))  # Fixed missing comma
         return cursor.fetchall()
+    
+def update_profile_info_with_id(profile_id, clmn, new_data):
+    valid_columns = ['sdi', 'first_name', 'last_name', 'current_semester', 'direction']
+    if clmn not in valid_columns:
+        raise ValueError(f"Invalid column: {clmn}. Must be one of {valid_columns}")
+    
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        query = f'UPDATE profile SET {clmn} = ? WHERE id = ?'  # Add WHERE clause
+        cursor.execute(query, (new_data, profile_id))
+        conn.commit()  # Add commit
 
 def update_course_status(course_id, new_status):
     """Update the status of a course"""
