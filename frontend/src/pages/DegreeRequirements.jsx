@@ -62,7 +62,7 @@ function DegreeRequirements() {
         if (c.type !== 'ΕΥΜ') {
           return false;
         }
-        
+
         // Direction must match the user's selected direction (CS or CET)
         return c.direction === direction;
       });
@@ -390,7 +390,6 @@ function DegreeRequirements() {
       description: 'Choose 2 from: Πρακτική I/II or Πτυχιακή I/II',
     },
   ];
-
 
   const availableSpecialities = getAvailableSpecialities(userDirection);
   const completedSpecialities = availableSpecialities.filter(
