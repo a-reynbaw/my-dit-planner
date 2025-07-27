@@ -3,7 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 import { User, Save, Home, Edit3, Check, X } from 'lucide-react';
 
 function Profile() {
@@ -13,7 +19,7 @@ function Profile() {
     first_name: '',
     last_name: '',
     current_semester: '',
-    direction: ''
+    direction: '',
   });
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -31,7 +37,7 @@ function Profile() {
   // Semester options (1-8)
   const semesters = Array.from({ length: 8 }, (_, i) => ({
     value: i + 1,
-    label: `Semester ${i + 1}`
+    label: `Semester ${i + 1}`,
   }));
 
   useEffect(() => {
@@ -46,7 +52,7 @@ function Profile() {
         throw new Error('Failed to fetch profile');
       }
       const data = await response.json();
-      
+
       // Handle null values from backend by converting to empty strings or appropriate defaults
       const profileData = {
         id: data.id,
@@ -54,9 +60,9 @@ function Profile() {
         first_name: data.first_name || '',
         last_name: data.last_name || '',
         current_semester: data.current_semester || '',
-        direction: data.direction || ''
+        direction: data.direction || '',
       };
-      
+
       setProfile(profileData);
       setEditedProfile(profileData);
     } catch (error) {
@@ -100,8 +106,10 @@ function Profile() {
         sdi: editedProfile.sdi ? parseInt(editedProfile.sdi) : null,
         first_name: editedProfile.first_name || null,
         last_name: editedProfile.last_name || null,
-        current_semester: editedProfile.current_semester ? parseInt(editedProfile.current_semester) : null,
-        direction: editedProfile.direction || null
+        current_semester: editedProfile.current_semester
+          ? parseInt(editedProfile.current_semester)
+          : null,
+        direction: editedProfile.direction || null,
       };
 
       const response = await fetch('/api/profile', {
@@ -118,7 +126,7 @@ function Profile() {
       }
 
       const updatedProfile = await response.json();
-      
+
       // Convert null values back to empty strings for the UI
       const uiProfile = {
         id: updatedProfile.id,
@@ -126,9 +134,9 @@ function Profile() {
         first_name: updatedProfile.first_name || '',
         last_name: updatedProfile.last_name || '',
         current_semester: updatedProfile.current_semester || '',
-        direction: updatedProfile.direction || ''
+        direction: updatedProfile.direction || '',
       };
-      
+
       setProfile(uiProfile);
       setEditing(false);
     } catch (error) {
@@ -140,9 +148,9 @@ function Profile() {
   };
 
   const handleInputChange = (field, value) => {
-    setEditedProfile(prev => ({
+    setEditedProfile((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -247,17 +255,13 @@ function Profile() {
                     placeholder="Enter 7-digit SDI"
                   />
                 ) : (
-                  <p className="text-lg font-semibold text-white">
-                    {profile.sdi || 'Not set'}
-                  </p>
+                  <p className="text-lg font-semibold text-white">{profile.sdi || 'Not set'}</p>
                 )}
               </div>
 
               {/* First Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  First Name
-                </label>
+                <label className="block text-sm font-medium text-gray-400 mb-2">First Name</label>
                 {editing ? (
                   <Input
                     value={editedProfile.first_name}
@@ -274,9 +278,7 @@ function Profile() {
 
               {/* Last Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Last Name
-                </label>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Last Name</label>
                 {editing ? (
                   <Input
                     value={editedProfile.last_name}
@@ -298,8 +300,10 @@ function Profile() {
                 </label>
                 {editing ? (
                   <Select
-                    value={editedProfile.current_semester?.toString() || ""}
-                    onValueChange={(value) => handleInputChange('current_semester', value ? parseInt(value) : '')}
+                    value={editedProfile.current_semester?.toString() || ''}
+                    onValueChange={(value) =>
+                      handleInputChange('current_semester', value ? parseInt(value) : '')
+                    }
                   >
                     <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                       <SelectValue placeholder="Select semester" />
@@ -353,7 +357,7 @@ function Profile() {
                   </Select>
                 ) : (
                   <p className="text-lg font-semibold text-white">
-                    {directions.find(d => d.value === profile.direction)?.label || 'Not selected'}
+                    {directions.find((d) => d.value === profile.direction)?.label || 'Not selected'}
                   </p>
                 )}
                 {!editing && (
@@ -372,19 +376,17 @@ function Profile() {
                   <div>
                     <span className="text-gray-400">Full Name:</span>
                     <span className="text-white ml-2 font-medium">
-                      {profile.first_name && profile.last_name 
+                      {profile.first_name && profile.last_name
                         ? `${profile.first_name} ${profile.last_name}`
-                        : 'Not complete'
-                      }
+                        : 'Not complete'}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-400">Progress:</span>
                     <span className="text-blue-400 ml-2 font-medium">
-                      {profile.current_semester 
+                      {profile.current_semester
                         ? `Semester ${profile.current_semester}/8`
-                        : 'Not set'
-                      }
+                        : 'Not set'}
                     </span>
                   </div>
                   <div>
@@ -402,7 +404,8 @@ function Profile() {
         {/* Additional Info */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-400">
-            Update your profile information to get personalized course recommendations and track your progress accurately.
+            Update your profile information to get personalized course recommendations and track
+            your progress accurately.
           </p>
         </div>
       </div>
