@@ -67,16 +67,25 @@ function DegreeRequirements() {
     try {
       const specialities = direction === 'CS' ? ['S1', 'S2', 'S3'] : ['S4', 'S5', 'S6'];
 
-      // Get all direction courses (ΚΜ type)
-      const directionCourses = courses.filter((c) => c.type === 'ΚΜ');
-
-      // Check which ones belong to the direction's specialities by inspecting the course object
-      const results = directionCourses.filter((course) => {
-        const belongsToDirection = specialities.some((spec) => course[spec] != null);
-        return belongsToDirection;
+      // Get all courses that can be direction courses:
+      // 1. Type 'ΕΥΜ' (Elective Compulsory) with speciality markers for the direction
+      // 2. Type 'ΕΥΜ' (Elective Compulsory) with direction 'COM' (Common)
+      const directionCourses = courses.filter((c) => {
+        // All direction courses are type 'ΕΥΜ'
+        if (c.type !== 'ΕΥΜ') {
+          return false;
+        }
+        
+        // Case 1: ΕΥΜ courses with speciality markers for the direction
+        const belongsToDirection = specialities.some((spec) => c[spec] != null);
+        
+        // Case 2: ΕΥΜ courses with COM direction (common to all directions)
+        const isCommonCourse = c.direction === 'COM';
+        
+        return belongsToDirection || isCommonCourse;
       });
 
-      return results;
+      return directionCourses;
     } catch (error) {
       console.error('Error getting direction courses:', error);
       return [];
@@ -97,9 +106,9 @@ function DegreeRequirements() {
         (course) => course.status === 'Passed'
       );
 
-      // Count compulsory direction courses (ΚΜ type with 'Υ' value)
+      // Count compulsory direction courses (ΕΥΜ type with 'Υ' value)
       const compulsorySpeciality = passedSpecialityCourses.filter(
-        (course) => course.type === 'ΚΜ' && course.specialityValue === 'Υ'
+        (course) => course.type === 'ΕΥΜ' && course.specialityValue === 'Υ'
       );
 
       // Count basic courses (any type with 'B' value)
@@ -372,7 +381,7 @@ function DegreeRequirements() {
       description: '3 general education courses required',
     },
     {
-      title: 'Direction Courses (ΚΜ)',
+      title: 'Direction Courses (ΕΥΜ)', // Change from ΚΜ to ΕΥΜ
       completed: completedDirection.length,
       total: 4,
       progress: directionProgress,
@@ -400,18 +409,18 @@ function DegreeRequirements() {
     },
   ];
 
-  // Add CS-specific requirement if CS is selected
-  if (userDirection === 'CS') {
-    requirements.splice(4, 0, {
-      title: 'CS Required Courses',
-      completed: csRequiredCompleted,
-      total: 3,
-      progress: csRequiredProgress,
-      icon: Target,
-      color: 'text-red-400',
-      description: 'CS direction requires 3 specific courses',
-    });
-  }
+  // // Add CS-specific requirement if CS is selected
+  // if (userDirection === 'CS') {
+  //   requirements.splice(4, 0, {
+  //     title: 'CS Required Courses',
+  //     completed: csRequiredCompleted,
+  //     total: 3,
+  //     progress: csRequiredProgress,
+  //     icon: Target,
+  //     color: 'text-red-400',
+  //     description: 'CS direction requires 3 specific courses',
+  //   });
+  // }
 
   // Speciality calculations
   // const calculateSpecialityProgress = (specialityColumn) => {
@@ -772,7 +781,7 @@ function DegreeRequirements() {
             <div className="mb-4">
               <p className="text-sm text-gray-400 mb-2">
                 You can obtain up to 2 out of 3 available specialities for your direction. Each
-                speciality requires 2 compulsory direction courses (ΚΜ) and 4 basic courses.
+                speciality requires 2 compulsory direction courses (ΕΥΜ) and 4 basic courses.
               </p>
             </div>
 
@@ -826,7 +835,7 @@ function DegreeRequirements() {
                       {/* Compulsory Direction Courses Progress */}
                       <div>
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
-                          <span>Direction Courses (ΚΜ)</span>
+                          <span>Direction Courses (ΕΥΜ)</span>
                           <span>
                             {progress.compulsoryCompleted}/{progress.compulsoryTotal}
                           </span>
