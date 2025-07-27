@@ -79,3 +79,4 @@ sudo docker-compose down -v --rmi all
 - [ ] add free courses
 - [ ] make the direction selection box a little wider (Degree Requirements)
 - [ ] add endpoints for S1,...,S6
+- [ ] look for prerequisets h opws sto diaolo legontai

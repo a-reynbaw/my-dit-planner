@@ -40,16 +40,6 @@ function DegreeRequirements() {
       });
   }, []);
 
-  // Define speciality names
-  // const specialityNames = {
-  //   S1: 'Αλγόριθμοι, Προγραμματισμός και Λογικής',
-  //   S2: 'Επιστήμη Δεδομένων και Μηχανική Μάθηση',
-  //   S3: 'Συστήματα Υπολογιστών και Λογισμικό',
-  //   S4: 'Τηλεπικοινωνίες και Δίκτυα',
-  //   S5: 'Ηλεκτρονική και Αρχιτεκτονική Υπολογιστών',
-  //   S6: 'Επεξεργασία Σήματος και Εικόνας'
-  // };
-
   // Add the getAvailableSpecialities function
   const getAvailableSpecialities = (direction) => {
     if (direction === 'CS') {
@@ -65,24 +55,16 @@ function DegreeRequirements() {
     if (!direction) return [];
 
     try {
-      const specialities = direction === 'CS' ? ['S1', 'S2', 'S3'] : ['S4', 'S5', 'S6'];
-
       // Get all courses that can be direction courses:
-      // 1. Type 'ΕΥΜ' (Elective Compulsory) with speciality markers for the direction
-      // 2. Type 'ΕΥΜ' (Elective Compulsory) with direction 'COM' (Common)
+      // Type 'ΕΥΜ' (Elective Compulsory) with direction matching the user's direction
       const directionCourses = courses.filter((c) => {
-        // All direction courses are type 'ΕΥΜ'
+        // Must be type 'ΕΥΜ'
         if (c.type !== 'ΕΥΜ') {
           return false;
         }
-
-        // Case 1: ΕΥΜ courses with speciality markers for the direction
-        const belongsToDirection = specialities.some((spec) => c[spec] != null);
-
-        // Case 2: ΕΥΜ courses with COM direction (common to all directions)
-        const isCommonCourse = c.direction === 'COM';
-
-        return belongsToDirection || isCommonCourse;
+        
+        // Direction must match the user's selected direction (CS or CET)
+        return c.direction === direction;
       });
 
       return directionCourses;
@@ -409,76 +391,6 @@ function DegreeRequirements() {
     },
   ];
 
-  // // Add CS-specific requirement if CS is selected
-  // if (userDirection === 'CS') {
-  //   requirements.splice(4, 0, {
-  //     title: 'CS Required Courses',
-  //     completed: csRequiredCompleted,
-  //     total: 3,
-  //     progress: csRequiredProgress,
-  //     icon: Target,
-  //     color: 'text-red-400',
-  //     description: 'CS direction requires 3 specific courses',
-  //   });
-  // }
-
-  // Speciality calculations
-  // const calculateSpecialityProgress = (specialityColumn) => {
-  //   const specialityCourses = courses.filter((course) => course[specialityColumn]);
-  //   const passedSpecialityCourses = specialityCourses.filter(
-  //     (course) => course.status === 'Passed'
-  //   );
-
-  //   // Count compulsory direction courses (ΚΜ type with 'Υ' value)
-  //   const compulsorySpeciality = passedSpecialityCourses.filter(
-  //     (course) => course.type === 'ΚΜ' && course[specialityColumn] === 'Υ'
-  //   );
-
-  //   // Count basic courses (any type with 'B' value)
-  //   const basicSpeciality = passedSpecialityCourses.filter(
-  //     (course) => course[specialityColumn] === 'B'
-  //   );
-
-  //   const compulsoryProgress = Math.min(compulsorySpeciality.length / 2, 1) * 100; // 2/4 required
-  //   const basicProgress = Math.min(basicSpeciality.length / 4, 1) * 100; // 4/8 required
-
-  //   // Overall progress (both requirements must be met)
-  //   const overallProgress = Math.min(compulsoryProgress, basicProgress);
-  //   const isCompleted = compulsorySpeciality.length >= 2 && basicSpeciality.length >= 4;
-
-  //   return {
-  //     compulsoryCompleted: compulsorySpeciality.length,
-  //     compulsoryTotal: 2,
-  //     compulsoryProgress,
-  //     basicCompleted: basicSpeciality.length,
-  //     basicTotal: 4,
-  //     basicProgress,
-  //     overallProgress,
-  //     isCompleted,
-  //     totalCourses: passedSpecialityCourses.length,
-  //     availableCourses: specialityCourses.length,
-  //   };
-  // };
-
-  // Define speciality names
-  // const specialityNames = {
-  //   S1: 'Αλγόριθμοι, Προγραμματισμός και Λογικής',
-  //   S2: 'Επιστήμη Δεδομένων και Μηχανική Μάθηση',
-  //   S3: 'Συστήματα Υπολογιστών και Λογισμικό',
-  //   S4: 'Τηλεπικοινωνίες και Δίκτυα',
-  //   S5: 'Ηλεκτρονική και Αρχιτεκτονική Υπολογιστών',
-  //   S6: 'Επεξεργασία Σήματος και Εικόνας',
-  // };
-
-  // Get available specialities based on direction
-  // const getAvailableSpecialities = (direction) => {
-  //   if (direction === 'CS') {
-  //     return ['S1', 'S2', 'S3'];
-  //   } else if (direction === 'CET') {
-  //     return ['S4', 'S5', 'S6'];
-  //   }
-  //   return [];
-  // };
 
   const availableSpecialities = getAvailableSpecialities(userDirection);
   const completedSpecialities = availableSpecialities.filter(
@@ -587,7 +499,7 @@ function DegreeRequirements() {
                     csRequiredCompleted >= 3 ? 'text-green-400' : 'text-orange-400'
                   }`}
                 >
-                  {csRequiredCompleted}/3 required courses completed
+                  {/* {csRequiredCompleted}/3 required courses completed */}
                   {csRequiredCompleted >= 3 ? ' ✓' : ''}
                 </span>
               </div>
