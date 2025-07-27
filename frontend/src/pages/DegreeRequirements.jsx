@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Target, CheckCircle2, XCircle, Clock, Settings, BookOpen } from 'lucide-react';
+import {
+  Home,
+  Target,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Settings,
+  BookOpen,
+  GraduationCap,
+  ListChecks,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -11,6 +21,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+
+function SummaryCard({ title, value, icon: Icon, color }) {
+  return (
+    <Card className="bg-gray-800 border-gray-700 text-white">
+      <CardContent className="p-4 flex items-center">
+        <Icon className={`h-8 w-8 mr-4 ${color}`} />
+        <div>
+          <p className="text-sm text-gray-400">{title}</p>
+          <p className="text-xl font-bold">{value}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function RequirementCard({
+  title,
+  description,
+  icon: Icon,
+  color,
+  completed,
+  total,
+  progress,
+  children,
+}) {
+  return (
+    <Card className="bg-gray-800 border-gray-700 text-white flex flex-col">
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-3">
+            <Icon className={`h-6 w-6 ${color}`} />
+            <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+          </div>
+          <Badge variant="secondary" className="font-mono">
+            {completed}/{total}
+          </Badge>
+        </div>
+        <p className="text-sm text-gray-400 pt-1">{description}</p>
+      </CardHeader>
+      <CardContent className="flex-grow flex flex-col justify-end">
+        {children && <div className="mb-4">{children}</div>}
+        <div className="space-y-1">
+          <Progress value={progress} className="h-2 bg-gray-700" />
+          <p className="text-xs text-gray-400 text-right">{progress.toFixed(0)}% Complete</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 function DegreeRequirements() {
   const navigate = useNavigate();
@@ -21,9 +81,8 @@ function DegreeRequirements() {
   const [specialityProgress, setSpecialityProgress] = useState({});
   const [directionCourses, setDirectionCourses] = useState([]);
   const [completedDirection, setCompletedDirection] = useState([]);
-  const [specialityNames, setSpecialityNames] = useState({}); // Change this line
+  const [specialityNames, setSpecialityNames] = useState({});
 
-  // Direction options
   const directions = [
     { value: 'CS', label: 'Computer Science (CS)' },
     { value: 'CET', label: 'Computer Engineering & Telecommunications (CET)' },
@@ -33,110 +92,8 @@ function DegreeRequirements() {
     fetch('/api/specialities')
       .then((res) => res.json())
       .then((data) => setSpecialityNames(data))
-      .catch((error) => {
-        console.error('Error fetching speciality names:', error);
-        // Fallback to prevent crashes
-        setSpecialityNames({});
-      });
-  }, []);
+      .catch((error) => console.error('Error fetching speciality names:', error));
 
-  // Add the getAvailableSpecialities function
-  const getAvailableSpecialities = (direction) => {
-    if (direction === 'CS') {
-      return ['S1', 'S2', 'S3'];
-    } else if (direction === 'CET') {
-      return ['S4', 'S5', 'S6'];
-    }
-    return [];
-  };
-
-  // Move these functions BEFORE the useEffect that calls them
-  const getDirectionCourses = (direction) => {
-    if (!direction) return [];
-
-    try {
-      // Get all courses that can be direction courses:
-      // Type 'ΕΥΜ' (Elective Compulsory) with direction matching the user's direction
-      const directionCourses = courses.filter((c) => {
-        // Must be type 'ΕΥΜ'
-        if (c.type !== 'ΕΥΜ') {
-          return false;
-        }
-
-        // Direction must match the user's selected direction (CS or CET)
-        return c.direction === direction;
-      });
-
-      return directionCourses;
-    } catch (error) {
-      console.error('Error getting direction courses:', error);
-      return [];
-    }
-  };
-
-  const calculateSpecialityProgress = (specialityColumn) => {
-    try {
-      // Get all courses that belong to this speciality from the local state
-      const specialityCourses = courses
-        .filter((course) => course[specialityColumn] != null)
-        .map((course) => ({
-          ...course,
-          specialityValue: course[specialityColumn],
-        }));
-
-      const passedSpecialityCourses = specialityCourses.filter(
-        (course) => course.status === 'Passed'
-      );
-
-      // Count compulsory direction courses (ΕΥΜ type with 'Υ' value)
-      const compulsorySpeciality = passedSpecialityCourses.filter(
-        (course) => course.type === 'ΕΥΜ' && course.specialityValue === 'Υ'
-      );
-
-      // Count basic courses (any type with 'B' value)
-      const basicSpeciality = passedSpecialityCourses.filter(
-        (course) => course.specialityValue === 'B'
-      );
-
-      const compulsoryProgress = Math.min(compulsorySpeciality.length / 2, 1) * 100; // 2/4 required
-      const basicProgress = Math.min(basicSpeciality.length / 4, 1) * 100; // 4/8 required
-
-      // Overall progress (both requirements must be met)
-      const overallProgress = Math.min(compulsoryProgress, basicProgress);
-      const isCompleted = compulsorySpeciality.length >= 2 && basicSpeciality.length >= 4;
-
-      return {
-        compulsoryCompleted: compulsorySpeciality.length,
-        compulsoryTotal: 2,
-        compulsoryProgress,
-        basicCompleted: basicSpeciality.length,
-        basicTotal: 4,
-        basicProgress,
-        overallProgress,
-        isCompleted,
-        totalCourses: passedSpecialityCourses.length,
-        availableCourses: specialityCourses.length,
-      };
-    } catch (error) {
-      console.error(`Error calculating speciality progress for ${specialityColumn}:`, error);
-      return {
-        compulsoryCompleted: 0,
-        compulsoryTotal: 2,
-        compulsoryProgress: 0,
-        basicCompleted: 0,
-        basicTotal: 4,
-        basicProgress: 0,
-        overallProgress: 0,
-        isCompleted: false,
-        totalCourses: 0,
-        availableCourses: 0,
-      };
-    }
-  };
-
-  // NOW the useEffect that calls these functions
-  useEffect(() => {
-    // Fetch courses, SDI, and direction using separate endpoints
     Promise.all([
       fetch('/api/courses').then((res) => res.json()),
       fetch('/api/profile/sdi').then((res) => res.json()),
@@ -146,51 +103,59 @@ function DegreeRequirements() {
         setCourses(coursesData);
         setUserSDI(sdiData.sdi);
         setUserDirection(directionData.direction);
-        setLoading(false);
       })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
+      .catch((error) => console.error('Error fetching data:', error))
+      .finally(() => setLoading(false));
   }, []);
 
-  // Effect to calculate direction courses and speciality progress when data changes
+  const getAvailableSpecialities = (direction) => {
+    if (direction === 'CS') return ['S1', 'S2', 'S3'];
+    if (direction === 'CET') return ['S4', 'S5', 'S6'];
+    return [];
+  };
+
   useEffect(() => {
     if (courses.length > 0 && userDirection) {
-      const calculateData = () => {
-        // Calculate direction courses
-        const dirCourses = getDirectionCourses(userDirection);
-        const completedDir = dirCourses.filter((c) => c.status === 'Passed');
-
-        setDirectionCourses(dirCourses);
-        setCompletedDirection(completedDir);
-
-        // Calculate speciality progress
-        const availableSpecs = getAvailableSpecialities(userDirection);
-        const progressResults = availableSpecs.map((spec) => {
-          const progress = calculateSpecialityProgress(spec);
-          return [spec, progress];
-        });
-
-        const progressObj = Object.fromEntries(progressResults);
-        setSpecialityProgress(progressObj);
+      const getDirectionCourses = (direction) => {
+        if (!direction) return [];
+        return courses.filter((c) => c.type === 'ΕΥΜ' && c.direction === direction);
       };
 
-      calculateData();
+      const calculateSpecialityProgress = (specialityColumn) => {
+        const specialityCourses = courses.filter((c) => c[specialityColumn] != null);
+        const passed = specialityCourses.filter((c) => c.status === 'Passed');
+        const compulsory = passed.filter((c) => c.type === 'ΕΥΜ' && c[specialityColumn] === 'Υ');
+        const basic = passed.filter((c) => c[specialityColumn] === 'B');
+        const isCompleted = compulsory.length >= 2 && basic.length >= 4;
+        return {
+          compulsoryCompleted: compulsory.length,
+          compulsoryTotal: 2,
+          basicCompleted: basic.length,
+          basicTotal: 4,
+          isCompleted,
+        };
+      };
+
+      const dirCourses = getDirectionCourses(userDirection);
+      setDirectionCourses(dirCourses);
+      setCompletedDirection(dirCourses.filter((c) => c.status === 'Passed'));
+
+      const availableSpecs = getAvailableSpecialities(userDirection);
+      const progressResults = availableSpecs.map((spec) => [
+        spec,
+        calculateSpecialityProgress(spec),
+      ]);
+      setSpecialityProgress(Object.fromEntries(progressResults));
     }
   }, [courses, userDirection]);
 
   const handleDirectionChange = async (newDirection) => {
     try {
-      // Update direction in backend
       const response = await fetch('/api/profile/direction', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ direction: newDirection }),
       });
-
       if (response.ok) {
         setUserDirection(newDirection);
       } else {
@@ -203,30 +168,17 @@ function DegreeRequirements() {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
-        <div className="text-center py-10">
-          <p className="text-xl text-gray-400">Loading degree requirements...</p>
-        </div>
+      <div className="bg-gray-900 min-h-screen text-white font-sans p-8 text-center">
+        <p className="text-xl text-gray-400">Loading degree requirements...</p>
       </div>
     );
   }
 
-  // Show direction selection if no direction is set
   if (!userDirection) {
     return (
-      <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
+      <div className="bg-gray-900 min-h-screen text-white p-8">
         <header className="flex items-center justify-between mb-10">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight">Choose Your Direction</h1>
-            <p className="text-lg text-gray-400">
-              Please select your academic direction to view degree requirements
-            </p>
-            {userSDI && (
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-sm text-gray-400">SDI: {userSDI}</span>
-              </div>
-            )}
-          </div>
+          <h1 className="text-4xl font-bold tracking-tight">Choose Your Direction</h1>
           <Button
             variant="outline"
             size="icon"
@@ -236,45 +188,37 @@ function DegreeRequirements() {
             <Home className="h-5 w-5" />
           </Button>
         </header>
-
-        <Card className="bg-gray-800 border-gray-700 text-white max-w-2xl mx-auto">
+        <Card className="bg-gray-800 border-gray-700 max-w-2xl mx-auto">
           <CardHeader>
             <CardTitle className="text-center text-2xl text-blue-400">
-              Select Your Academic Direction
+              Select Academic Direction
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-gray-300 text-center">
-              Choose your direction to see personalized degree requirements and track your progress.
+              Choose your direction to see personalized degree requirements.
             </p>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {directions.map((direction) => (
+              {directions.map((dir) => (
                 <Card
-                  key={direction.value}
+                  key={dir.value}
                   className="bg-gray-700 border-gray-600 hover:border-blue-500 transition-colors cursor-pointer"
-                  onClick={() => handleDirectionChange(direction.value)}
+                  onClick={() => handleDirectionChange(dir.value)}
                 >
                   <CardContent className="p-6 text-center">
-                    <h3 className="text-lg font-semibold text-white mb-2">{direction.label}</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">{dir.label}</h3>
                     <Button
                       className="mt-4 bg-blue-600 hover:bg-blue-700"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDirectionChange(direction.value);
+                        handleDirectionChange(dir.value);
                       }}
                     >
-                      Select {direction.value}
+                      Select {dir.value}
                     </Button>
                   </CardContent>
                 </Card>
               ))}
-            </div>
-
-            <div className="text-center">
-              <p className="text-sm text-gray-400">
-                You can change your direction later in the settings.
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -282,157 +226,168 @@ function DegreeRequirements() {
     );
   }
 
-  // Calculate degree requirements (update to use state values)
-  const totalECTS = 240;
+  // --- CALCULATIONS ---
   const passedCourses = courses.filter((c) => c.status === 'Passed');
   const completedECTS = passedCourses.reduce((sum, course) => sum + course.ects, 0);
 
-  // Course type requirements
   const compulsoryCourses = courses.filter((c) => c.type === 'ΥΜ');
   const completedCompulsory = compulsoryCourses.filter((c) => c.status === 'Passed');
-  const compulsoryProgress = (completedCompulsory.length / 18) * 100; // 18 compulsory required
 
-  const generalEducationCourses = courses.filter((c) => c.type === 'ΓΠ');
-  const completedGE = generalEducationCourses.filter((c) => c.status === 'Passed');
-  const geProgress = (completedGE.length / 3) * 100; // 3 general education required
+  const geCourses = courses.filter((c) => c.type === 'ΓΠ');
+  const completedGE = geCourses.filter((c) => c.status === 'Passed');
 
-  // Use state values for direction courses
-  const directionProgress = (completedDirection.length / 4) * 100; // 4 direction courses required
+  const projectCourses = courses.filter((c) => c.name.startsWith('Ανάπτυξη'));
+  const completedProject = projectCourses.filter((c) => c.status === 'Passed');
 
-  // Direction project (should be a specific course type or identifiable by name)
-  const directionProjectCourses = courses.filter((c) => c.name.startsWith('Ανάπτυξη'));
-  const completedDirectionProject = directionProjectCourses.filter((c) => c.status === 'Passed');
-  const directionProjectProgress = (completedDirectionProject.length / 1) * 100; // 1 direction project required
-
-  // Final courses: Πρακτική I, Πρακτική IΙ, Πτυχιακή Ι, Πτυχιακή ΙΙ
-  const finalCourses = courses.filter(
-    (c) => c.name.includes('Πρακτική') || c.name.includes('Πτυχιακή')
+  const finalCourses = courses.filter((c) =>
+    ['Πρακτική I', 'Πρακτική IΙ', 'Πτυχιακή Ι', 'Πτυχιακή ΙΙ'].some((name) => c.name.includes(name))
   );
-  const completedFinalCourses = finalCourses.filter((c) => c.status === 'Passed');
-  const finalCoursesProgress = (completedFinalCourses.length / 2) * 100; // 2 out of 4 required
+  const completedFinal = finalCourses.filter((c) => c.status === 'Passed');
 
-  // CS-specific required courses (restrictions on direction courses)
   const csRequiredCourses = [
     'Θεωρία Υπολογισμού',
     'Υλοποίηση Συστημάτων Βάσεων Δεδομένων',
     'Αριθμητική Ανάλυση',
   ];
-
-  // Check CS-specific requirements (these are just restrictions, not additional requirements)
   const csRequiredCompleted =
     userDirection === 'CS'
-      ? csRequiredCourses.filter((courseName) =>
-          completedDirection.some((course) => course.name === courseName)
-        ).length
-      : 0;
+      ? completedDirection.filter((c) => csRequiredCourses.includes(c.name))
+      : [];
 
-  const csRequiredProgress = userDirection === 'CS' ? (csRequiredCompleted / 3) * 100 : 100;
-
-  // ECTS requirements
-  const ectsProgress = (completedECTS / totalECTS) * 100;
+  const availableSpecialities = getAvailableSpecialities(userDirection);
+  const completedSpecialities = availableSpecialities.filter(
+    (spec) => specialityProgress[spec]?.isCompleted
+  );
 
   const selectedDirectionLabel =
     directions.find((d) => d.value === userDirection)?.label || userDirection;
 
   const requirements = [
     {
-      title: 'Total ECTS',
-      completed: completedECTS,
-      total: totalECTS,
-      progress: ectsProgress,
-      icon: Target,
-      color: 'text-blue-400',
-      description: 'Complete 240 ECTS to graduate',
-    },
-    {
       title: 'Compulsory Courses (ΥΜ)',
+      description: 'Core curriculum courses required for all students.',
+      icon: ListChecks,
+      color: 'text-green-400',
       completed: completedCompulsory.length,
       total: 18,
-      progress: compulsoryProgress,
-      icon: CheckCircle2,
-      color: 'text-green-400',
-      description: '18 compulsory courses required for graduation',
     },
     {
       title: 'General Education (ΓΠ)',
+      description: 'Courses from a broad range of subjects.',
+      icon: ListChecks,
+      color: 'text-yellow-400',
       completed: completedGE.length,
       total: 3,
-      progress: geProgress,
-      icon: CheckCircle2,
-      color: 'text-yellow-400',
-      description: '3 general education courses required',
     },
     {
-      title: 'Direction Courses (ΕΥΜ)', // Change from ΚΜ to ΕΥΜ
-      completed: completedDirection.length,
-      total: 4,
-      progress: directionProgress,
+      title: 'Direction Courses (ΕΥΜ)',
+      description: `4 elective courses specific to the ${selectedDirectionLabel} direction.`,
       icon: Target,
       color: 'text-orange-400',
-      description: `4 direction courses required for ${selectedDirectionLabel}`,
+      completed: completedDirection.length,
+      total: 4,
+      children: userDirection === 'CS' && (
+        <div className="mt-2 p-3 bg-gray-700/50 rounded-lg text-xs">
+          <p className="font-semibold text-gray-300 mb-2">CS Direction Constraint:</p>
+          <ul className="space-y-1.5">
+            {csRequiredCourses.map((name) => (
+              <li key={name} className="flex items-center gap-2">
+                {csRequiredCompleted.some((c) => c.name === name) ? (
+                  <CheckCircle2 className="h-4 w-4 text-green-400" />
+                ) : (
+                  <XCircle className="h-4 w-4 text-red-400" />
+                )}
+                <span
+                  className={
+                    csRequiredCompleted.some((c) => c.name === name)
+                      ? 'text-gray-300'
+                      : 'text-gray-400'
+                  }
+                >
+                  {name}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p
+            className={`mt-2 text-right font-medium ${csRequiredCompleted.length >= 3 ? 'text-green-400' : 'text-orange-400'}`}
+          >
+            {csRequiredCompleted.length}/3 met
+          </p>
+        </div>
+      ),
     },
     {
       title: 'Direction Project',
-      completed: completedDirectionProject.length,
-      total: 1,
-      progress: directionProjectProgress,
+      description: 'A semester-long software development project.',
       icon: BookOpen,
       color: 'text-purple-400',
-      description: '1 direction project required',
+      completed: completedProject.length,
+      total: 1,
     },
     {
       title: 'Final Courses',
-      completed: completedFinalCourses.length,
-      total: 2,
-      progress: finalCoursesProgress,
+      description: 'Choose 2 from Internship (I/II) or Thesis (I/II).',
       icon: Clock,
       color: 'text-cyan-400',
-      description: 'Choose 2 from: Πρακτική I/II or Πτυχιακή I/II',
+      completed: completedFinal.length,
+      total: 2,
+      children: (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {['Πρακτική I', 'Πρακτική IΙ', 'Πτυχιακή Ι', 'Πτυχιακή ΙΙ'].map((name) => {
+            const isCompleted = completedFinal.some((c) => c.name.includes(name));
+            return (
+              <Badge
+                key={name}
+                variant={isCompleted ? 'default' : 'secondary'}
+                className={isCompleted ? 'bg-green-600' : ''}
+              >
+                {name}
+              </Badge>
+            );
+          })}
+        </div>
+      ),
+    },
+    {
+      title: 'Specialities',
+      description: 'Complete 2 of 3 specialities for your direction (optional).',
+      icon: GraduationCap,
+      color: 'text-pink-400',
+      completed: completedSpecialities.length,
+      total: 2,
+      children: (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {completedSpecialities.map((spec) => (
+            <Badge key={spec} variant="default" className="bg-pink-600">
+              {specialityNames[spec] || spec}
+            </Badge>
+          ))}
+        </div>
+      ),
     },
   ];
 
-  const availableSpecialities = getAvailableSpecialities(userDirection);
-  const completedSpecialities = availableSpecialities.filter(
-    (spec) => specialityProgress[spec]?.isCompleted === true
-  );
-
   return (
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
-      <header className="flex flex-col md:flex-col md:items-center md:justify-between gap-6 mb-10">
+      <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">Degree Requirements</h1>
-          <p className="text-lg text-gray-400">
-            Track your progress towards graduation requirements
-          </p>
-          {userSDI && (
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-sm text-gray-400">
-                SDI: {userSDI} • Direction: {selectedDirectionLabel}
-              </span>
-            </div>
-          )}
+          <p className="text-lg text-gray-400">Your progress towards graduation.</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
-          <div className="flex items-center gap-2 flex-grow">
-            <Settings className="h-5 w-5 text-gray-400" />
-            <span className="text-sm text-gray-400 shrink-0">Direction:</span>
-            <Select value={userDirection} onValueChange={handleDirectionChange}>
-              <SelectTrigger className="w-full bg-gray-800 border-gray-700 text-white">
-                <SelectValue placeholder="Select direction" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
-                {directions.map((direction) => (
-                  <SelectItem
-                    key={direction.value}
-                    value={direction.value}
-                    className="text-white hover:bg-gray-700"
-                  >
-                    {direction.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="flex items-center gap-4">
+          <Select value={userDirection} onValueChange={handleDirectionChange}>
+            <SelectTrigger className="w-[280px] bg-gray-800 border-gray-700 text-white">
+              <SelectValue placeholder="Select direction" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-gray-700 text-white">
+              {directions.map((dir) => (
+                <SelectItem key={dir.value} value={dir.value} className="focus:bg-gray-700">
+                  {dir.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             variant="outline"
             size="icon"
@@ -444,408 +399,124 @@ function DegreeRequirements() {
         </div>
       </header>
 
-      {/* Direction-specific info card */}
-      <Card className="bg-gray-800 border-gray-700 text-white mb-6">
-        <CardHeader>
-          <CardTitle className="text-orange-400 flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            {selectedDirectionLabel} Requirements
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-400 mb-2">Direction:</p>
-              <p className="text-lg font-semibold text-orange-400">{selectedDirectionLabel}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-400 mb-2">Direction Courses Progress:</p>
-              <p className="text-lg font-semibold text-green-400">
-                {completedDirection.length} / 4 completed
-              </p>
-            </div>
-          </div>
+      {/* High-Level Summary */}
+      <section className="mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <SummaryCard
+          title="Overall ECTS"
+          value={`${completedECTS} / 240`}
+          icon={Target}
+          color="text-blue-400"
+        />
+        <SummaryCard
+          title="Direction"
+          value={selectedDirectionLabel}
+          icon={Settings}
+          color="text-orange-400"
+        />
+        <SummaryCard
+          title="Courses Passed"
+          value={passedCourses.length}
+          icon={CheckCircle2}
+          color="text-green-400"
+        />
+        <SummaryCard
+          title="Specialities"
+          value={`${completedSpecialities.length} / 2`}
+          icon={GraduationCap}
+          color="text-pink-400"
+        />
+      </section>
 
-          {userDirection === 'CS' && (
-            <div className="mt-4">
-              <p className="text-sm text-gray-400 mb-2">
-                CS Direction Restrictions (3 of your 4 direction courses must include):
-              </p>
-              <div className="space-y-2">
-                {csRequiredCourses.map((courseName, index) => {
-                  const isCompleted = completedDirection.some(
-                    (course) => course.name === courseName
-                  );
-                  return (
-                    <div key={index} className="flex items-center gap-2">
-                      {isCompleted ? (
-                        <CheckCircle2 className="h-4 w-4 text-green-400" />
-                      ) : (
-                        <XCircle className="h-4 w-4 text-red-400" />
-                      )}
-                      <span
-                        className={`text-sm ${isCompleted ? 'text-green-400' : 'text-gray-300'}`}
-                      >
-                        {courseName}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="mt-2">
-                <span
-                  className={`text-sm ${
-                    csRequiredCompleted >= 3 ? 'text-green-400' : 'text-orange-400'
-                  }`}
-                >
-                  {/* {csRequiredCompleted}/3 required courses completed */}
-                  {csRequiredCompleted >= 3 ? ' ✓' : ''}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {userDirection === 'CET' && (
-            <div className="mt-4">
-              <p className="text-sm text-green-400">
-                ✓ CET direction has no restrictions on direction course selection
-              </p>
-            </div>
-          )}
-
-          <div className="mt-4">
-            <p className="text-sm text-gray-400 mb-2">Final Courses (choose 2):</p>
-            <div className="flex flex-wrap gap-2">
-              {['Πρακτική I', 'Πρακτική IΙ', 'Πτυχιακή Ι', 'Πτυχιακή ΙΙ'].map(
-                (courseName, index) => {
-                  const isCompleted = courses.some(
-                    (course) => course.name.includes(courseName) && course.status === 'Passed'
-                  );
-                  return (
-                    <span
-                      key={index}
-                      className={`px-2 py-1 rounded text-sm ${
-                        isCompleted ? 'bg-green-700 text-green-200' : 'bg-gray-700 text-gray-300'
-                      }`}
-                    >
-                      {courseName}
-                    </span>
-                  );
-                }
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-        {requirements.map((req, index) => (
-          <Card key={index} className="bg-gray-800 border-gray-700 text-white">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-gray-200 flex items-center gap-2">
-                  <req.icon className={`h-5 w-5 ${req.color}`} />
-                  {req.title}
-                </CardTitle>
-                <span className={`text-lg font-semibold ${req.color}`}>
-                  {req.completed} / {req.total}
-                </span>
-              </div>
-              <p className="text-sm text-gray-400 mt-1">{req.description}</p>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Progress value={req.progress} className="w-full h-2 bg-gray-700" />
-                <div className="flex justify-between text-sm text-gray-400">
-                  <span>{req.progress.toFixed(1)}% Complete</span>
-                  <span>{req.total - req.completed} remaining</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Detailed breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-        <Card className="bg-gray-800 border-gray-700 text-white">
-          <CardHeader>
-            <CardTitle className="text-green-400">Completed Requirements</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span>Compulsory (18 required):</span>
-                <span className="text-green-400">{completedCompulsory.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>General Education (3 required):</span>
-                <span className="text-yellow-400">{completedGE.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Direction Courses (4 required):</span>
-                <span className="text-orange-400">{completedDirection.length}</span>
-              </div>
-              {userDirection === 'CS' && (
-                <div className="flex justify-between text-sm text-gray-300 ml-4">
-                  <span>• CS Required (3 of 4 direction courses):</span>
-                  <span className={csRequiredCompleted >= 3 ? 'text-green-400' : 'text-orange-400'}>
-                    {csRequiredCompleted}/3
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span>Direction Project (1 required):</span>
-                <span className="text-purple-400">{completedDirectionProject.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Final Courses (2 required):</span>
-                <span className="text-cyan-400">{completedFinalCourses.length}</span>
-              </div>
-
-              {/* Add Specialities section */}
-              {userDirection && availableSpecialities.length > 0 && (
-                <>
-                  <hr className="border-gray-600" />
-                  <div className="flex justify-between">
-                    <span>Specialities (0-2 optional):</span>
-                    <span className="text-purple-400">{completedSpecialities.length}/2</span>
-                  </div>
-                  {completedSpecialities.map((spec) => (
-                    <div key={spec} className="flex justify-between text-sm text-gray-300 ml-4">
-                      <span>
-                        • {spec} - {specialityNames[spec]}:
-                      </span>
-                      <CheckCircle2 className="h-4 w-4 text-green-400" />
-                    </div>
-                  ))}
-                </>
-              )}
-
-              <hr className="border-gray-600" />
-              <div className="flex justify-between font-semibold">
-                <span>Total ECTS:</span>
-                <span className="text-blue-400">{completedECTS}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-800 border-gray-700 text-white">
-          <CardHeader>
-            <CardTitle className="text-red-400">Remaining Requirements</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span>ECTS needed:</span>
-                <span className="text-red-400">{totalECTS - completedECTS}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Compulsory courses:</span>
-                <span className="text-red-400">{Math.max(0, 18 - completedCompulsory.length)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>General Education:</span>
-                <span className="text-red-400">{Math.max(0, 3 - completedGE.length)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Direction courses:</span>
-                <span className="text-red-400">{Math.max(0, 4 - completedDirection.length)}</span>
-              </div>
-              {userDirection === 'CS' && (
-                <div className="flex justify-between">
-                  <span>CS Required courses:</span>
-                  <span className="text-red-400">{Math.max(0, 3 - csRequiredCompleted)}</span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span>Direction project:</span>
-                <span className="text-red-400">
-                  {Math.max(0, 1 - completedDirectionProject.length)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Final courses:</span>
-                <span className="text-red-400">
-                  {Math.max(0, 2 - completedFinalCourses.length)}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Core Requirements Grid */}
+      <section className="mb-10">
+        <h2 className="text-2xl font-bold tracking-tight mb-6">Core Requirements</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {requirements.map((req) => (
+            <RequirementCard
+              key={req.title}
+              {...req}
+              progress={(req.completed / req.total) * 100}
+            />
+          ))}
+        </div>
+      </section>
 
       {/* Specialities Progress Section */}
       {userDirection && availableSpecialities.length > 0 && (
-        <Card className="bg-gray-800 border-gray-700 text-white mt-10">
-          <CardHeader>
-            <CardTitle className="text-purple-400 flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Specialities Progress ({selectedDirectionLabel})
-              <span className="text-sm text-gray-400 ml-2">
-                ({completedSpecialities.length}/2 completed - Optional)
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-4">
-              <p className="text-sm text-gray-400 mb-2">
-                You can obtain up to 2 out of 3 available specialities for your direction. Each
-                speciality requires 2 compulsory direction courses (ΕΥΜ) and 4 basic courses.
+        <section>
+          <h2 className="text-2xl font-bold tracking-tight mb-6">
+            Speciality Progress ({selectedDirectionLabel})
+          </h2>
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-purple-400">Your Specialities</CardTitle>
+              <p className="text-sm text-gray-400">
+                Each speciality requires 2 compulsory direction (ΕΥΜ) and 4 basic courses.
               </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {availableSpecialities.map((spec) => {
                 const progress = specialityProgress[spec] || {
-                  compulsoryCompleted: 0,
-                  compulsoryTotal: 2,
-                  compulsoryProgress: 0,
-                  basicCompleted: 0,
-                  basicTotal: 4,
-                  basicProgress: 0,
-                  overallProgress: 0,
                   isCompleted: false,
-                  totalCourses: 0,
-                  availableCourses: 0,
+                  compulsoryCompleted: 0,
+                  basicCompleted: 0,
                 };
-
+                const overallProgress = Math.min(
+                  (progress.compulsoryCompleted / 2) * 100,
+                  (progress.basicCompleted / 4) * 100
+                );
                 return (
                   <Card
                     key={spec}
-                    className={`border transition-all ${
-                      progress.isCompleted
-                        ? 'bg-green-900/30 border-green-500/50'
-                        : 'bg-gray-700/50 border-gray-600'
-                    }`}
+                    className={`border ${progress.isCompleted ? 'bg-green-900/30 border-green-500/50' : 'bg-gray-700/50 border-gray-600'}`}
                   >
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm text-gray-200 flex items-center gap-2">
-                          {progress.isCompleted ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-400" />
-                          ) : (
-                            <Clock className="h-4 w-4 text-orange-400" />
-                          )}
-                          {spec}
-                        </CardTitle>
-                        <span
-                          className={`text-xs px-2 py-1 rounded ${
-                            progress.isCompleted
-                              ? 'bg-green-700 text-green-200'
-                              : 'bg-gray-600 text-gray-300'
-                          }`}
-                        >
-                          {progress.isCompleted ? 'Completed' : 'In Progress'}
-                        </span>
+                        <p className="font-semibold text-gray-200">
+                          {specialityNames[spec] || spec}
+                        </p>
+                        {progress.isCompleted ? (
+                          <Badge className="bg-green-600">Completed</Badge>
+                        ) : (
+                          <Badge variant="secondary">In Progress</Badge>
+                        )}
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">{specialityNames[spec]}</p>
                     </CardHeader>
-                    <CardContent className="space-y-3">
-                      {/* Compulsory Direction Courses Progress */}
+                    <CardContent className="space-y-3 text-sm">
                       <div>
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
-                          <span>Direction Courses (ΕΥΜ)</span>
-                          <span>
-                            {progress.compulsoryCompleted}/{progress.compulsoryTotal}
-                          </span>
+                          <span>Direction Courses</span>
+                          <span>{progress.compulsoryCompleted}/2</span>
                         </div>
                         <Progress
-                          value={progress.compulsoryProgress}
-                          className="w-full h-1.5 bg-gray-600"
+                          value={(progress.compulsoryCompleted / 2) * 100}
+                          className="h-1.5"
                         />
-                        <div className="text-xs text-gray-500 mt-1">
-                          {progress.compulsoryProgress.toFixed(0)}% Complete
-                        </div>
                       </div>
-
-                      {/* Basic Courses Progress */}
                       <div>
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
                           <span>Basic Courses</span>
-                          <span>
-                            {progress.basicCompleted}/{progress.basicTotal}
-                          </span>
+                          <span>{progress.basicCompleted}/4</span>
                         </div>
-                        <Progress
-                          value={progress.basicProgress}
-                          className="w-full h-1.5 bg-gray-600"
-                        />
-                        <div className="text-xs text-gray-500 mt-1">
-                          {progress.basicProgress.toFixed(0)}% Complete
-                        </div>
+                        <Progress value={(progress.basicCompleted / 4) * 100} className="h-1.5" />
                       </div>
-
-                      {/* Overall Progress */}
-                      <div className="pt-2 border-t border-gray-600">
-                        <div className="flex justify-between text-xs font-medium mb-1">
-                          <span className="text-gray-300">Overall Progress</span>
+                      <div className="pt-2 border-t border-gray-600/50">
+                        <div className="flex justify-between text-xs font-medium text-gray-300">
+                          <span>Overall</span>
                           <span
                             className={progress.isCompleted ? 'text-green-400' : 'text-orange-400'}
                           >
-                            {progress.overallProgress.toFixed(0)}%
+                            {overallProgress.toFixed(0)}%
                           </span>
                         </div>
-                        <Progress
-                          value={progress.overallProgress}
-                          className="w-full h-2 bg-gray-600"
-                        />
-                      </div>
-
-                      {/* Course counts */}
-                      <div className="text-xs text-gray-500 pt-1">
-                        {progress.totalCourses} passed / {progress.availableCourses} available
-                        courses
                       </div>
                     </CardContent>
                   </Card>
                 );
               })}
-            </div>
-
-            {/* Specialities Summary */}
-            <div className="mt-6 p-4 bg-gray-700/50 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-300 mb-2">Specialities Summary</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-400">Completed:</span>
-                  <span className="text-green-400 ml-2 font-medium">
-                    {completedSpecialities.length}/2
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Available:</span>
-                  <span className="text-blue-400 ml-2 font-medium">
-                    {availableSpecialities.length}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-400">Remaining:</span>
-                  <span className="text-orange-400 ml-2 font-medium">
-                    {Math.max(0, 2 - completedSpecialities.length)}
-                  </span>
-                </div>
-              </div>
-
-              {completedSpecialities.length > 0 && (
-                <div className="mt-3">
-                  <span className="text-gray-400 text-sm">Completed Specialities:</span>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {completedSpecialities.map((spec) => (
-                      <span
-                        key={spec}
-                        className="px-2 py-1 bg-green-700 text-green-200 rounded text-xs"
-                      >
-                        {spec}: {specialityNames[spec] || 'Loading...'}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </section>
       )}
     </div>
   );
