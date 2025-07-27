@@ -75,13 +75,13 @@ function DegreeRequirements() {
         if (c.type !== 'ΕΥΜ') {
           return false;
         }
-        
+
         // Case 1: ΕΥΜ courses with speciality markers for the direction
         const belongsToDirection = specialities.some((spec) => c[spec] != null);
-        
+
         // Case 2: ΕΥΜ courses with COM direction (common to all directions)
         const isCommonCourse = c.direction === 'COM';
-        
+
         return belongsToDirection || isCommonCourse;
       });
 
