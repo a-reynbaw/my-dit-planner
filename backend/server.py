@@ -52,7 +52,15 @@ class CourseStatusUpdate(BaseModel):
     status: str
 class CoursePlannedSemesterUpdate(BaseModel):
     planned_semester: int
-class DirectionUpdate(BaseModel):   # Add this model
+class SdiUpdate(BaseModel):
+    direction: int
+class FirstnameUpdate(BaseModel):
+    direction: str
+class LastnameUpdate(BaseModel):
+    direction: str
+class CurrentSemesterUpdate(BaseModel):
+    direction: int
+class DirectionUpdate(BaseModel):
     direction: str
 class ProfileFieldUpdate(BaseModel):
     value: str  # Generic value for any profile field
@@ -65,7 +73,7 @@ class FullProfileUpdate(BaseModel):
     direction: Optional[str] = None
 
 # API Endpoints
-
+######### GET ENDPOINTS #########
 @app.get("/api/courses")
 def api_get_courses():
     try:
@@ -73,7 +81,7 @@ def api_get_courses():
         return courses
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading courses: {str(e)}")
-    
+
 @app.get("/api/profile/sdi") 
 def api_get_sdi():
     try:
@@ -84,20 +92,53 @@ def api_get_sdi():
             raise HTTPException(status_code=404, detail="User profile not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading sdi: {str(e)}")
+   
+@app.get("/api/profile/first_name") 
+def api_get_first_name():
+    try:
+        result = get_first_name_with_id(1)
+        if result and len(result) > 0:
+            return {"first_name": result[0][0]}
+        else:
+            return {"first_name": None}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading first name: {str(e)}")
+
+@app.get("/api/profile/last_name") 
+def api_get_last_name():
+    try:
+        result = get_last_name_with_id(1)
+        if result and len(result) > 0:
+            return {"last_name": result[0][0]}
+        else:
+            return {"last_name": None}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading last name: {str(e)}")
+
+@app.get("/api/profile/current_semester") 
+def api_get_current_semester():
+    try:
+        result = get_current_semester_with_id(1)
+        if result and len(result) > 0:
+            return {"current_semester": result[0][0]}
+        else:
+            return {"current_semester": None}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading current semester: {str(e)}")
 
 @app.get("/api/profile/direction")
 def api_get_direction():
     try:
         result = get_direction_with_id(1)
         if result and len(result) > 0:
-            direction = result[0][0]  # Extract the direction value
+            direction = result[0][0] 
             return {"direction": direction}
         else:
             # Return null if no direction is set
             return {"direction": None}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading direction: {str(e)}")
-    
+   
 @app.get("/api/specialities")
 def api_get_speciality_names():
     speciality_names = {
@@ -110,40 +151,7 @@ def api_get_speciality_names():
     }
     return speciality_names
 
-@app.get("/api/specialities/{s_id}")
-def api_get_courses_by_speciality(s_id: str):
-    """Get all courses for a specific speciality"""
-    try:
-        courses = get_courses_by_speciality(s_id)
-        return courses
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error getting courses for speciality {s_id}: {str(e)}")
-
-@app.get("/api/courses/{course_name}/speciality/{s_no}")
-def api_get_course_speciality_info(course_name: str, s_no: str):
-    """Get speciality information for a specific course"""
-    try:
-        result = get_info_by_s_and_name(s_no, course_name)
-        if result and len(result) > 0:
-            return {"course_name": course_name, "speciality": s_no, "value": result[0][0]}
-        else:
-            return {"course_name": course_name, "speciality": s_no, "value": None}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error getting speciality info: {str(e)}")
-
-
-@app.put("/api/profile/direction")
-def api_update_direction(update: DirectionUpdate):
-    try:
-        update_direction(1, update.direction)
-        return {"message": "Direction updated"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating direction: {str(e)}")
-
+######### PUT ENDPOINTS #########
 @app.put("/api/courses/{course_id}/status")
 def api_update_course_status(course_id: int, update: CourseStatusUpdate):
     try:
@@ -170,170 +178,42 @@ def api_update_course_planned_semester(course_id: int, update: CoursePlannedSeme
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating course planned semester: {str(e)}")
 
-
-@app.get("/api/profile/first_name") 
-def api_get_first_name():
+@app.put("/api/profile/sdi")
+def api_update_sdi_with_id(update: SdiUpdate):
     try:
-        result = get_first_name_with_id(1)
-        if result and len(result) > 0:
-            return {"first_name": result[0][0]}
-        else:
-            return {"first_name": None}
+        update_sdi_with_id(1, update.sdi)
+        return {"message": "SDI updated"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error loading first name: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating sdi: {str(e)}")
 
-@app.get("/api/profile/last_name") 
-def api_get_last_name():
+@app.put("/api/profile/first_name")
+def api_update_first_name_with_id(update: FirstnameUpdate):
     try:
-        result = get_last_name_with_id(1)
-        if result and len(result) > 0:
-            return {"last_name": result[0][0]}
-        else:
-            return {"last_name": None}
+        update_first_name_with_id(1, update.first_name)
+        return {"message": "Firstname updated"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error loading last name: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating firstname: {str(e)}")
 
-@app.get("/api/profile/current_semester") 
-def api_get_current_semester():
+@app.put("/api/profile/last_name")
+def api_update_last_name_with_id(update: LastnameUpdate):
     try:
-        result = get_current_semester_with_id(1)
-        if result and len(result) > 0:
-            return {"current_semester": result[0][0]}
-        else:
-            return {"current_semester": None}
+        update_last_name_with_id(1, update.last_name)
+        return {"message": "Lastname updated"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error loading current semester: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating lastname: {str(e)}")
 
-@app.put("/api/profile/{field}")
-def api_update_profile_field(field: str, update: ProfileFieldUpdate):
-    """Update a specific profile field"""
-    valid_fields = ['sdi', 'first_name', 'last_name', 'current_semester', 'direction']
-    
-    if field not in valid_fields:
-        raise HTTPException(status_code=400, detail=f"Invalid field: {field}. Must be one of {valid_fields}")
-    
+@app.put("/api/profile/current_semester")
+def api_update_current_semester_with_id(update: CurrentSemesterUpdate):
     try:
-        # Convert value to appropriate type
-        value = update.value
-        if field in ['sdi', 'current_semester']:
-            try:
-                value = int(value)
-            except ValueError:
-                raise HTTPException(status_code=400, detail=f"{field} must be a number")
-        
-        update_profile_info_with_id(1, field, value)
-        return {"message": f"Profile {field} updated successfully"}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        update_current_semester_with_id(1, update.current_semester)
+        return {"message": "Current course updated"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating profile {field}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating current course: {str(e)}")
 
-
-@app.get("/api/profile")
-def api_get_full_profile():
-    """Get complete profile information using database functions"""
+@app.put("/api/profile/direction")
+def api_update_direction_with_id(update: DirectionUpdate):
     try:
-        profile_id = 1  # Assuming single user
-        
-        # Use existing database functions
-        sdi_result = get_sdi_with_id(profile_id)
-        first_name_result = get_first_name_with_id(profile_id)
-        last_name_result = get_last_name_with_id(profile_id)
-        current_semester_result = get_current_semester_with_id(profile_id)
-        direction_result = get_direction_with_id(profile_id)
-        
-        return {
-            "id": profile_id,
-            "sdi": sdi_result[0][0] if sdi_result and sdi_result[0][0] else None,
-            "first_name": first_name_result[0][0] if first_name_result and first_name_result[0][0] else None,
-            "last_name": last_name_result[0][0] if last_name_result and last_name_result[0][0] else None,
-            "current_semester": current_semester_result[0][0] if current_semester_result and current_semester_result[0][0] else None,
-            "direction": direction_result[0][0] if direction_result and direction_result[0][0] else None
-        }
+        update_direction(1, update.direction)
+        return {"message": "Direction updated"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
-@app.put("/api/profile")
-def api_update_full_profile(profile: FullProfileUpdate):
-    """Update multiple profile fields using database functions"""
-    try:
-        profile_id = 1  # Assuming single user
-        
-        # Update each field that's provided using the database function
-        if profile.sdi is not None:
-            update_profile_info_with_id(profile_id, 'sdi', profile.sdi)
-        if profile.first_name is not None:
-            update_profile_info_with_id(profile_id, 'first_name', profile.first_name)
-        if profile.last_name is not None:
-            update_profile_info_with_id(profile_id, 'last_name', profile.last_name)
-        if profile.current_semester is not None:
-            update_profile_info_with_id(profile_id, 'current_semester', profile.current_semester)
-        if profile.direction is not None:
-            update_profile_info_with_id(profile_id, 'direction', profile.direction)
-        
-        # Return updated profile using the GET endpoint logic
-        return api_get_full_profile()
-            
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
-# Keep the individual field endpoints as they already use database functions correctly:
-@app.get("/api/profile/first_name") 
-def api_get_first_name():
-    try:
-        result = get_first_name_with_id(1)
-        if result and len(result) > 0:
-            return {"first_name": result[0][0]}
-        else:
-            return {"first_name": None}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error loading first name: {str(e)}")
-
-@app.get("/api/profile/last_name") 
-def api_get_last_name():
-    try:
-        result = get_last_name_with_id(1)
-        if result and len(result) > 0:
-            return {"last_name": result[0][0]}
-        else:
-            return {"last_name": None}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error loading last name: {str(e)}")
-
-@app.get("/api/profile/current_semester") 
-def api_get_current_semester():
-    try:
-        result = get_current_semester_with_id(1)
-        if result and len(result) > 0:
-            return {"current_semester": result[0][0]}
-        else:
-            return {"current_semester": None}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error loading current semester: {str(e)}")
-
-@app.put("/api/profile/{field}")
-def api_update_profile_field(field: str, update: ProfileFieldUpdate):
-    """Update a specific profile field using database function"""
-    valid_fields = ['sdi', 'first_name', 'last_name', 'current_semester', 'direction']
-    
-    if field not in valid_fields:
-        raise HTTPException(status_code=400, detail=f"Invalid field: {field}. Must be one of {valid_fields}")
-    
-    try:
-        # Convert value to appropriate type
-        value = update.value
-        if field in ['sdi', 'current_semester']:
-            try:
-                value = int(value)
-            except ValueError:
-                raise HTTPException(status_code=400, detail=f"{field} must be a number")
-        
-        # Use the database function
-        update_profile_info_with_id(1, field, value)
-        return {"message": f"Profile {field} updated successfully"}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating profile {field}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating direction: {str(e)}")

@@ -192,6 +192,7 @@ def init_database():
         print(f"Error inserting profile data: {str(e)}")
 
 
+######### GET ENDPOINTS #########
 
 @contextmanager
 def get_db_connection():
@@ -211,43 +212,6 @@ def get_all_courses():
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
 
-# def get_degree_requirements():
-#     """Return all degree requirements as a list of dicts"""
-#     with get_db_connection() as conn:
-#         cursor = conn.cursor()
-#         cursor.execute('SELECT * FROM degree_requirements')
-#         rows = cursor.fetchall()
-#         return [dict(row) for row in rows]
-
-def get_courses_by_status(status):
-    """Return all courses with a specific status"""
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM courses WHERE status = ? ORDER BY semester, id', (status,))
-        rows = cursor.fetchall()
-        return [dict(row) for row in rows]
-    
-def get_info_by_s_and_name(s_no, name):
-    # Validate the column name to prevent SQL injection
-    valid_columns = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6']
-    if s_no not in valid_columns:
-        raise ValueError(f"Invalid column name: {s_no}. Must be one of {valid_columns}")
-    
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        # Use string formatting for column name (after validation)
-        query = f'SELECT {s_no} FROM courses WHERE name = ?'
-        cursor.execute(query, (name,))
-        return cursor.fetchall()
-
-def get_courses_by_planned_semester(p_s):
-    """Return all courses for a specific planned semester"""
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM courses WHERE planned_semester = ?', (p_s))
-        rows = cursor.fetchall()
-        return [dict(row) for row in rows]
-    
 def get_sdi_with_id(profile_id):
     with get_db_connection() as conn:
         cursor = conn.cursor()
@@ -278,16 +242,7 @@ def get_direction_with_id(profile_id):
         cursor.execute('SELECT direction FROM profile WHERE id = ?', (profile_id,))  # Fixed missing comma
         return cursor.fetchall()
     
-def update_profile_info_with_id(profile_id, clmn, new_data):
-    valid_columns = ['sdi', 'first_name', 'last_name', 'current_semester', 'direction']
-    if clmn not in valid_columns:
-        raise ValueError(f"Invalid column: {clmn}. Must be one of {valid_columns}")
-    
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        query = f'UPDATE profile SET {clmn} = ? WHERE id = ?'  # Add WHERE clause
-        cursor.execute(query, (new_data, profile_id))
-        conn.commit()  # Add commit
+######### PUT ENDPOINTS #########
 
 def update_course_status(course_id, new_status):
     """Update the status of a course"""
@@ -310,15 +265,54 @@ def update_course_planned_semester(course_id, new_semester):
         cursor.execute('UPDATE courses SET planned_semester = ? WHERE id = ?', (new_semester, course_id))
         conn.commit()
 
-def update_direction(profile_id, new_direction):
+def update_sdi_with_id(profile_id, new_sdi):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE profile SET sdi = ? WHERE id = ?', (new_sdi, profile_id))
+        return cursor.fetchall()
+    
+def update_first_name_with_id(profile_id, new_first_name):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE profile SET first_name = ? WHERE id = ?', (new_first_name, profile_id)) 
+        return cursor.fetchall()
+    
+def update_last_name_with_id(profile_id, new_last_name):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE profile SET last_name = ? WHERE id = ?', (new_last_name, profile_id))
+        return cursor.fetchall()
+    
+def update_current_semester_with_id(profile_id, new_current_semester):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE profile SET current_semester = ? WHERE id = ?', (new_current_semester, profile_id))  # Fixed missing comma
+        return cursor.fetchall()
+
+def update_direction_with_id(profile_id, new_direction):
     """Update the direction of a user"""
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE profile SET direction = ? WHERE id = ?', (new_direction, profile_id))
         conn.commit()
 
-# def update_current_semester(profile_id, new_semester):
-#     """Update the current semester of a user"""
+######### OTHER ENDPOINTS #########
+
+    
+# maybe remove this
+def get_info_by_s_and_name(s_no, name):
+    # Validate the column name to prevent SQL injection
+    valid_columns = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6']
+    if s_no not in valid_columns:
+        raise ValueError(f"Invalid column name: {s_no}. Must be one of {valid_columns}")
+    
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        # Use string formatting for column name (after validation)
+        query = f'SELECT {s_no} FROM courses WHERE name = ?'
+        cursor.execute(query, (name,))
+        return cursor.fetchall()
+
 
 def get_courses_by_speciality(s_no):
     """Return all courses belonging to a specific speciality"""
@@ -333,17 +327,6 @@ def get_courses_by_speciality(s_no):
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
 
-def get_completed_courses():
-    """Return all courses with status 'Completed'"""
-    return get_courses_by_status('Completed')
-
-def get_total_ects_completed():
-    """Return the total ECTS from completed courses"""
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT SUM(ects) as ects_sum FROM courses WHERE status = "Completed"')
-        row = cursor.fetchone()
-        return row['ects_sum'] if row and row['ects_sum'] else 0
 
 def reset_database():
     """Reset the database by dropping all tables"""

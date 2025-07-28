@@ -54,6 +54,24 @@ jobs:
           echo "SDI response: $response"
           echo "$response" | jq -e '.sdi == 2400120'
 
+      - name: Test /api/profile/first_name endpoint
+        run: |
+          response=$(curl --fail -s http://localhost:8000/api/profile/first_name)
+          echo "Firstname response: $response"
+          echo "$response" | jq -e '.first_name == "Anastasia"'
+
+      - name: Test /api/profile/last_name endpoint
+        run: |
+          response=$(curl --fail -s http://localhost:8000/api/profile/last_name)
+          echo "Lastname response: $response"
+          echo "$response" | jq -e '.last_name == "Marinakou"'
+
+      - name: Test /api/profile/current_semester endpoint
+        run: |
+          response=$(curl --fail -s http://localhost:8000/api/profile/current_semester)
+          echo "Lastname response: $response"
+          echo "$response" | jq -e '.current_semester == 2'
+
       - name: Test getting initial direction
         run: |
           response=$(curl --fail -s http://localhost:8000/api/profile/direction)
@@ -93,6 +111,50 @@ jobs:
           -d '{"planned_semester": 3}' \
           http://localhost:8000/api/courses/1/planned_semester
 
+      - name: test update profile sdi
+        run: |
+          curl --fail -X PUT \
+          -H "Content-Type: application/json" \
+          -d '{"sdi": 2400000}' \
+          http://localhost:8000/api/profile/1/sdi
+
+          response=$(curl --fail -s http://localhost:8000/api/profile/sdi)
+          echo "Updated sdi response: $response"
+          echo "$response" | jq -e '.sdi == 2400000'
+
+      - name: Update profile firstname
+        run: |
+          curl --fail -X PUT \
+          -H "Content-Type: application/json" \
+          -d '{"first_name": "Maria"}' \
+          http://localhost:8000/api/profile/1/first_name
+
+          response=$(curl --fail -s http://localhost:8000/api/profile/first_name)
+          echo "Updated firstname response: $response"
+          echo "$response" | jq -e '.first_name == "Maria"'
+
+      - name: Update profile lastname
+        run: |
+          curl --fail -X PUT \
+          -H "Content-Type: application/json" \
+          -d '{"last_name": "Papadopoulou"}' \
+          http://localhost:8000/api/profile/1/
+
+          response=$(curl --fail -s http://localhost:8000/api/profile/last_name)
+          echo "Updated lastname response: $response"
+          echo "$response" | jq -e '.last_name == "Papadopoulou'
+
+      - name: Update profile current semester
+        run: |
+          curl --fail -X PUT \
+          -H "Content-Type: application/json" \
+          -d '{"current_semester": 5}' \
+          http://localhost:8000/api/profile/1/current_semester
+
+          response=$(curl --fail -s http://localhost:8000/api/profile/current_semester)
+          echo "Updated current semester response: $response"
+          echo "$response" | jq -e '.current_semester == 5'
+
       - name: Verify course status was updated
         run: |
           curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .status == "Passed"'
@@ -116,27 +178,3 @@ jobs:
         run: |
           curl -s http://localhost:8000/api/courses | jq -e '.[] | select(.id == 1) | .status == "Not Taken"'
       
-      - name: Test /api/specialities endpoint
-        run: |
-          response=$(curl --fail -s http://localhost:8000/api/specialities)
-          echo "Specialities response: $response"
-          echo "$response" | jq -e '.S1 == "Αλγόριθμοι, Προγραμματισμός και Λογικής"'
-          echo "$response" | jq -e '.S6 == "Επεξεργασία Σήματος και Εικόνας"'
-      
-      - name: Test /api/specialities/{s_id} endpoint
-        run: |
-          response=$(curl --fail -s http://localhost:8000/api/specialities/S1)
-          echo "Courses for S1: $response"
-
-          echo "$response" | jq -e 'type == "array" and length > 0 and all(.[]; .S1 != null)'
-
-      - name: Test /api/courses/{course_name}/speciality/{s_no} endpoint
-        run: |
-          
-          response=$(curl --fail -s "http://localhost:8000/api/courses/Αριθμητική%20Ανάλυση/speciality/S1")
-          echo "Speciality info for 'Αριθμητική Ανάλυση': $response"
-          echo "$response" | jq -e '.value == "Υ"'
-
-          response=$(curl --fail -s "http://localhost:8000/api/courses/Αρχές%20Γλωσσών%20Προγραμματισμού/speciality/S2")
-          echo "Speciality info for 'Αρχές Γλωσσών Προγραμματισμού': $response"
-          echo "$response" | jq -e '.value == "B"'
