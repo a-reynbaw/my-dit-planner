@@ -47,23 +47,25 @@ function Profile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      
-      // Fetch all profile data using individual endpoints
-      const [sdiRes, firstNameRes, lastNameRes, currentSemesterRes, directionRes] = await Promise.all([
-        fetch('/api/profile/sdi'),
-        fetch('/api/profile/first_name'),
-        fetch('/api/profile/last_name'),
-        fetch('/api/profile/current_semester'),
-        fetch('/api/profile/direction')
-      ]);
 
-      const [sdiData, firstNameData, lastNameData, currentSemesterData, directionData] = await Promise.all([
-        sdiRes.json(),
-        firstNameRes.json(),
-        lastNameRes.json(),
-        currentSemesterRes.json(),
-        directionRes.json()
-      ]);
+      // Fetch all profile data using individual endpoints
+      const [sdiRes, firstNameRes, lastNameRes, currentSemesterRes, directionRes] =
+        await Promise.all([
+          fetch('/api/profile/sdi'),
+          fetch('/api/profile/first_name'),
+          fetch('/api/profile/last_name'),
+          fetch('/api/profile/current_semester'),
+          fetch('/api/profile/direction'),
+        ]);
+
+      const [sdiData, firstNameData, lastNameData, currentSemesterData, directionData] =
+        await Promise.all([
+          sdiRes.json(),
+          firstNameRes.json(),
+          lastNameRes.json(),
+          currentSemesterRes.json(),
+          directionRes.json(),
+        ]);
 
       // Handle null values from backend by converting to empty strings or appropriate defaults
       const profileData = {
@@ -154,8 +156,10 @@ function Profile() {
           fetch('/api/profile/current_semester', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              current_semester: editedProfile.current_semester ? parseInt(editedProfile.current_semester) : null 
+            body: JSON.stringify({
+              current_semester: editedProfile.current_semester
+                ? parseInt(editedProfile.current_semester)
+                : null,
             }),
           })
         );
