@@ -269,25 +269,25 @@ def update_sdi_with_id(profile_id, new_sdi):
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE profile SET sdi = ? WHERE id = ?', (new_sdi, profile_id))
-        return cursor.fetchall()
+        conn.commit()  # Changed from return cursor.fetchall()
     
 def update_first_name_with_id(profile_id, new_first_name):
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE profile SET first_name = ? WHERE id = ?', (new_first_name, profile_id)) 
-        return cursor.fetchall()
+        conn.commit()  # Changed from return cursor.fetchall()
     
 def update_last_name_with_id(profile_id, new_last_name):
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE profile SET last_name = ? WHERE id = ?', (new_last_name, profile_id))
-        return cursor.fetchall()
+        conn.commit()  # Changed from return cursor.fetchall()
     
 def update_current_semester_with_id(profile_id, new_current_semester):
     with get_db_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute('UPDATE profile SET current_semester = ? WHERE id = ?', (new_current_semester, profile_id))  # Fixed missing comma
-        return cursor.fetchall()
+        cursor.execute('UPDATE profile SET current_semester = ? WHERE id = ?', (new_current_semester, profile_id))
+        conn.commit()  # Changed from return cursor.fetchall()
 
 def update_direction_with_id(profile_id, new_direction):
     """Update the direction of a user"""

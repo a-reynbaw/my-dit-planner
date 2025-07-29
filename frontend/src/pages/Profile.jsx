@@ -47,20 +47,31 @@ function Profile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/profile');
-      if (!response.ok) {
-        throw new Error('Failed to fetch profile');
-      }
-      const data = await response.json();
+      
+      // Fetch all profile data using individual endpoints
+      const [sdiRes, firstNameRes, lastNameRes, currentSemesterRes, directionRes] = await Promise.all([
+        fetch('/api/profile/sdi'),
+        fetch('/api/profile/first_name'),
+        fetch('/api/profile/last_name'),
+        fetch('/api/profile/current_semester'),
+        fetch('/api/profile/direction')
+      ]);
+
+      const [sdiData, firstNameData, lastNameData, currentSemesterData, directionData] = await Promise.all([
+        sdiRes.json(),
+        firstNameRes.json(),
+        lastNameRes.json(),
+        currentSemesterRes.json(),
+        directionRes.json()
+      ]);
 
       // Handle null values from backend by converting to empty strings or appropriate defaults
       const profileData = {
-        id: data.id,
-        sdi: data.sdi || '',
-        first_name: data.first_name || '',
-        last_name: data.last_name || '',
-        current_semester: data.current_semester || '',
-        direction: data.direction || '',
+        sdi: sdiData.sdi || '',
+        first_name: firstNameData.first_name || '',
+        last_name: lastNameData.last_name || '',
+        current_semester: currentSemesterData.current_semester || '',
+        direction: directionData.direction || '',
       };
 
       setProfile(profileData);
@@ -101,43 +112,79 @@ function Profile() {
         return;
       }
 
-      // Prepare data for backend - convert empty strings to null where appropriate
-      const updateData = {
-        sdi: editedProfile.sdi ? parseInt(editedProfile.sdi) : null,
-        first_name: editedProfile.first_name || null,
-        last_name: editedProfile.last_name || null,
-        current_semester: editedProfile.current_semester
-          ? parseInt(editedProfile.current_semester)
-          : null,
-        direction: editedProfile.direction || null,
-      };
+      // Update each field individually using the existing endpoints
+      const updatePromises = [];
 
-      const response = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to update profile');
+      // Update SDI if changed
+      if (editedProfile.sdi !== profile.sdi) {
+        updatePromises.push(
+          fetch('/api/profile/sdi', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sdi: parseInt(editedProfile.sdi) }),
+          })
+        );
       }
 
-      const updatedProfile = await response.json();
+      // Update first name if changed
+      if (editedProfile.first_name !== profile.first_name) {
+        updatePromises.push(
+          fetch('/api/profile/first_name', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ first_name: editedProfile.first_name }),
+          })
+        );
+      }
 
-      // Convert null values back to empty strings for the UI
-      const uiProfile = {
-        id: updatedProfile.id,
-        sdi: updatedProfile.sdi || '',
-        first_name: updatedProfile.first_name || '',
-        last_name: updatedProfile.last_name || '',
-        current_semester: updatedProfile.current_semester || '',
-        direction: updatedProfile.direction || '',
-      };
+      // Update last name if changed
+      if (editedProfile.last_name !== profile.last_name) {
+        updatePromises.push(
+          fetch('/api/profile/last_name', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ last_name: editedProfile.last_name }),
+          })
+        );
+      }
 
-      setProfile(uiProfile);
+      // Update current semester if changed
+      if (editedProfile.current_semester !== profile.current_semester) {
+        updatePromises.push(
+          fetch('/api/profile/current_semester', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              current_semester: editedProfile.current_semester ? parseInt(editedProfile.current_semester) : null 
+            }),
+          })
+        );
+      }
+
+      // Update direction if changed
+      if (editedProfile.direction !== profile.direction) {
+        updatePromises.push(
+          fetch('/api/profile/direction', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ direction: editedProfile.direction || null }),
+          })
+        );
+      }
+
+      // Execute all update requests
+      const responses = await Promise.all(updatePromises);
+
+      // Check if all requests were successful
+      for (const response of responses) {
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'Failed to update profile');
+        }
+      }
+
+      // Update local state with new values
+      setProfile(editedProfile);
       setEditing(false);
     } catch (error) {
       console.error('Error updating profile:', error);

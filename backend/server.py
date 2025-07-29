@@ -2,26 +2,42 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
+from contextlib import asynccontextmanager  # Add this import
+import os
 from database import (
-    get_sdi_with_id,
-    get_first_name_with_id,      # Add this
-    get_last_name_with_id,       # Add this
-    get_current_semester_with_id, # Add this
-    get_direction_with_id,  
-    update_direction,
-    update_profile_info_with_id,  # Add this
     init_database,
     get_all_courses,
-    get_info_by_s_and_name,
+    get_sdi_with_id,
+    get_first_name_with_id,
+    get_last_name_with_id,
+    get_current_semester_with_id,
+    get_direction_with_id,
     update_course_status,
     update_course_grade,
     update_course_planned_semester,
-    get_courses_by_speciality,
+    update_sdi_with_id,
+    update_first_name_with_id,
+    update_last_name_with_id,
+    update_current_semester_with_id,
+    update_direction_with_id,
     DATABASE_PATH
 )
-import os
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    if not os.path.exists(DATABASE_PATH):
+        init_database()
+        print("Database initialized successfully")
+    else:
+        print("Database already exists, skipping initialization")
+    
+    yield  # This is where the application runs
+    
+    # Shutdown (if you need any cleanup)
+    print("Application shutting down")
+
+app = FastAPI(lifespan=lifespan)
 
 # CORS middleware
 app.add_middleware(
@@ -36,14 +52,14 @@ app.add_middleware(
 def health_check():
     return {"status": "ok"}
 
-@app.on_event("startup")
-# Initialize the database on startup if it doesn't exist
-def startup_event():
-    if not os.path.exists(DATABASE_PATH):
-        init_database()
-        print("Database initialized successfully")
-    else:
-        print("Database already exists, skipping initialization")
+# Remove this entire block:
+# @app.on_event("startup")
+# def startup_event():
+#     if not os.path.exists(DATABASE_PATH):
+#         init_database()
+#         print("Database initialized successfully")
+#     else:
+#         print("Database already exists, skipping initialization")
 
 # Models
 class CourseGradeUpdate(BaseModel):
@@ -53,17 +69,17 @@ class CourseStatusUpdate(BaseModel):
 class CoursePlannedSemesterUpdate(BaseModel):
     planned_semester: int
 class SdiUpdate(BaseModel):
-    direction: int
+    sdi: int  # Fixed: was 'direction'
 class FirstnameUpdate(BaseModel):
-    direction: str
+    first_name: str  # Fixed: was 'direction'
 class LastnameUpdate(BaseModel):
-    direction: str
+    last_name: str  # Fixed: was 'direction'
 class CurrentSemesterUpdate(BaseModel):
-    direction: int
+    current_semester: int  # Fixed: was 'direction'
 class DirectionUpdate(BaseModel):
     direction: str
 class ProfileFieldUpdate(BaseModel):
-    value: str  # Generic value for any profile field
+    value: str
 
 class FullProfileUpdate(BaseModel):
     sdi: Optional[int] = None
@@ -213,7 +229,7 @@ def api_update_current_semester_with_id(update: CurrentSemesterUpdate):
 @app.put("/api/profile/direction")
 def api_update_direction_with_id(update: DirectionUpdate):
     try:
-        update_direction(1, update.direction)
+        update_direction_with_id(1, update.direction)
         return {"message": "Direction updated"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating direction: {str(e)}")
