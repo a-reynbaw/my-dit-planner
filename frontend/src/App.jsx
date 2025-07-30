@@ -16,6 +16,7 @@ import {
   Loader2,
   User,
 } from 'lucide-react';
+import { Toaster } from 'sonner';
 
 import AllCourses from '@/pages/AllCourses';
 import PlanCourses from '@/pages/PlanCourses';
@@ -62,7 +63,7 @@ function Sidebar() {
                 : 'text-gray-300 hover:bg-gray-700 hover:text-white'
             }`}
           >
-            <item.icon className="mr-3 h-5 w-5" />
+            <item.icon className="h-5 w-5" />
             {item.title}
           </Button>
         ))}
@@ -318,6 +319,7 @@ function App() {
 
   return (
     <div className="flex min-h-screen bg-gray-900">
+      <Toaster richColors theme="dark" />
       <Sidebar />
       <main className="flex-1">
         <Routes>

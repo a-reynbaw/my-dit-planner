@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
-import { User, Save, Home, Edit3, Check, X } from 'lucide-react';
+} from '@/components/ui/select';
+import { User, Home, Edit3, Check, X, Hash, BookOpen, Settings } from 'lucide-react';
+import { toast } from 'sonner';
 
 function Profile() {
   const navigate = useNavigate();
@@ -24,12 +25,10 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({});
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
 
   // Direction options
   const directions = [
-    { value: '', label: 'Not Selected' },
+    { value: 'Not Selected', label: 'Not Selected' },
     { value: 'CS', label: 'Computer Science (CS)' },
     { value: 'CET', label: 'Computer Engineering & Telecommunications (CET)' },
   ];
@@ -47,8 +46,6 @@ function Profile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-
-      // Fetch all profile data using individual endpoints
       const [sdiRes, firstNameRes, lastNameRes, currentSemesterRes, directionRes] =
         await Promise.all([
           fetch('/api/profile/sdi'),
@@ -67,20 +64,19 @@ function Profile() {
           directionRes.json(),
         ]);
 
-      // Handle null values from backend by converting to empty strings or appropriate defaults
       const profileData = {
         sdi: sdiData.sdi || '',
         first_name: firstNameData.first_name || '',
         last_name: lastNameData.last_name || '',
         current_semester: currentSemesterData.current_semester || '',
-        direction: directionData.direction || '',
+        direction: directionData.direction || 'Not Selected',
       };
 
       setProfile(profileData);
       setEditedProfile(profileData);
     } catch (error) {
       console.error('Error fetching profile:', error);
-      setError('Failed to load profile data');
+      toast.error('Failed to load profile data');
     } finally {
       setLoading(false);
     }
@@ -89,35 +85,25 @@ function Profile() {
   const handleEdit = () => {
     setEditing(true);
     setEditedProfile({ ...profile });
-    setError(null);
   };
 
   const handleCancel = () => {
     setEditing(false);
     setEditedProfile({ ...profile });
-    setError(null);
   };
 
   const handleSave = async () => {
     try {
-      setSaving(true);
-      setError(null);
-
-      // Validate required fields
       if (!editedProfile.first_name || !editedProfile.last_name) {
-        setError('First name and last name are required');
+        toast.error('First name and last name are required');
         return;
       }
-
       if (!editedProfile.sdi || editedProfile.sdi.toString().length !== 7) {
-        setError('SDI must be a 7-digit number');
+        toast.error('SDI must be a 7-digit number');
         return;
       }
 
-      // Update each field individually using the existing endpoints
       const updatePromises = [];
-
-      // Update SDI if changed
       if (editedProfile.sdi !== profile.sdi) {
         updatePromises.push(
           fetch('/api/profile/sdi', {
@@ -127,8 +113,6 @@ function Profile() {
           })
         );
       }
-
-      // Update first name if changed
       if (editedProfile.first_name !== profile.first_name) {
         updatePromises.push(
           fetch('/api/profile/first_name', {
@@ -138,8 +122,6 @@ function Profile() {
           })
         );
       }
-
-      // Update last name if changed
       if (editedProfile.last_name !== profile.last_name) {
         updatePromises.push(
           fetch('/api/profile/last_name', {
@@ -149,8 +131,6 @@ function Profile() {
           })
         );
       }
-
-      // Update current semester if changed
       if (editedProfile.current_semester !== profile.current_semester) {
         updatePromises.push(
           fetch('/api/profile/current_semester', {
@@ -164,22 +144,20 @@ function Profile() {
           })
         );
       }
-
-      // Update direction if changed
       if (editedProfile.direction !== profile.direction) {
         updatePromises.push(
           fetch('/api/profile/direction', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ direction: editedProfile.direction || null }),
+            body: JSON.stringify({
+              direction:
+                editedProfile.direction === 'Not Selected' ? null : editedProfile.direction,
+            }),
           })
         );
       }
 
-      // Execute all update requests
       const responses = await Promise.all(updatePromises);
-
-      // Check if all requests were successful
       for (const response of responses) {
         if (!response.ok) {
           const errorData = await response.json();
@@ -187,14 +165,12 @@ function Profile() {
         }
       }
 
-      // Update local state with new values
       setProfile(editedProfile);
       setEditing(false);
+      toast.success('Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
-      setError(error.message || 'Failed to update profile');
-    } finally {
-      setSaving(false);
+      toast.error(error.message || 'Failed to update profile');
     }
   };
 
@@ -207,258 +183,234 @@ function Profile() {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto"></div>
-            <p className="text-gray-400 mt-4">Loading profile...</p>
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
       </div>
     );
   }
 
+  const fullName =
+    profile.first_name && profile.last_name
+      ? `${profile.first_name} ${profile.last_name}`
+      : 'Student Name';
+  const directionLabel =
+    directions.find((d) => d.value === profile.direction)?.label || 'Not selected';
+
   return (
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
+      <div className="max-w-5xl mx-auto">
+        <header className="flex items-center justify-between gap-6 mb-8">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Profile</h1>
+            <h1 className="text-4xl font-bold tracking-tight">Your Profile</h1>
             <p className="text-lg text-gray-400">
-              Manage your personal information and preferences
+              View and manage your personal information and academic preferences.
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => navigate('/')}
-              className="bg-gray-800 border-gray-700 hover:bg-gray-700"
-            >
-              <Home className="h-5 w-5" />
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigate('/')}
+            className="bg-gray-800 border-gray-700 hover:bg-gray-700 flex-shrink-0"
+          >
+            <Home className="h-5 w-5" />
+          </Button>
         </header>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg">
-            <p className="text-red-400">{error}</p>
-          </div>
-        )}
+        <Card className="bg-gray-800/80 border-gray-700 text-white overflow-hidden backdrop-blur-sm">
+          <div className="grid md:grid-cols-12">
+            {/* Left Sidebar / Avatar Section */}
+            <div className="md:col-span-4 bg-gray-800/50 p-6 border-b md:border-b-0 md:border-r border-gray-700 flex flex-col items-center justify-center text-center">
+              <div className="w-28 h-28 rounded-full bg-blue-500/20 flex items-center justify-center mb-4 border-2 border-blue-400/50">
+                <User className="w-16 h-16 text-blue-300" />
+              </div>
+              <h2 className="text-2xl font-bold text-white">{fullName}</h2>
+              <p className="text-gray-400">
+                <span className="font-mono">sdi{profile.sdi || 'XXXXXXX'}</span>
+              </p>
+              <div className="mt-4 text-sm text-center">
+                <p className="text-gray-300">
+                  <span className="font-semibold text-orange-400">Direction:</span> {directionLabel}
+                </p>
+                <p className="text-gray-300">
+                  <span className="font-semibold text-purple-400">Semester:</span>{' '}
+                  {profile.current_semester ? ` ${profile.current_semester}` : ' Not set'}
+                </p>
+              </div>
+            </div>
 
-        {/* Profile Card */}
-        <Card className="bg-gray-800 border-gray-700 text-white">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-blue-400 flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Personal Information
-              </CardTitle>
-              {!editing ? (
-                <Button
-                  onClick={handleEdit}
-                  variant="outline"
-                  size="sm"
-                  className="bg-gray-700 border-gray-600 hover:bg-gray-600"
-                >
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-              ) : (
-                <div className="flex items-center gap-2">
+            {/* Right Content / Form Section */}
+            <div className="md:col-span-8 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-blue-300">Account Details</h3>
+                {!editing ? (
                   <Button
-                    onClick={handleSave}
-                    disabled={saving}
-                    size="sm"
-                    className="bg-green-700 hover:bg-green-600"
-                  >
-                    <Check className="h-4 w-4 mr-2" />
-                    {saving ? 'Saving...' : 'Save'}
-                  </Button>
-                  <Button
-                    onClick={handleCancel}
+                    onClick={handleEdit}
                     variant="outline"
                     size="sm"
                     className="bg-gray-700 border-gray-600 hover:bg-gray-600"
                   >
-                    <X className="h-4 w-4 mr-2" />
-                    Cancel
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Edit Profile
                   </Button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={handleSave}
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <Check className="h-4 w-4 mr-2" />
+                      Save Changes
+                    </Button>
+                    <Button
+                      onClick={handleCancel}
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-300 hover:bg-gray-700"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {editing ? (
+                // EDITING VIEW
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        First Name
+                      </label>
+                      <Input
+                        value={editedProfile.first_name}
+                        onChange={(e) => handleInputChange('first_name', e.target.value)}
+                        className="bg-gray-700 border-gray-600 text-white"
+                        placeholder="Enter first name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Last Name
+                      </label>
+                      <Input
+                        value={editedProfile.last_name}
+                        onChange={(e) => handleInputChange('last_name', e.target.value)}
+                        className="bg-gray-700 border-gray-600 text-white"
+                        placeholder="Enter last name"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">
+                      Student ID (SDI)
+                    </label>
+                    <Input
+                      type="number"
+                      value={editedProfile.sdi}
+                      onChange={(e) => handleInputChange('sdi', parseInt(e.target.value) || '')}
+                      className="bg-gray-700 border-gray-600 text-white"
+                      placeholder="Enter 7-digit SDI"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Current Semester
+                      </label>
+                      <Select
+                        value={editedProfile.current_semester?.toString() || ''}
+                        onValueChange={(value) =>
+                          handleInputChange('current_semester', value ? parseInt(value) : '')
+                        }
+                      >
+                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                          <SelectValue placeholder="Select semester" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-700 text-white">
+                          {semesters.map((sem) => (
+                            <SelectItem
+                              key={sem.value}
+                              value={sem.value.toString()}
+                              className="focus:bg-gray-700"
+                            >
+                              {sem.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Academic Direction
+                      </label>
+                      <Select
+                        value={editedProfile.direction}
+                        onValueChange={(value) => handleInputChange('direction', value)}
+                      >
+                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                          <SelectValue placeholder="Select direction" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-700 text-white">
+                          {directions.map((dir) => (
+                            <SelectItem
+                              key={dir.value}
+                              value={dir.value}
+                              className="focus:bg-gray-700"
+                            >
+                              {dir.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
+              ) : (
+                // VIEWING VIEW
+                <dl className="space-y-6 text-sm">
+                  <div className="grid grid-cols-3 gap-2">
+                    <dt className="font-medium text-gray-400 flex items-center gap-2">
+                      <User className="h-4 w-4" /> First Name
+                    </dt>
+                    <dd className="col-span-2 text-gray-200">{profile.first_name || 'Not set'}</dd>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <dt className="font-medium text-gray-400 flex items-center gap-2">
+                      <User className="h-4 w-4" /> Last Name
+                    </dt>
+                    <dd className="col-span-2 text-gray-200">{profile.last_name || 'Not set'}</dd>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <dt className="font-medium text-gray-400 flex items-center gap-2">
+                      <Hash className="h-4 w-4" /> Student ID (SDI)
+                    </dt>
+                    <dd className="col-span-2 font-mono text-gray-200">
+                      {profile.sdi || 'Not set'}
+                    </dd>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <dt className="font-medium text-gray-400 flex items-center gap-2">
+                      <BookOpen className="h-4 w-4" /> Current Semester
+                    </dt>
+                    <dd className="col-span-2 text-gray-200">
+                      {profile.current_semester
+                        ? `Semester ${profile.current_semester}`
+                        : 'Not set'}
+                    </dd>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <dt className="font-medium text-gray-400 flex items-center gap-2">
+                      <Settings className="h-4 w-4" /> Academic Direction
+                    </dt>
+                    <dd className="col-span-2 text-gray-200">{directionLabel}</dd>
+                  </div>
+                </dl>
               )}
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* SDI */}
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Student ID (SDI)
-                </label>
-                {editing ? (
-                  <Input
-                    type="number"
-                    value={editedProfile.sdi}
-                    onChange={(e) => handleInputChange('sdi', parseInt(e.target.value) || '')}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="Enter 7-digit SDI"
-                  />
-                ) : (
-                  <p className="text-lg font-semibold text-white">{profile.sdi || 'Not set'}</p>
-                )}
-              </div>
-
-              {/* First Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">First Name</label>
-                {editing ? (
-                  <Input
-                    value={editedProfile.first_name}
-                    onChange={(e) => handleInputChange('first_name', e.target.value)}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="Enter first name"
-                  />
-                ) : (
-                  <p className="text-lg font-semibold text-white">
-                    {profile.first_name || 'Not set'}
-                  </p>
-                )}
-              </div>
-
-              {/* Last Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">Last Name</label>
-                {editing ? (
-                  <Input
-                    value={editedProfile.last_name}
-                    onChange={(e) => handleInputChange('last_name', e.target.value)}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="Enter last name"
-                  />
-                ) : (
-                  <p className="text-lg font-semibold text-white">
-                    {profile.last_name || 'Not set'}
-                  </p>
-                )}
-              </div>
-
-              {/* Current Semester */}
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Current Semester
-                </label>
-                {editing ? (
-                  <Select
-                    value={editedProfile.current_semester?.toString() || ''}
-                    onValueChange={(value) =>
-                      handleInputChange('current_semester', value ? parseInt(value) : '')
-                    }
-                  >
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                      <SelectValue placeholder="Select semester" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      <SelectItem value="" className="text-white hover:bg-gray-700">
-                        Not selected
-                      </SelectItem>
-                      {semesters.map((sem) => (
-                        <SelectItem
-                          key={sem.value}
-                          value={sem.value.toString()}
-                          className="text-white hover:bg-gray-700"
-                        >
-                          {sem.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <p className="text-lg font-semibold text-white">
-                    {profile.current_semester ? `Semester ${profile.current_semester}` : 'Not set'}
-                  </p>
-                )}
-              </div>
-
-              {/* Direction */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Academic Direction
-                </label>
-                {editing ? (
-                  <Select
-                    value={editedProfile.direction || ''}
-                    onValueChange={(value) => handleInputChange('direction', value)}
-                  >
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                      <SelectValue placeholder="Select direction" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      {directions.map((dir) => (
-                        <SelectItem
-                          key={dir.value}
-                          value={dir.value}
-                          className="text-white hover:bg-gray-700"
-                        >
-                          {dir.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <p className="text-lg font-semibold text-white">
-                    {directions.find((d) => d.value === profile.direction)?.label || 'Not selected'}
-                  </p>
-                )}
-                {!editing && (
-                  <p className="text-sm text-gray-400 mt-1">
-                    Choose your academic direction to see relevant course requirements
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Profile Summary */}
-            {!editing && (
-              <div className="mt-8 p-4 bg-gray-700/50 rounded-lg">
-                <h4 className="text-sm font-medium text-gray-300 mb-3">Profile Summary</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-400">Full Name:</span>
-                    <span className="text-white ml-2 font-medium">
-                      {profile.first_name && profile.last_name
-                        ? `${profile.first_name} ${profile.last_name}`
-                        : 'Not complete'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">Progress:</span>
-                    <span className="text-blue-400 ml-2 font-medium">
-                      {profile.current_semester
-                        ? `Semester ${profile.current_semester}/8`
-                        : 'Not set'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">Direction:</span>
-                    <span className="text-orange-400 ml-2 font-medium">
-                      {profile.direction || 'Not selected'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </CardContent>
+          </div>
         </Card>
-
-        {/* Additional Info */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-400">
-            Update your profile information to get personalized course recommendations and track
-            your progress accurately.
-          </p>
-        </div>
       </div>
     </div>
   );
