@@ -102,7 +102,7 @@ function Subscription() {
         'Early access to new features',
       ],
       cta: 'Go Ultimate',
-    }
+    },
   ];
 
   return (
