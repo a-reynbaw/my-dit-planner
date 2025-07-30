@@ -122,7 +122,7 @@ jobs:
           echo "Updated sdi response: $response"
           echo "$response" | jq -e '.sdi == 2400000'
 
-      - name: Update profile firstname
+      - name: Update profile first name
         run: |
           curl --fail -X PUT \
           -H "Content-Type: application/json" \
@@ -133,7 +133,7 @@ jobs:
           echo "Updated firstname response: $response"
           echo "$response" | jq -e '.first_name == "Maria"'
 
-      - name: Update profile lastname
+      - name: Update profile last name
         run: |
           curl --fail -X PUT \
           -H "Content-Type: application/json" \
@@ -142,7 +142,7 @@ jobs:
 
           response=$(curl --fail -s http://localhost:8000/api/profile/last_name)
           echo "Updated lastname response: $response"
-          echo "$response" | jq -e '.last_name == "Papadopoulou'
+          echo "$response" | jq -e '.last_name == "Papadopoulou"'
 
       - name: Update profile current semester
         run: |
