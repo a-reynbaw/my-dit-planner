@@ -95,28 +95,28 @@ jobs:
           curl --fail -X PUT \
             -H "Content-Type: application/json" \
             -d '{"status": "Passed"}' \
-            http://localhost:8000/api/courses/1/status
+            http://localhost:8000/api/courses/status
 
       - name: Update course grade
         run: |
           curl --fail -X PUT \
           -H "Content-Type: application/json" \
           -d '{"grade": 8}' \
-          http://localhost:8000/api/courses/1/grade
+          http://localhost:8000/api/courses/grade
 
       - name: Update course planned semester
         run: |
           curl --fail -X PUT \
           -H "Content-Type: application/json" \
           -d '{"planned_semester": 3}' \
-          http://localhost:8000/api/courses/1/planned_semester
+          http://localhost:8000/api/courses/planned_semester
 
-      - name: test update profile sdi
+      - name: Test update profile sdi
         run: |
           curl --fail -X PUT \
           -H "Content-Type: application/json" \
           -d '{"sdi": 2400000}' \
-          http://localhost:8000/api/profile/1/sdi
+          http://localhost:8000/api/profile/sdi
 
           response=$(curl --fail -s http://localhost:8000/api/profile/sdi)
           echo "Updated sdi response: $response"
@@ -127,7 +127,7 @@ jobs:
           curl --fail -X PUT \
           -H "Content-Type: application/json" \
           -d '{"first_name": "Maria"}' \
-          http://localhost:8000/api/profile/1/first_name
+          http://localhost:8000/api/profile/first_name
 
           response=$(curl --fail -s http://localhost:8000/api/profile/first_name)
           echo "Updated firstname response: $response"
@@ -138,7 +138,7 @@ jobs:
           curl --fail -X PUT \
           -H "Content-Type: application/json" \
           -d '{"last_name": "Papadopoulou"}' \
-          http://localhost:8000/api/profile/1/
+          http://localhost:8000/api/profile/last_name
 
           response=$(curl --fail -s http://localhost:8000/api/profile/last_name)
           echo "Updated lastname response: $response"
@@ -149,7 +149,7 @@ jobs:
           curl --fail -X PUT \
           -H "Content-Type: application/json" \
           -d '{"current_semester": 5}' \
-          http://localhost:8000/api/profile/1/current_semester
+          http://localhost:8000/api/profile/current_semester
 
           response=$(curl --fail -s http://localhost:8000/api/profile/current_semester)
           echo "Updated current semester response: $response"

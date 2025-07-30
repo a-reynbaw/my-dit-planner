@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
-from contextlib import asynccontextmanager  # Add this import
+from contextlib import asynccontextmanager
 import os
 from database import (
     init_database,
@@ -69,13 +69,13 @@ class CourseStatusUpdate(BaseModel):
 class CoursePlannedSemesterUpdate(BaseModel):
     planned_semester: int
 class SdiUpdate(BaseModel):
-    sdi: int  # Fixed: was 'direction'
+    sdi: int  
 class FirstnameUpdate(BaseModel):
-    first_name: str  # Fixed: was 'direction'
+    first_name: str  
 class LastnameUpdate(BaseModel):
-    last_name: str  # Fixed: was 'direction'
+    last_name: str  
 class CurrentSemesterUpdate(BaseModel):
-    current_semester: int  # Fixed: was 'direction'
+    current_semester: int 
 class DirectionUpdate(BaseModel):
     direction: str
 class ProfileFieldUpdate(BaseModel):
@@ -233,3 +233,7 @@ def api_update_direction_with_id(update: DirectionUpdate):
         return {"message": "Direction updated"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating direction: {str(e)}")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
