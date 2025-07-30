@@ -95,7 +95,7 @@ jobs:
           curl --fail -X PUT \
             -H "Content-Type: application/json" \
             -d '{"status": "Passed"}' \
-            http://localhost:8000/api/courses/status
+            http://localhost:8000/api/courses/1/status
 
       - name: Update course grade
         run: |
