@@ -73,10 +73,10 @@ sudo docker-compose down -v --rmi all
 ## To-Do List
 - [X] add two tests to the backend for getting and updating the direction
 - [X] re-make the main page to make more sense given the current features
-- [ ] add specialty progress to the requirements
-- [ ] potential (one) new page: profile/info/setting/stats etc
+- [X] add specialty progress to the requirements
+- [X] potential (one) new page: profile/info/setting/stats etc
 - [ ] links for usefull resources like delos, dit page, eclass, dit lab
-- [ ] add free courses
-- [ ] make the direction selection box a little wider (Degree Requirements)
-- [ ] add endpoints for S1,...,S6
+- [X] add free courses
+- [X] make the direction selection box a little wider (Degree Requirements)
+- [X] add endpoints for S1,...,S6
 - [ ] look for prerequisets h opws sto diaolo legontai
