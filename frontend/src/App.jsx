@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   Loader2,
   User,
+  Gem,
 } from 'lucide-react';
 import { Toaster } from 'sonner';
 
@@ -27,6 +28,7 @@ import Timetable from '@/pages/Timetable';
 import Maintenance from '@/pages/Maintenance';
 import NotFound from '@/pages/NotFound';
 import Profile from '@/pages/Profile';
+import Subscription from '@/pages/Subscription';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -49,25 +51,39 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-gray-800 p-6 hidden lg:flex flex-col">
-      <h2 className="text-2xl font-bold text-white mb-10">DIT Hub</h2>
-      <nav className="flex flex-col space-y-2">
-        {navItems.map((item) => (
-          <Button
-            key={item.title}
-            variant="ghost"
-            onClick={() => navigate(item.path)}
-            className={`justify-start text-left text-base p-3 h-auto ${
-              location.pathname === item.path
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-            }`}
-          >
-            <item.icon className="h-5 w-5" />
-            {item.title}
-          </Button>
-        ))}
-      </nav>
+    <aside className="w-64 flex-shrink-0 bg-gray-800 p-6 hidden lg:flex flex-col justify-between">
+      <div>
+        <h2 className="text-2xl font-bold text-white mb-10">DIT Hub</h2>
+        <nav className="flex flex-col space-y-2">
+          {navItems.map((item) => (
+            <Button
+              key={item.title}
+              variant="ghost"
+              onClick={() => navigate(item.path)}
+              className={`justify-start text-left text-base p-3 h-auto ${
+                location.pathname === item.path
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+              }`}
+            >
+              <item.icon className="h-5 w-5 mr-3" />
+              {item.title}
+            </Button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Subscription Link at the bottom */}
+      <div>
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/subscription')}
+          className="justify-start text-left w-full text-xs p-3 h-auto text-gray-500 hover:bg-gray-700 hover:text-white"
+        >
+          <Gem className="h-4 w-4 mr-3" />
+          Subscription Plans
+        </Button>
+      </div>
     </aside>
   );
 }
@@ -331,6 +347,7 @@ function App() {
           <Route path="/degree-requirements" element={<DegreeRequirements />} />
           <Route path="/timetable" element={<Timetable />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/subscription" element={<Subscription />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
