@@ -44,16 +44,25 @@ My DIT Planner is a full-stack web application designed to help students of the 
     ```bash
     cd my-dit-planner
     ```
-3. Install dependencies:
+3. Build and run the backend server:
 
-    To build the whole app simply run:
+    Move to the backend directory and just run the command:
     ```bash
-    docker-compose up --build
+    ./run.sh
     ```
 
-    This will build both the frontend and backend Docker images and start the services.
+    This will install the needed requirements and run the backend server in a virtual enviroment.
+
+4. Run frontend
+
+    In a new terminal, run the following commands
+    ```bash
+    cd my-dit-planner/frontend
+    npm i
+    npm run dev
+    ```
    
-4. Access the application:
+5. Access the application:
 Open your web browser and navigate to `http://localhost:5173` for the frontend. The backend API will be available at `http://localhost:8000`.
 
 ## Cleaning Up

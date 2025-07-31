@@ -178,7 +178,7 @@ def init_database():
     ''')
 
     profile = [
-        (2400120, 'Anastasia', 'Marinakou', 2, None)
+        (0, None, None, 0, None)
     ]
     try:
         for sdi, first_name, last_name, current_semester, direction in profile:
