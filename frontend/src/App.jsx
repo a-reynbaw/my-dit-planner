@@ -114,9 +114,37 @@ function SummaryCard({ title, value, icon: Icon, color, onClick, cta, showArrow 
 }
 
 // The new Dashboard component
-function Dashboard({ courses }) {
+function Dashboard() {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]); // Add local state
+  const [loading, setLoading] = useState(true); // Add loading state
   const totalECTS = 240;
+
+  // Fetch courses every time Dashboard loads
+  useEffect(() => {
+    fetch('/api/courses')
+      .then((res) => res.json())
+      .then((data) => {
+        setCourses(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch courses:', error);
+        setLoading(false);
+      });
+  }, []); // This runs every time Dashboard component mounts
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+          <span className="ml-3 text-gray-400">Loading dashboard...</span>
+        </div>
+      </div>
+    );
+  }
 
   // Calculations
   const passedCourses = courses.filter((c) => c.status === 'Passed');
@@ -304,12 +332,7 @@ function App() {
         if (!res.ok) {
           throw new Error('Backend is not responding');
         }
-        // If health check is ok, fetch courses
-        return fetch('/api/courses');
-      })
-      .then((res) => res.json())
-      .then((data) => {
-        setCourses(data);
+        // Just do health check, Dashboard will fetch its own courses
         setIsBackendDown(false);
       })
       .catch((error) => {
@@ -339,7 +362,7 @@ function App() {
       <Sidebar />
       <main className="flex-1">
         <Routes>
-          <Route path="/" element={<Dashboard courses={courses} />} />
+          <Route path="/" element={<Dashboard />} /> {/* Remove courses prop */}
           <Route path="/all-courses" element={<AllCourses />} />
           <Route path="/plan-courses" element={<PlanCourses />} />
           <Route path="/failed-courses" element={<FailedCourses />} />

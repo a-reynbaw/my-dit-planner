@@ -47,19 +47,84 @@ function AllCourses() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ semester: 'all', type: 'all' });
+  const [userCurrentSemester, setUserCurrentSemester] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((data) => {
-        setCourses(data);
+    // Fetch both courses and user's current semester
+    Promise.all([
+      fetch(API_URL).then((res) => res.json()),
+      fetch('/api/profile/current_semester').then((res) => res.json()),
+    ])
+      .then(([coursesData, semesterData]) => {
+        setCourses(coursesData);
+        setUserCurrentSemester(semesterData.current_semester);
         setLoading(false);
       })
-      .catch(() => toast.error('Failed to load courses.'));
+      .catch(() => {
+        toast.error('Failed to load courses.');
+        setLoading(false);
+      });
   }, []);
 
+  const checkSemesterParity = (courseId, newStatus) => {
+    if (newStatus !== 'Current Semester') {
+      return { valid: true };
+    }
+
+    // Find the course
+    const course = courses.find((c) => c.id === courseId);
+    if (!course) {
+      return { valid: false, message: 'Course not found.' };
+    }
+
+    // Check if user has set their current semester
+    if (!userCurrentSemester) {
+      return {
+        valid: false,
+        message: 'Please set your current semester in your profile before marking courses as current.',
+        showProfileLink: true,
+      };
+    }
+
+    // Check semester parity
+    const courseSemester = course.semester;
+    const userSemesterIsOdd = userCurrentSemester % 2 === 1;
+    const courseSemesterIsOdd = courseSemester % 2 === 1;
+
+    if (userSemesterIsOdd !== courseSemesterIsOdd) {
+      const courseType = courseSemesterIsOdd ? 'odd' : 'even';
+      const userType = userSemesterIsOdd ? 'odd' : 'even';
+
+      return {
+        valid: false,
+        message: `Cannot mark this course as current. "${course.name}" is a semester ${courseSemester} (${courseType}) course, but you're currently in semester ${userCurrentSemester} (${userType}). Please update your current semester in your profile if this is correct.`,
+        showProfileLink: true,
+      };
+    }
+
+    return { valid: true };
+  };
+
   const updateStatus = (id, newStatus) => {
+    // Validate semester parity before making the request
+    const validation = checkSemesterParity(id, newStatus);
+
+    if (!validation.valid) {
+      if (validation.showProfileLink) {
+        toast.error(validation.message, {
+          duration: 8000,
+          action: {
+            label: 'Update Profile',
+            onClick: () => navigate('/profile'),
+          },
+        });
+      } else {
+        toast.error(validation.message);
+      }
+      return;
+    }
+
     const originalCourses = [...courses];
     setCourses((prev) =>
       prev.map((c) => {
@@ -114,6 +179,14 @@ function AllCourses() {
       });
   };
 
+  // Helper function to check if a course has semester parity mismatch
+  const hasSemesterMismatch = (course) => {
+    if (!userCurrentSemester) return false;
+    const userSemesterIsOdd = userCurrentSemester % 2 === 1;
+    const courseSemesterIsOdd = course.semester % 2 === 1;
+    return userSemesterIsOdd !== courseSemesterIsOdd;
+  };
+
   const filteredCourses = courses.filter((c) => {
     const searchLower = search.toLowerCase();
     const courseName = c.name.toLowerCase();
@@ -141,6 +214,11 @@ function AllCourses() {
         <div>
           <h1 className="text-4xl font-bold tracking-tight">All University Courses</h1>
           <p className="text-lg text-gray-400">Browse, search, and manage all available courses.</p>
+          {userCurrentSemester && (
+            <p className="text-sm text-gray-400 mt-1">
+              Current semester: {userCurrentSemester} ({userCurrentSemester % 2 === 1 ? 'odd' : 'even'})
+            </p>
+          )}
         </div>
         <Button
           variant="outline"
@@ -262,7 +340,7 @@ function AllCourses() {
                           step="0.5"
                           min="0"
                           max="10"
-                          defaultValue={course.grade || ''}
+                          defaultValue={course.grade || '5'}
                           onBlur={(e) => updateGrade(course.id, e.target.value)}
                           className="w-20 bg-gray-700 border-gray-600 text-white h-8"
                           placeholder="N/A"
@@ -306,9 +384,21 @@ function AllCourses() {
                           <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Current Semester')}
                             disabled={course.status === 'Current Semester'}
-                            className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
+                            className={`hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white ${
+                              hasSemesterMismatch(course) ? 'opacity-60' : ''
+                            }`}
                           >
-                            Set as Current
+                            <span className="flex items-center justify-between w-full">
+                              Set as Current
+                              {hasSemesterMismatch(course) && (
+                                <span
+                                  className="ml-2 text-xs text-yellow-400"
+                                  title="Semester parity mismatch"
+                                >
+                                  ⚠️
+                                </span>
+                              )}
+                            </span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Planned')}
@@ -332,7 +422,7 @@ function AllCourses() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-24 text-gray-400">
+                  <TableCell colSpan={8} className="text-center h-24 text-gray-400">
                     No courses found matching your criteria.
                   </TableCell>
                 </TableRow>

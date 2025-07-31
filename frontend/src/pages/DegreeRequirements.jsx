@@ -82,6 +82,7 @@ function DegreeRequirements() {
   const [directionCourses, setDirectionCourses] = useState([]);
   const [completedDirection, setCompletedDirection] = useState([]);
   const [specialityNames, setSpecialityNames] = useState({});
+  const [graduationBasicReq, setGraduationBasicReq] = useState(null);
 
   const directions = [
     { value: 'CS', label: 'Computer Science (CS)' },
@@ -136,6 +137,41 @@ function DegreeRequirements() {
         };
       };
 
+      // NEW: Calculate graduation requirement for basic courses across all specialities
+      const calculateGraduationBasicRequirement = (direction) => {
+        if (!direction) return { completed: 0, total: 4, passedCourses: [] };
+        
+        const availableSpecs = getAvailableSpecialities(direction);
+        const passedCourses = courses.filter(c => c.status === 'Passed');
+        
+        // Get courses marked as "B" in any of the three direction specialities
+        const basicCoursesAcrossSpecs = passedCourses.filter(course => {
+          return availableSpecs.some(spec => course[spec] === 'B');
+        });
+
+        // Count how many specialities are represented
+        const specialitiesRepresented = new Set();
+        basicCoursesAcrossSpecs.forEach(course => {
+          availableSpecs.forEach(spec => {
+            if (course[spec] === 'B') {
+              specialitiesRepresented.add(spec);
+            }
+          });
+        });
+
+        const allSpecsRepresented = specialitiesRepresented.size === 3;
+        const minimumCoursesReached = basicCoursesAcrossSpecs.length >= 4;
+        
+        return {
+          completed: basicCoursesAcrossSpecs.length,
+          total: 4,
+          passedCourses: basicCoursesAcrossSpecs,
+          specialitiesRepresented: Array.from(specialitiesRepresented),
+          allSpecsRepresented,
+          isCompleted: minimumCoursesReached && allSpecsRepresented
+        };
+      };
+
       const dirCourses = getDirectionCourses(userDirection);
       setDirectionCourses(dirCourses);
       setCompletedDirection(dirCourses.filter((c) => c.status === 'Passed'));
@@ -146,6 +182,9 @@ function DegreeRequirements() {
         calculateSpecialityProgress(spec),
       ]);
       setSpecialityProgress(Object.fromEntries(progressResults));
+
+      // Store the graduation basic requirement data
+      setGraduationBasicReq(calculateGraduationBasicRequirement(userDirection));
     }
   }, [courses, userDirection]);
 
@@ -262,6 +301,7 @@ function DegreeRequirements() {
   const selectedDirectionLabel =
     directions.find((d) => d.value === userDirection)?.label || userDirection;
 
+  // Add the new graduation basic requirement to the existing requirements array
   const requirements = [
     {
       title: 'Compulsory Courses (ΥΜ)',
@@ -318,6 +358,63 @@ function DegreeRequirements() {
       ),
     },
     {
+      title: 'Graduation Basic Requirement',
+      description: `Pass 4+ courses marked as "Basic" across all 3 ${selectedDirectionLabel} specialities.`,
+      icon: Target,
+      color: 'text-indigo-400',
+      completed: graduationBasicReq?.completed || 0,
+      total: 4,
+      children: graduationBasicReq && (
+        <div className="mt-2 space-y-2">
+          <div className="p-3 bg-gray-700/50 rounded-lg text-xs">
+            <p className="font-semibold text-gray-300 mb-2">Speciality Coverage:</p>
+            <div className="grid grid-cols-3 gap-2">
+              {availableSpecialities.map((spec) => {
+                const isRepresented = graduationBasicReq.specialitiesRepresented.includes(spec);
+                return (
+                  <div key={spec} className="flex items-center gap-1">
+                    {isRepresented ? (
+                      <CheckCircle2 className="h-3 w-3 text-green-400" />
+                    ) : (
+                      <XCircle className="h-3 w-3 text-red-400" />
+                    )}
+                    <span className={`text-xs ${isRepresented ? 'text-gray-300' : 'text-gray-500'}`}>
+                      {specialityNames[spec] || spec}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-2 pt-2 border-t border-gray-600/50">
+              <p className={`text-xs font-medium ${
+                graduationBasicReq.isCompleted ? 'text-green-400' : 
+                graduationBasicReq.allSpecsRepresented ? 'text-orange-400' : 'text-red-400'
+              }`}>
+                {graduationBasicReq.completed}/4 courses • {graduationBasicReq.specialitiesRepresented.length}/3 specialities
+              </p>
+            </div>
+          </div>
+          {graduationBasicReq.passedCourses.length > 0 && (
+            <div className="max-h-24 overflow-y-auto">
+              <p className="text-xs text-gray-400 mb-1">Completed basic courses:</p>
+              <div className="space-y-1">
+                {graduationBasicReq.passedCourses.slice(0, 6).map((course) => (
+                  <div key={course.id} className="text-xs text-gray-300 truncate">
+                    • {course.name}
+                  </div>
+                ))}
+                {graduationBasicReq.passedCourses.length > 6 && (
+                  <div className="text-xs text-gray-400">
+                    +{graduationBasicReq.passedCourses.length - 6} more...
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
       title: 'Direction Project',
       description: 'A semester-long software development project.',
       icon: BookOpen,
@@ -349,6 +446,8 @@ function DegreeRequirements() {
         </div>
       ),
     },
+    // NEW: Graduation Basic Requirement
+    
     {
       title: 'Specialities',
       description: 'Complete 2 of 3 specialities for your direction (optional).',
