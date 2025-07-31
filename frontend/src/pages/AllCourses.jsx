@@ -82,7 +82,8 @@ function AllCourses() {
     if (!userCurrentSemester) {
       return {
         valid: false,
-        message: 'Please set your current semester in your profile before marking courses as current.',
+        message:
+          'Please set your current semester in your profile before marking courses as current.',
         showProfileLink: true,
       };
     }
@@ -216,7 +217,8 @@ function AllCourses() {
           <p className="text-lg text-gray-400">Browse, search, and manage all available courses.</p>
           {userCurrentSemester && (
             <p className="text-sm text-gray-400 mt-1">
-              Current semester: {userCurrentSemester} ({userCurrentSemester % 2 === 1 ? 'odd' : 'even'})
+              Current semester: {userCurrentSemester} (
+              {userCurrentSemester % 2 === 1 ? 'odd' : 'even'})
             </p>
           )}
         </div>

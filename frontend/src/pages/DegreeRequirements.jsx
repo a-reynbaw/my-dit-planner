@@ -140,19 +140,19 @@ function DegreeRequirements() {
       // NEW: Calculate graduation requirement for basic courses across all specialities
       const calculateGraduationBasicRequirement = (direction) => {
         if (!direction) return { completed: 0, total: 4, passedCourses: [] };
-        
+
         const availableSpecs = getAvailableSpecialities(direction);
-        const passedCourses = courses.filter(c => c.status === 'Passed');
-        
+        const passedCourses = courses.filter((c) => c.status === 'Passed');
+
         // Get courses marked as "B" in any of the three direction specialities
-        const basicCoursesAcrossSpecs = passedCourses.filter(course => {
-          return availableSpecs.some(spec => course[spec] === 'B');
+        const basicCoursesAcrossSpecs = passedCourses.filter((course) => {
+          return availableSpecs.some((spec) => course[spec] === 'B');
         });
 
         // Count how many specialities are represented
         const specialitiesRepresented = new Set();
-        basicCoursesAcrossSpecs.forEach(course => {
-          availableSpecs.forEach(spec => {
+        basicCoursesAcrossSpecs.forEach((course) => {
+          availableSpecs.forEach((spec) => {
             if (course[spec] === 'B') {
               specialitiesRepresented.add(spec);
             }
@@ -161,14 +161,14 @@ function DegreeRequirements() {
 
         const allSpecsRepresented = specialitiesRepresented.size === 3;
         const minimumCoursesReached = basicCoursesAcrossSpecs.length >= 4;
-        
+
         return {
           completed: basicCoursesAcrossSpecs.length,
           total: 4,
           passedCourses: basicCoursesAcrossSpecs,
           specialitiesRepresented: Array.from(specialitiesRepresented),
           allSpecsRepresented,
-          isCompleted: minimumCoursesReached && allSpecsRepresented
+          isCompleted: minimumCoursesReached && allSpecsRepresented,
         };
       };
 
@@ -378,7 +378,9 @@ function DegreeRequirements() {
                     ) : (
                       <XCircle className="h-3 w-3 text-red-400" />
                     )}
-                    <span className={`text-xs ${isRepresented ? 'text-gray-300' : 'text-gray-500'}`}>
+                    <span
+                      className={`text-xs ${isRepresented ? 'text-gray-300' : 'text-gray-500'}`}
+                    >
                       {specialityNames[spec] || spec}
                     </span>
                   </div>
@@ -386,11 +388,17 @@ function DegreeRequirements() {
               })}
             </div>
             <div className="mt-2 pt-2 border-t border-gray-600/50">
-              <p className={`text-xs font-medium ${
-                graduationBasicReq.isCompleted ? 'text-green-400' : 
-                graduationBasicReq.allSpecsRepresented ? 'text-orange-400' : 'text-red-400'
-              }`}>
-                {graduationBasicReq.completed}/4 courses • {graduationBasicReq.specialitiesRepresented.length}/3 specialities
+              <p
+                className={`text-xs font-medium ${
+                  graduationBasicReq.isCompleted
+                    ? 'text-green-400'
+                    : graduationBasicReq.allSpecsRepresented
+                      ? 'text-orange-400'
+                      : 'text-red-400'
+                }`}
+              >
+                {graduationBasicReq.completed}/4 courses •{' '}
+                {graduationBasicReq.specialitiesRepresented.length}/3 specialities
               </p>
             </div>
           </div>
@@ -447,7 +455,7 @@ function DegreeRequirements() {
       ),
     },
     // NEW: Graduation Basic Requirement
-    
+
     {
       title: 'Specialities',
       description: 'Complete 2 of 3 specialities for your direction (optional).',
