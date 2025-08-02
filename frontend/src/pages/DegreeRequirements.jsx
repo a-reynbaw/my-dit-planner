@@ -316,39 +316,38 @@ function DegreeRequirements() {
       color: 'text-orange-400',
       completed: completedDirection.length,
       total: 4,
-      children:
-        userDirection === 'CS' && (
-          <div className="mt-3 pt-3 border-t border-dashed border-gray-700 text-xs">
-            <p className="font-semibold text-gray-400 mb-2">CS Direction Constraint:</p>
-            <ul className="space-y-1.5">
-              {csRequiredCourses.map((name) => (
-                <li key={name} className="flex items-center gap-2">
-                  {csRequiredCompleted.some((c) => c.name === name) ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-400" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-red-400/80" />
-                  )}
-                  <span
-                    className={
-                      csRequiredCompleted.some((c) => c.name === name)
-                        ? 'text-gray-300'
-                        : 'text-gray-500'
-                    }
-                  >
-                    {name}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p
-              className={`mt-2 text-right font-medium ${
-                csRequiredCompleted.length >= 3 ? 'text-green-400' : 'text-orange-400'
-              }`}
-            >
-              {csRequiredCompleted.length}/3 met
-            </p>
-          </div>
-        ),
+      children: userDirection === 'CS' && (
+        <div className="mt-3 pt-3 border-t border-dashed border-gray-700 text-xs">
+          <p className="font-semibold text-gray-400 mb-2">CS Direction Constraint:</p>
+          <ul className="space-y-1.5">
+            {csRequiredCourses.map((name) => (
+              <li key={name} className="flex items-center gap-2">
+                {csRequiredCompleted.some((c) => c.name === name) ? (
+                  <CheckCircle2 className="h-4 w-4 text-green-400" />
+                ) : (
+                  <XCircle className="h-4 w-4 text-red-400/80" />
+                )}
+                <span
+                  className={
+                    csRequiredCompleted.some((c) => c.name === name)
+                      ? 'text-gray-300'
+                      : 'text-gray-500'
+                  }
+                >
+                  {name}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p
+            className={`mt-2 text-right font-medium ${
+              csRequiredCompleted.length >= 3 ? 'text-green-400' : 'text-orange-400'
+            }`}
+          >
+            {csRequiredCompleted.length}/3 met
+          </p>
+        </div>
+      ),
     },
     {
       title: 'Graduation Basic Requirement',
@@ -482,7 +481,11 @@ function DegreeRequirements() {
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gray-700 text-white">
               {directions.map((dir) => (
-                <SelectItem key={dir.value} value={dir.value} className="focus:bg-gray-700 focus:text-white">
+                <SelectItem
+                  key={dir.value}
+                  value={dir.value}
+                  className="focus:bg-gray-700 focus:text-white"
+                >
                   {dir.label}
                 </SelectItem>
               ))}
