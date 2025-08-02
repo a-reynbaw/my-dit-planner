@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, ChevronDown, Home, BookOpen } from 'lucide-react';
+import { Search, ChevronDown, BookOpen } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -133,14 +133,6 @@ function CurrentCourses() {
             Manage your current semester courses. Total: {courses.length} courses ({totalECTS} ECTS)
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => navigate('/')}
-          className="bg-gray-700 border-gray-600 hover:bg-gray-600 text-white hover:text-white transition-colors"
-        >
-          <Home className="h-5 w-5" />
-        </Button>
       </header>
 
       <div className="mb-8">

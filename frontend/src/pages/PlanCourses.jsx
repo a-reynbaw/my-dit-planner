@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Home, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import DraggableCourse from '@/components/course-planning/DraggableCourse';
@@ -212,21 +211,13 @@ function PlanCourses() {
               Drag & drop courses to organize your academic path.
             </p>
           </div>
-          <div className="text-right">
+          <div className="text-center w-full">
             <h4 className="text-xl font-bold text-blue-300">Planned ECTS</h4>
             <span className="text-lg font-semibold">
               {totalPlannedECTS} / {totalECTS}
             </span>
             <p className="text-xs text-gray-500 mt-1">Includes planned, current & failed courses</p>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigate('/')}
-            className="bg-gray-800 border-gray-700 hover:bg-gray-700"
-          >
-            <Home className="h-5 w-5" />
-          </Button>
         </header>
 
         {loading ? (

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { User, Home, Edit3, Check, X, Hash, BookOpen, Settings } from 'lucide-react';
+import { User, Edit3, Check, X, Hash, BookOpen, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
 function Profile() {
@@ -206,14 +206,6 @@ function Profile() {
               View and manage your personal information and academic preferences.
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigate('/')}
-            className="bg-gray-800 border-gray-700 hover:bg-gray-700 flex-shrink-0"
-          >
-            <Home className="h-5 w-5" />
-          </Button>
         </header>
 
         <Card className="bg-gray-800/80 border-gray-700 text-white overflow-hidden backdrop-blur-sm">

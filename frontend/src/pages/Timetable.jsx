@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Clock, MapPin, User, Calendar, Hash } from 'lucide-react';
+import { Clock, MapPin, User, Calendar, Hash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -294,14 +294,6 @@ function Timetable() {
             </div>
           )}
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => navigate('/')}
-          className="bg-gray-800 border-gray-700 hover:bg-gray-700"
-        >
-          <Home className="h-5 w-5" />
-        </Button>
       </header>
 
       {/* Summary Cards */}

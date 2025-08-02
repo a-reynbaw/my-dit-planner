@@ -33,6 +33,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import HomeButton from './components/layout/HomeButton';
 
 // Sidebar component for navigation
 function Sidebar() {
@@ -324,6 +325,9 @@ function App() {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isBackendDown, setIsBackendDown] = useState(false);
+  const location = useLocation();
+
+  const showHomeButton = location.pathname !== '/' && location.pathname !== '*';
 
   useEffect(() => {
     // Health check first
@@ -361,6 +365,7 @@ function App() {
       <Toaster richColors theme="dark" />
       <Sidebar />
       <main className="flex-1">
+        {showHomeButton && <HomeButton />}
         <Routes>
           <Route path="/" element={<Dashboard />} /> {/* Remove courses prop */}
           <Route path="/all-courses" element={<AllCourses />} />

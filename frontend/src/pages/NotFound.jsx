@@ -13,7 +13,7 @@ function NotFound() {
           <div className="mx-auto bg-yellow-900/40 rounded-full p-4 w-fit">
             <Frown className="h-12 w-12 text-yellow-400" />
           </div>
-          <CardTitle className="text-4xl font-bold mt-6">404 - Not Found</CardTitle>
+          <CardTitle className="text-4xl font-bold mt-6 text-white">404 - Not Found</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-gray-400 mb-8">

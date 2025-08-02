@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Home,
   Target,
   CheckCircle2,
   XCircle,
@@ -218,14 +217,6 @@ function DegreeRequirements() {
       <div className="bg-gray-900 min-h-screen text-white p-8">
         <header className="flex items-center justify-between mb-10">
           <h1 className="text-4xl font-bold tracking-tight">Choose Your Direction</h1>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigate('/')}
-            className="bg-gray-800 border-gray-700 hover:bg-gray-700"
-          >
-            <Home className="h-5 w-5" />
-          </Button>
         </header>
         <Card className="bg-gray-800 border-gray-700 max-w-2xl mx-auto">
           <CardHeader>
@@ -495,14 +486,6 @@ function DegreeRequirements() {
               ))}
             </SelectContent>
           </Select>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigate('/')}
-            className="bg-gray-800 border-gray-700 hover:bg-gray-700"
-          >
-            <Home className="h-5 w-5" />
-          </Button>
         </div>
       </header>
 

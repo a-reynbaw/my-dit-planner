@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, ChevronDown, Home, SlidersHorizontal } from 'lucide-react';
+import { Search, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -40,6 +40,15 @@ const getStatusBadgeColor = (status) => {
     default:
       return 'bg-gray-500 hover:bg-gray-600 text-white transition-colors duration-200';
   }
+};
+
+// Helper function to get the background color based on the semester
+const getSemesterBadgeClass = (semester) => {
+  if (semester >= 1 && semester <= 2) return 'bg-blue-200 text-blue-800';
+  if (semester >= 3 && semester <= 4) return 'bg-yellow-200 text-yellow-800';
+  if (semester >= 5 && semester <= 6) return 'bg-orange-200 text-orange-800';
+  if (semester >= 7 && semester <= 8) return 'bg-pink-200 text-pink-800';
+  return 'bg-gray-500 text-white'; // Default case
 };
 
 function AllCourses() {
@@ -222,14 +231,6 @@ function AllCourses() {
             </p>
           )}
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => navigate('/')}
-          className="bg-gray-700 border-gray-600 hover:bg-gray-600 text-white hover:text-white transition-colors"
-        >
-          <Home className="h-5 w-5" />
-        </Button>
       </header>
 
       <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -296,7 +297,7 @@ function AllCourses() {
         <Card className="bg-gray-800 border-gray-700">
           <Table>
             <TableHeader>
-              <TableRow className="border-b-gray-700">
+              <TableRow className="border-b-gray-700 hover:bg-transparent">
                 <TableHead className="text-white">Name</TableHead>
                 <TableHead className="text-white">Code</TableHead>
                 <TableHead className="text-white hidden md:table-cell">Semester</TableHead>
@@ -319,7 +320,7 @@ function AllCourses() {
                     <TableCell className="hidden md:table-cell">
                       <Badge
                         variant="secondary"
-                        className="transition-all duration-200 hover:scale-105"
+                        className={`transition-all duration-200 hover:scale-105 ${getSemesterBadgeClass(course.semester)}`}
                       >
                         {course.semester}
                       </Badge>
@@ -360,14 +361,14 @@ function AllCourses() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-white hover:bg-gray-700 transition-colors duration-200"
+                            className="text-white hover:bg-gray-700 hover:text-white transition duration-200"
                           >
                             Actions <ChevronDown className="h-4 w-4 ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
-                          className="bg-gray-800 text-white border-gray-700"
+                          className="bg-gray-800 text-white border-gray-700 max-w-full overflow-hidden z-50"
                         >
                           <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Passed')}
