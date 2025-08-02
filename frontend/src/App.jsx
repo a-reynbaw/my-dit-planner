@@ -322,7 +322,6 @@ function Dashboard() {
 }
 
 function App() {
-  const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isBackendDown, setIsBackendDown] = useState(false);
   const location = useLocation();
