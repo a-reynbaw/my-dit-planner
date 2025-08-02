@@ -16,6 +16,7 @@ import {
   Loader2,
   User,
   Gem,
+  LifeBuoy,
 } from 'lucide-react';
 import { Toaster } from 'sonner';
 
@@ -29,6 +30,7 @@ import Maintenance from '@/pages/Maintenance';
 import NotFound from '@/pages/NotFound';
 import Profile from '@/pages/Profile';
 import Subscription from '@/pages/Subscription';
+import Resources from '@/pages/Resources';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -51,6 +53,7 @@ function Sidebar() {
     { title: 'Current Courses', path: '/current-courses', icon: BookOpen },
     { title: 'Failed Courses', path: '/failed-courses', icon: XCircle },
     { title: 'Profile', path: '/profile', icon: User },
+    { title: 'Resources', path: '/resources', icon: LifeBuoy },
   ];
 
   return (
@@ -389,6 +392,7 @@ function App() {
           <Route path="/timetable" element={<Timetable />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/subscription" element={<Subscription />} />
+          <Route path="/resources" element={<Resources />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
