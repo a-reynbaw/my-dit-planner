@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,9 +11,10 @@ import {
 } from '@/components/ui/select';
 import { User, Edit3, Check, X, Hash, BookOpen, Settings } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 function Profile() {
-  const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [profile, setProfile] = useState({
     sdi: '',
     first_name: '',
@@ -179,6 +179,21 @@ function Profile() {
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleLanguageChange = async (newLang) => {
+    try {
+      await fetch('/api/profile/language', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language: newLang }),
+      });
+      i18n.changeLanguage(newLang);
+      toast.success(t('profile.languageChanged'));
+    } catch (error) {
+      console.error('Error updating language:', error);
+      toast.error(t('profile.languageChangeFailed'));
+    }
   };
 
   if (loading) {
@@ -397,6 +412,24 @@ function Profile() {
                       <Settings className="h-4 w-4" /> Academic Direction
                     </dt>
                     <dd className="col-span-2 text-gray-200">{directionLabel}</dd>
+                  </div>
+                  <div className="mt-6">
+                    <label className="block text-sm font-medium text-gray-400 mb-2">
+                      {t('profile.language')}
+                    </label>
+                    <Select value={i18n.language} onValueChange={handleLanguageChange}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700 text-white">
+                        <SelectItem value="en" className="focus:bg-gray-700 focus:text-white">
+                          English
+                        </SelectItem>
+                        <SelectItem value="el" className="focus:bg-gray-700 focus:text-white">
+                          Ελληνικά
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </dl>
               )}

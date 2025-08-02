@@ -173,19 +173,20 @@ def init_database():
             first_name TEXT,
             last_name TEXT,
             current_semester INT,
-            direction TEXT
+            direction TEXT,
+            language TEXT
         )
     ''')
 
     profile = [
-        (0, None, None, 0, None)
+        (0, None, None, 0, None, 'en')
     ]
     try:
-        for sdi, first_name, last_name, current_semester, direction in profile:
+        for sdi, first_name, last_name, current_semester, direction, language in profile:
             cursor.execute(
-                '''INSERT OR IGNORE INTO profile (sdi, first_name, last_name, current_semester, direction)
-                VALUES (?, ?, ?, ?, ?)''',
-                (sdi, first_name, last_name, current_semester, direction)
+                '''INSERT OR IGNORE INTO profile (sdi, first_name, last_name, current_semester, direction, language)
+                VALUES (?, ?, ?, ?, ?, ?)''',
+                (sdi, first_name, last_name, current_semester, direction, language)
             )
         conn.commit()
     except Exception as e:
@@ -241,7 +242,13 @@ def get_direction_with_id(profile_id):
         cursor = conn.cursor()
         cursor.execute('SELECT direction FROM profile WHERE id = ?', (profile_id,))  # Fixed missing comma
         return cursor.fetchall()
-    
+
+def get_language_with_id(profile_id):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT language FROM profile WHERE id = ?', (profile_id,))
+        return cursor.fetchall()
+
 ######### PUT ENDPOINTS #########
 
 def update_course_status(course_id, new_status):
@@ -294,6 +301,12 @@ def update_direction_with_id(profile_id, new_direction):
     with get_db_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE profile SET direction = ? WHERE id = ?', (new_direction, profile_id))
+        conn.commit()
+
+def update_language_with_id(profile_id, new_language):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE profile SET language = ? WHERE id = ?', (new_language, profile_id))
         conn.commit()
 
 ######### OTHER ENDPOINTS #########

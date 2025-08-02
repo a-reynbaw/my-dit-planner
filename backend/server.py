@@ -20,6 +20,8 @@ from database import (
     update_last_name_with_id,
     update_current_semester_with_id,
     update_direction_with_id,
+    get_language_with_id,
+    update_language_with_id,
     DATABASE_PATH
 )
 
@@ -80,6 +82,8 @@ class DirectionUpdate(BaseModel):
     direction: str
 class ProfileFieldUpdate(BaseModel):
     value: str
+class LanguageUpdate(BaseModel):
+    language: str
 
 class FullProfileUpdate(BaseModel):
     sdi: Optional[int] = None
@@ -87,6 +91,7 @@ class FullProfileUpdate(BaseModel):
     last_name: Optional[str] = None
     current_semester: Optional[int] = None
     direction: Optional[str] = None
+    language: Optional[str] = None
 
 # API Endpoints
 ######### GET ENDPOINTS #########
@@ -167,6 +172,17 @@ def api_get_speciality_names():
     }
     return speciality_names
 
+@app.get("/api/profile/language")
+def api_get_language():
+    try:
+        result = get_language_with_id(1)
+        if result and len(result) > 0:
+            return {"language": result[0][0]}
+        else:
+            raise HTTPException(status_code=404, detail="User profile not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading language: {str(e)}")
+
 ######### PUT ENDPOINTS #########
 @app.put("/api/courses/{course_id}/status")
 def api_update_course_status(course_id: int, update: CourseStatusUpdate):
@@ -233,6 +249,14 @@ def api_update_direction_with_id(update: DirectionUpdate):
         return {"message": "Direction updated"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating direction: {str(e)}")
+
+@app.put("/api/profile/language")
+def api_update_language_with_id(update: LanguageUpdate):
+    try:
+        update_language_with_id(1, update.language)
+        return {"message": "Language updated"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating language: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

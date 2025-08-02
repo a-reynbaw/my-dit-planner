@@ -33,16 +33,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import HomeButton from './components/layout/HomeButton';
+import HomeButton from '@/components/layout/HomeButton';
+import { useTranslation } from 'react-i18next';
 
 // Sidebar component for navigation
 function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const navItems = [
-    { title: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { title: 'All Courses', path: '/all-courses', icon: BookCopy },
+    { title: t('sidebar.dashboard'), path: '/', icon: LayoutDashboard },
+    { title: t('sidebar.allCourses'), path: '/all-courses', icon: BookCopy },
     { title: 'Plan Semesters', path: '/plan-courses', icon: ListTree },
     { title: 'Degree Requirements', path: '/degree-requirements', icon: Target },
     { title: 'Timetable', path: '/timetable', icon: CalendarClock },
@@ -120,6 +122,7 @@ function Dashboard() {
   const [courses, setCourses] = useState([]); // Add local state
   const [loading, setLoading] = useState(true); // Add loading state
   const totalECTS = 240;
+  const { t } = useTranslation();
 
   // Fetch courses every time Dashboard loads
   useEffect(() => {
@@ -168,7 +171,7 @@ function Dashboard() {
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
       <header className="mb-8">
         <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-lg text-gray-400">Welcome back! Here's your academic snapshot.</p>
+        <p className="text-lg text-gray-400">{t('dashboard.welcome')}</p>
       </header>
 
       {/* Main Progress and Stats */}
@@ -325,6 +328,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isBackendDown, setIsBackendDown] = useState(false);
   const location = useLocation();
+  const { i18n } = useTranslation();
 
   const showHomeButton = location.pathname !== '/' && location.pathname !== '*';
 
@@ -345,7 +349,17 @@ function App() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+
+    // Fetch user's language preference and set it
+    fetch('/api/profile/language')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.language) {
+          i18n.changeLanguage(data.language);
+        }
+      })
+      .catch((error) => console.error('Failed to fetch language:', error));
+  }, [i18n]);
 
   if (isLoading) {
     return (
@@ -366,7 +380,7 @@ function App() {
       <main className="flex-1">
         {showHomeButton && <HomeButton />}
         <Routes>
-          <Route path="/" element={<Dashboard />} /> {/* Remove courses prop */}
+          <Route path="/" element={<Dashboard />} />
           <Route path="/all-courses" element={<AllCourses />} />
           <Route path="/plan-courses" element={<PlanCourses />} />
           <Route path="/failed-courses" element={<FailedCourses />} />

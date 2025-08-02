@@ -1,0 +1,20 @@
+sidebar:
+  dashboard: Dashboard
+  allCourses: All Courses
+  planSemesters: Plan Semesters
+  degreeRequirements: Degree Requirements
+  timetable: Timetable
+  currentCourses: Current Courses
+  failedCourses: Failed Courses
+  profile: Profile
+  subscription: Subscription Plans
+
+dashboard:
+  title: Dashboard
+  welcome: Welcome back! Here's your academic snapshot.
+
+profile:
+  language: Language
+
+currentCourses:
+  title: Current Courses

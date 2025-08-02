@@ -1,0 +1,21 @@
+sidebar:
+  dashboard: Πίνακας Ελέγχου
+  allCourses: Όλα τα Μαθήματα
+  planSemesters: Προγραμματισμός Εξαμήνων
+  degreeRequirements: Απαιτήσεις Πτυχίου
+  timetable: Ωρολόγιο Πρόγραμμα
+  currentCourses: Τρέχοντα Μαθήματα
+  failedCourses: Αποτυχημένα Μαθήματα
+  profile: Προφίλ
+  subscription: Συνδρομητικά Πλάνα
+
+dashboard:
+  title: Πίνακας Ελέγχου
+  welcome: Καλώς όρισες! Εδώ είναι η ακαδημαϊκή σου σύνοψη.
+
+
+profile:
+  language: "Γλώσσα"
+
+currentCourses:
+  title: Τρέχοντα Μαθήματα

@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { toGreeklish, toGreek } from 'greek-utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const API_URL = '/api/courses';
 
@@ -29,6 +30,7 @@ function CurrentCourses() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetch(API_URL)
@@ -127,7 +129,7 @@ function CurrentCourses() {
         <div>
           <div className="flex items-center gap-3 mb-2">
             <BookOpen className="h-8 w-8 text-purple-400" />
-            <h1 className="text-4xl font-bold tracking-tight">Current Semester Courses</h1>
+            <h1 className="text-4xl font-bold tracking-tight">{t('currentCourses.title')}</h1>
           </div>
           <p className="text-lg text-gray-400">
             Manage your current semester courses. Total: {courses.length} courses ({totalECTS} ECTS)
