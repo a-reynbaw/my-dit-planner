@@ -7,15 +7,386 @@ sidebar:
   currentCourses: Τρέχοντα Μαθήματα
   failedCourses: Αποτυχημένα Μαθήματα
   profile: Προφίλ
+  resources: Πόροι
   subscription: Συνδρομητικά Πλάνα
 
 dashboard:
   title: Πίνακας Ελέγχου
   welcome: Καλώς όρισες! Εδώ είναι η ακαδημαϊκή σου σύνοψη.
+  overallECTSProgress: Συνολική Πρόοδος ECTS
+  avgGrade: Μέσος Όρος
+  avgGradeMsg: Βάση περασμένων μαθημάτων
+  coursesPassed: Περασμένα Μαθήματα
+  coursesPassedMsg: Συνολικά μαθήματα
+  coursesPlanned: Προγραμματισμένα Μαθήματα
+  coursesPlannedMsg: Προετοιμάσου για μελλοντικά εξάμηνα
+  degreeReqs: Απαιτήσεις Πτυχίου
+  degreeReqsMsg: Δες την πρόοδό σου
+  thisSemestersCourses: Μαθήματα Τρέχοντος Εξαμήνου
+  enrolledMsg: δηλωμένα
+  noCoursesMsg: Κανένα μάθημα για το τρέχον εξάμηνο.
+  manageCurrentCourses: Διαχείριση Μαθημάτων Τρέχοντος Εξαμήνου
+  viewTimetable: Προβολή Ωρολογίου Προγράμματος
+  viewTimetableMsg: Δείτε το εβδομαδιαίο πρόγραμμα μαθημάτων σας.
+  failedCourses: Αποτυχημένα Μαθήματα
+  failedCoursesMsg: Ελέγξτε και προγραμματίστε την επανεξέτασή τους.
+  allCourses: Εξερεύνηση Όλων των Μαθημάτων
+  allCoursesMsg: Περιηγηθείτε στον πλήρη κατάλογο μαθημάτων του τμήματος.
 
-
-profile:
-  language: "Γλώσσα"
+allCourses:
+  title: Όλα τα Μαθήματα του Πανεπιστημίου
+  subtitle: Περιηγηθείτε, αναζητήστε και διαχειριστείτε όλα τα διαθέσιμα μαθήματα.
+  currentSemester: "Τρέχον εξάμηνο: {{semester}} ({{parity}})"
+  searchPlaceholder: Αναζήτηση βάσει ονόματος ή κωδικού (Ελληνικά/Greeklish)...
+  filters: Φίλτρα
+  filterBySemester: Φιλτράρισμα βάσει Εξαμήνου
+  filterByType: Φιλτράρισμα βάσει Τύπου
+  allSemesters: Όλα τα Εξάμηνα
+  semester: "Εξάμηνο {{number}}"
+  allTypes: Όλοι οι Τύποι
+  loading: Φόρτωση μαθημάτων...
+  noCourses: Δε βρέθηκαν μαθήματα που να ταιριάζουν στα κριτήριά σας.
+  headers:
+    name: Όνομα
+    code: Κωδικός
+    semester: Εξάμηνο
+    type: Τύπος
+    ects: ECTS
+    grade: Βαθμός
+    status: Κατάσταση
+    actions: Ενέργειες
+  statuses:
+    passed: Περασμένο
+    currentSemester: Τρέχον Εξάμηνο
+    planned: Προγραμματισμένο
+    failed: Αποτυχημένο
+    notTaken: Δεν έχει παρθεί
+  actions:
+    actions: Ενέργειες
+    setAsPassed: Ορισμός ως Περασμένο
+    setAsFailed: Ορισμός ως Αποτυχημένο
+    setAsCurrent: Ορισμός ως Τρέχον
+    setPlanned: Ορισμός για Προγραμματισμό
+    resetStatus: Επαναφορά Κατάστασης
+  messages:
+    statusUpdated: "Η κατάσταση ενημερώθηκε σε \"{{status}}\""
+    failedToUpdate: Αποτυχία ενημέρωσης κατάστασης. Επαναφορά.
+    gradeUpdated: "Ο βαθμός ενημερώθηκε σε {{grade}}"
+    failedToUpdateGrade: Αποτυχία ενημέρωσης βαθμού. Επαναφορά.
+    invalidGrade: Παρακαλώ εισάγετε έναν έγκυρο βαθμό μεταξύ 0 και 10.
+    failedToLoad: Αποτυχία φόρτωσης μαθημάτων.
+    setSemesterFirst: Παρακαλώ ορίστε το τρέχον εξάμηνό σας στο προφίλ σας πριν επισημάνετε μαθήματα ως τρέχοντα.
+    semesterMismatch: "Δεν μπορείτε να επισημάνετε αυτό το μάθημα ως τρέχον. Το \"{{courseName}}\" είναι μάθημα εξαμήνου {{courseSemester}} ({{courseType}}), αλλά βρίσκεστε στο εξάμηνο {{userSemester}} ({{userType}}). Παρακαλώ ενημερώστε το τρέχον εξάμηνό σας στο προφίλ σας εάν αυτό είναι σωστό."
+    updateProfile: Ενημέρωση Προφίλ
+  semesterTypes:
+    odd: μονό
+    even: ζυγό
+  gradeDefault: 5
+  gradeNA: "-"
+  gradePlaceholder: "Μ/Δ"
 
 currentCourses:
   title: Τρέχοντα Μαθήματα
+  subtitle: "Διαχειριστείτε τα μαθήματα του τρέχοντος εξαμήνου. Σύνολο: {{count}} μαθήματα ({{ects}} ECTS)"
+  searchPlaceholder: Αναζήτηση τρεχόντων μαθημάτων βάσει ονόματος ή κωδικού (Ελληνικά/Greeklish)...
+  loading: Φόρτωση μαθημάτων τρέχοντος εξαμήνου...
+  emptyState:
+    title: Κανένα Τρέχον Μάθημα
+    description: Δεν έχετε ορίσει μαθήματα για το τρέχον εξάμηνο.
+    buttonText: Περιηγηθείτε σε Όλα τα Μαθήματα
+  summary:
+    count: "{{count}} μάθημα τρέχοντος εξαμήνου"
+    countPlural: "{{count}} μαθήματα τρέχοντος εξαμήνου"
+    ects: "({{ects}} ECTS)"
+  table:
+    headers:
+      courseName: Όνομα Μαθήματος
+      code: Κωδικός
+      semester: Εξάμηνο
+      type: Τύπος
+      ects: ECTS
+      grade: Βαθμός
+      actions: Ενέργειες
+    gradePlaceholder: Βαθμός
+    changeStatus: Αλλαγή Κατάστασης
+  actions:
+    markAsPassed: Σήμανση ως Περασμένο
+    markAsFailed: Σήμανση ως Αποτυχημένο
+    moveToPlanned: Μετακίνηση στα Προγραμματισμένα
+    resetStatus: Επαναφορά Κατάστασης
+  messages:
+    failedToLoad: Αποτυχία φόρτωσης μαθημάτων.
+    statusUpdated: "Η κατάσταση ενημερώθηκε σε \"{{status}}\""
+    failedToUpdate: Αποτυχία ενημέρωσης κατάστασης. Επαναφορά.
+    gradeUpdated: "Ο βαθμός ενημερώθηκε σε {{grade}}"
+    failedToUpdateGrade: Αποτυχία ενημέρωσης βαθμού. Επαναφορά.
+    invalidGrade: Παρακαλώ εισάγετε έναν έγκυρο βαθμό μεταξύ 0 και 10.
+  search:
+    noResults: Δε βρέθηκαν τρέχοντα μαθήματα που να ταιριάζουν στα κριτήρια αναζήτησής σας.
+
+failedCourses:
+  title: Αποτυχημένα Μαθήματα
+  subtitle: "Δείτε και διαχειριστείτε μαθήματα που χρειάζονται επανεξέταση. Σύνολο: {{count}}"
+  searchPlaceholder: Αναζήτηση αποτυχημένων μαθημάτων βάσει ονόματος ή κωδικού (Ελληνικά/Greeklish)...
+  loading: Φόρτωση αποτυχημένων μαθημάτων...
+  emptyState:
+    title: Μπράβο!
+    description: Δεν έχετε αποτυχημένα μαθήματα. Συνεχίστε την καλή δουλειά!
+    buttonText: Περιηγηθείτε σε Όλα τα Μαθήματα
+  summary:
+    count: "{{count}} αποτυχημένο μάθημα"
+    countPlural: "{{count}} αποτυχημένα μαθήματα"
+  table:
+    headers:
+      courseName: Όνομα Μαθήματος
+      code: Κωδικός
+      semester: Εξάμηνο
+      type: Τύπος
+      ects: ECTS
+      actions: Ενέργειες
+    changeStatus: Αλλαγή Κατάστασης
+  actions:
+    setAsCurrent: Ορισμός ως Τρέχον Εξάμηνο
+    planToRetake: Προγραμματισμός για Επανεξέταση
+    markAsPassed: Σήμανση ως Περασμένο
+    resetStatus: Επαναφορά Κατάστασης
+  messages:
+    failedToLoad: Αποτυχία φόρτωσης μαθημάτων.
+    statusUpdated: "Η κατάσταση ενημερώθηκε σε \"{{status}}\""
+    failedToUpdate: Αποτυχία ενημέρωσης κατάστασης. Επαναφορά.
+  search:
+    noResults: Δε βρέθηκαν αποτυχημένα μαθήματα που να ταιριάζουν στα κριτήρια αναζήτησής σας.
+
+planCourses:
+  title: Προγραμματισμός Εξαμήνων
+  subtitle: Σύρετε και αποθέστε μαθήματα για να οργανώσετε την ακαδημαϊκή σας πορεία.
+  loading: Φόρτωση Προγραμματιστή...
+  plannedECTS: Προγραμματισμένα ECTS
+  ectsNote: Περιλαμβάνει προγραμματισμένα, τρέχοντα & αποτυχημένα μαθήματα
+  containers:
+    unassigned: Μαθήματα προς Προγραμματισμό
+    semester: "Εξάμηνο {{number}}"
+  dragMessages:
+    courseRemoved: "Το \"{{courseName}}\" αφαιρέθηκε από το πρόγραμμά σας."
+    courseMoved: "Μετακινήθηκε το \"{{courseName}}\"."
+    oddEvenWarning: Το μάθημα μπορεί να τοποθετηθεί μόνο σε αντίστοιχο μονό/ζυγό εξάμηνο.
+    failedToSave: Αποτυχία αποθήκευσης αλλαγών. Επαναφορά.
+    failedToLoad: Αποτυχία φόρτωσης προγραμματισμένων μαθημάτων.
+
+degreeRequirements:
+  title: Απαιτήσεις Πτυχίου
+  subtitle: Η πρόοδός σας προς την αποφοίτηση.
+  loading: Φόρτωση απαιτήσεων πτυχίου...
+  chooseDirection:
+    title: Επιλέξτε την Κατεύθυνσή σας
+    subtitle: Επιλογή Ακαδημαϊκής Κατεύθυνσης
+    description: Επιλέξτε την κατεύθυνσή σας για να δείτε εξατομικευμένες απαιτήσεις πτυχίου.
+    selectButton: "Επιλογή {{direction}}"
+  summary:
+    overallECTS: Συνολικά ECTS
+    direction: Κατεύθυνση
+    coursesPassed: Περασμένα Μαθήματα
+    specialities: Ειδικεύσεις
+  sections:
+    coreRequirements: Βασικές Απαιτήσεις
+    specialityProgress: "Πρόοδος Ειδικεύσεων ({{direction}})"
+    yourSpecialities: Οι Ειδικεύσεις σας
+    specialityDescription: Κάθε ειδικεύση απαιτεί 2 υποχρεωτικά μαθήματα κατεύθυνσης (ΕΥΜ) και 4 βασικά μαθήματα της κατεύθυνσης εκείνης.
+  requirements:
+    compulsoryCourses:
+      title: "Υποχρεωτικά Μαθήματα (ΥΜ)"
+      description: Μαθήματα κορμού που απαιτούνται για όλους τους φοιτητές.
+    generalEducation:
+      title: "Γενικής Παιδείας (ΓΠ)"
+      description: Μαθήματα γενικής παιδείας.
+    directionCourses:
+      title: "Μαθήματα Κατεύθυνσης (ΕΥΜ)"
+      description: "4 κατ' επιλογήν υποχρεωτικά μαθήματα της κατεύθυνσης \"{{direction}}\" ."
+      csConstraint: "Περιορισμός Κατεύθυνσης CS:"
+      csMet: "{{count}}/3 πληρούνται"
+    graduationBasic:
+      title: "Βασική Μαθήματα Κατεύθηνσης"
+      description: "Περάστε τουλάχιστον 4 μαθήματα που σημειώνονται ως \"Βασικά\" και των 3 ειδικεύσεων της κατευθηνσης \"{{direction}}\" (χωρίς καταχώρηση ειδίκευσης)."
+      specialityCoverage: "Κάλυψη Ειδικεύσεων:"
+      coursesSpecialities: "{{courses}}/4 μαθήματα • {{specialities}}/3 ειδικεύσεις"
+      completedBasicCourses: "Ολοκληρωμένα βασικά μαθήματα:"
+      moreCoursesText: "+{{count}} ακόμα..."
+    directionProject:
+      title: "Project Κατεύθυνσης"
+      description: Project κατεύθηνσης ενός εξαμήνου.
+    finalCourses:
+      title: "Πτυχιακή / Πρακτική"
+      description: "Επιλέξτε 2 από Πρακτική (Ι/ΙΙ) ή Πτυχιακή (Ι/ΙΙ)."
+    specialities:
+      title: "Ειδικεύσεις"
+      description: Καταχωρήστε έως και 2 από 3 ειδικεύσεις για την κατεύθυνσή σας (προαιρετικό).
+  specialityCard:
+    completed: Ολοκληρώθηκε
+    inProgress: Σε Εξέλιξη
+    directionCourses: Μαθήματα Κατεύθυνσης
+    basicCourses: Βασικά Μαθήματα
+    overall: Συνολικά
+  progress:
+    complete: "{{percent}}% Ολοκληρώθηκε"
+  directions:
+    cs: "Επιστήμη Υπολογιστών (CS)"
+    cet: "Μηχανική Υπολογιστών & Τηλεπικοινωνιών (CET)"
+  errors:
+    failedToUpdateDirection: Αποτυχία ενημέρωσης κατεύθυνσης
+
+maintenance:
+  title: Οι Υπηρεσίες δεν είναι Διαθέσιμες
+  description: Λυπούμαστε, αλλά οι υπηρεσίες backend δεν είναι προσωρινά διαθέσιμες. Εργαζόμαστε σκληρά για να επιλύσουμε το πρόβλημα. Παρακαλούμε δοκιμάστε ξανά σε λίγα λεπτά.
+  buttonText: Δοκιμάστε Ξανά
+
+notFound:
+  title: 404 - Δε Βρέθηκε
+  description: Ουπς! Η σελίδα που ψάχνετε δεν υπάρχει. Μπορεί να έχει μετακινηθεί ή διαγραφεί.
+  buttonText: Μετάβαση στον Πίνακα Ελέγχου
+
+profile:
+  title: Το Προφίλ σας
+  subtitle: Δείτε και διαχειριστείτε τα προσωπικά σας στοιχεία και τις ακαδημαϊκές προτιμήσεις.
+  loading: Φόρτωση προφίλ...
+  language: Γλώσσα
+  languageChanged: Η γλώσσα ενημερώθηκε επιτυχώς!
+  languageChangeFailed: Αποτυχία ενημέρωσης γλώσσας
+  fullName: Όνομα Φοιτητή
+  direction: Κατεύθυνση
+  semester: Εξάμηνο
+  accountDetails: Στοιχεία Λογαριασμού
+  editProfile: Επεξεργασία Προφίλ
+  saveChanges: Αποθήκευση Αλλαγών
+  cancel: Ακύρωση
+  profileUpdated: Το προφίλ ενημερώθηκε επιτυχώς!
+  profileUpdateFailed: Αποτυχία ενημέρωσης προφίλ
+  validation:
+    nameRequired: Το όνομα και το επώνυμο είναι υποχρεωτικά
+    sdiRequired: Το ΑΜ πρέπει να είναι 7ψήφιος αριθμός
+  fields:
+    firstName: Όνομα
+    lastName: Επώνυμο
+    sdi: Αριθμός Μητρώου (ΑΜ)
+    currentSemester: Τρέχον Εξάμηνο
+    academicDirection: Ακαδημαϊκή Κατεύθυνση
+  placeholders:
+    firstName: Εισάγετε όνομα
+    lastName: Εισάγετε επώνυμο
+    sdi: Εισάγετε 7ψήφιο ΑΜ
+    selectSemester: Επιλέξτε εξάμηνο
+    selectDirection: Επιλέξτε κατεύθυνση
+  values:
+    notSet: Δεν έχει οριστεί
+    notSelected: Δεν έχει επιλεγεί
+    semester: "Εξάμηνο {{number}}"
+  directions:
+    notSelected: Δεν έχει Επιλεγεί
+    cs: Επιστήμη Υπολογιστών (CS)
+    cet: Μηχανική Υπολογιστών & Τηλεπικοινωνιών (CET)
+  loadFailed: Αποτυχία φόρτωσης στοιχείων προφίλ
+
+resources:
+  title: Χρήσιμοι Πόροι
+  subtitle: Μια συλλογή βασικών συνδέσμων για τους φοιτητές του τμήματος.
+  goToSite: Μετάβαση στον Ιστότοπο
+  items:
+    ditWebsite:
+      title: Ιστότοπος DIT
+      description: Ο επίσημος ιστότοπος του Τμήματος Πληροφορικής και Τηλεπικοινωνιών.
+    eclass:
+      title: eClass
+      description: Η επίσημη πλατφόρμα ηλεκτρονικής μάθησης για εκπαιδευτικό υλικό, ανακοινώσεις και εργασίες.
+    myStudies:
+      title: My-Studies
+      description: Η πύλη φοιτητών για βαθμούς, δηλώσεις μαθημάτων και επίσημα έγγραφα.
+    ditLab:
+      title: DIT Lab
+      description: Πρόσβαση σε σημειώσεις και παλιές εξετάσεις για διάφορα μαθήματα.
+    progIntroLectures:
+      title: Εισαγωγή στον Προγραμματισμό - Διαλέξεις
+      description: Σημειώσεις διαλέξεων και πόροι για το μάθημα Εισαγωγή στον Προγραμματισμό.
+    hackIntroLectures:
+      title: Διαλέξεις Ασφάλειας Συστημάτων
+      description: Σημειώσεις διαλέξεων και πόροι για το μάθημα Προστασία και Ασφάλεια Υπολογιστικών Συστημάτων.
+    uoabot:
+      title: Uoabot
+      description: Ιστότοπος για τη δοκιμή των εργασιών σας στο μάθημα Εισαγωγή στον Προγραμματισμό.
+
+subscription:
+  title: Ξεκλειδώστε τις Δυνατότητές σας
+  subtitle: Επιλέξτε ένα πλάνο που ταιριάζει στην ακαδημαϊκή σας πορεία και αναλάβετε τον έλεγχο των σπουδών σας όπως ποτέ πριν.
+  goBackToDashboard: Επιστροφή στον Πίνακα Ελέγχου
+  perMonth: "/ μήνα"
+  badges:
+    mostPopular: ΠΙΟ ΔΗΜΟΦΙΛΕΣ
+    recommended: ΣΥΝΙΣΤΩΜΕΝΟ
+  plans:
+    basic:
+      title: Βασικό
+      price: "€0"
+      cta: Τρέχον Πλάνο
+      features:
+        - Παρακολούθηση όλων των μαθημάτων σας
+        - Υπολογισμός ECTS και Μ.Ο.
+        - Προβολή απαιτήσεων πτυχίου
+        - Βασική προβολή ωρολογίου προγράμματος
+    pro:
+      title: Pro
+      price: "€5"
+      cta: Αναβάθμιση σε Pro
+      features:
+        - Όλα τα χαρακτηριστικά του Βασικού
+        - Προχωρημένος προγραμματισμός μαθημάτων
+        - Εντοπισμός συγκρούσεων ωρολογίου προγράμματος
+        - Ανάλυση σεναρίων "τι θα γινόταν αν"
+        - Προτεραιότητα υποστήριξης
+    ultimate:
+      title: Ultimate
+      price: "€15"
+      cta: Επιλέξτε Ultimate
+      features:
+        - Όλα τα χαρακτηριστικά του Pro
+        - Προτάσεις εξαμήνων με τεχνητή νοημοσύνη
+        - Αυτοματοποιημένος έλεγχος πτυχίου
+        - Ενσωμάτωση με εφαρμογές ημερολογίου
+        - Πρώτη πρόσβαση σε νέα χαρακτηριστικά
+
+timetable:
+  title: Το Ωρολόγιο Πρόγραμμά μου
+  subtitle: "Το πρόγραμμά σας για την Άνοιξη 2025 - {{count}} δηλωμένα μαθήματα"
+  loading: Φόρτωση του ωρολογίου προγράμματός σας...
+  sdiInfo: "ΑΜ: {{sdi}} ({{group}})"
+  sdiGroups:
+    even: Άρτιοι
+    odd: Περιττοί
+  summaryCards:
+    enrolledCourses: Δηλωμένα Μαθήματα
+    weeklyHours: Εβδομαδιαίες Ώρες
+    totalECTS: Συνολικά ECTS
+    sdiGroup: Ομάδα ΑΜ
+  sdiFilter:
+    title: Ενεργό Φιλτράρισμα βάσει ΑΜ
+    description: "Εμφάνιση μαθημάτων μόνο για φοιτητές {{group}}. Διπλότυπα μαθήματα με διαφορετικές ομάδες φιλτράρονται αυτόματα."
+    modDescription: "Φιλτράρισμα βάσει modulo: ΑΜ {{sdi}} % 4 = {{remainder}}. Εμφανίζονται μόνο μαθήματα που ταιριάζουν σε αυτό το υπόλοιπο."
+  weeklySchedule: Εβδομαδιαίο Πρόγραμμα
+  groupLabel: "Ομάδα {{group}}"
+  days:
+    monday: Δευτέρα
+    tuesday: Τρίτη
+    wednesday: Τετάρτη
+    thursday: Πέμπτη
+    friday: Παρασκευή
+  emptyState:
+    title: Δε Βρέθηκε Πρόγραμμα
+    description: "Δε βρέθηκαν μαθήματα που να έχουν επισημανθεί ως \"Τρέχον Εξάμηνο\" στο ωρολόγιο πρόγραμμα. Αυτό μπορεί να σημαίνει:"
+    reasons:
+      - "Δεν έχετε επισημάνει μαθήματα ως \"Τρέχον Εξάμηνο\""
+      - "Τα ονόματα μαθημάτων δεν ταιριάζουν μεταξύ βάσης δεδομένων και ωρολογίου προγράμματος"
+      - "Τα μαθήματα δεν είναι προγραμματισμένα για την Άνοιξη 2025"
+      - "Τα μαθήματα φιλτράρονται βάσει της ομάδας του ΑΜ σας"
+    buttonText: Διαχείριση Μαθημάτων
+  overlappingCourses: "{{count}} επικαλυπτόμενα μαθήματα"
+  courseNumber: "#{index} από {{total}}"
+  enrolledCoursesSection: Δηλωμένα Μαθήματα
+  conflictsDetected: "⚠️ Εντοπίστηκαν συγκρούσεις στο πρόγραμμα"
+  noScheduleFound: Δε βρέθηκε πρόγραμμα

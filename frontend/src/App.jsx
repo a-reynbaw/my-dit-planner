@@ -47,17 +47,17 @@ function Sidebar() {
   const navItems = [
     { title: t('sidebar.dashboard'), path: '/', icon: LayoutDashboard },
     { title: t('sidebar.allCourses'), path: '/all-courses', icon: BookCopy },
-    { title: 'Plan Semesters', path: '/plan-courses', icon: ListTree },
-    { title: 'Degree Requirements', path: '/degree-requirements', icon: Target },
-    { title: 'Timetable', path: '/timetable', icon: CalendarClock },
-    { title: 'Current Courses', path: '/current-courses', icon: BookOpen },
-    { title: 'Failed Courses', path: '/failed-courses', icon: XCircle },
-    { title: 'Profile', path: '/profile', icon: User },
-    { title: 'Resources', path: '/resources', icon: LifeBuoy },
+    { title: t('sidebar.planSemesters'), path: '/plan-courses', icon: ListTree },
+    { title: t('sidebar.degreeRequirements'), path: '/degree-requirements', icon: Target },
+    { title: t('sidebar.timetable'), path: '/timetable', icon: CalendarClock },
+    { title: t('sidebar.currentCourses'), path: '/current-courses', icon: BookOpen },
+    { title: t('sidebar.failedCourses'), path: '/failed-courses', icon: XCircle },
+    { title: t('sidebar.profile'), path: '/profile', icon: User },
+    { title: t('sidebar.resources'), path: '/resources', icon: LifeBuoy },
   ];
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-gray-800 p-6 hidden lg:flex flex-col justify-between">
+    <aside className="w-72 flex-shrink-0 bg-gray-800 p-6 hidden lg:flex flex-col justify-between">
       <div>
         <h2 className="text-2xl font-bold text-white mb-10">DIT Hub</h2>
         <nav className="flex flex-col space-y-2">
@@ -66,14 +66,14 @@ function Sidebar() {
               key={item.title}
               variant="ghost"
               onClick={() => navigate(item.path)}
-              className={`justify-start text-left text-base p-3 h-auto ${
+              className={`justify-start text-left text-sm leading-tight p-3 min-h-[3rem] h-auto whitespace-normal ${
                 location.pathname === item.path
                   ? 'bg-blue-600 text-white'
                   : 'text-gray-300 hover:bg-gray-700 hover:text-white'
               }`}
             >
-              <item.icon className="h-5 w-5 mr-3" />
-              {item.title}
+              <item.icon className="h-5 w-5 mr-3 flex-shrink-0 self-start mt-0.5" />
+              <span className="flex-1 text-left">{item.title}</span>
             </Button>
           ))}
         </nav>
@@ -84,10 +84,10 @@ function Sidebar() {
         <Button
           variant="ghost"
           onClick={() => navigate('/subscription')}
-          className="justify-start text-left w-full text-xs p-3 h-auto text-gray-500 hover:bg-gray-700 hover:text-white"
+          className="justify-start text-left w-full text-xs p-3 min-h-[2.5rem] h-auto text-gray-500 hover:bg-gray-700 hover:text-white whitespace-normal"
         >
-          <Gem className="h-4 w-4 mr-3" />
-          Subscription Plans
+          <Gem className="h-4 w-4 mr-3 flex-shrink-0 self-start mt-0.5" />
+          <span className="flex-1 text-left">{t('sidebar.subscription')}</span>
         </Button>
       </div>
     </aside>
@@ -173,7 +173,7 @@ function Dashboard() {
   return (
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-4xl font-bold tracking-tight">{t('dashboard.title')}</h1>
         <p className="text-lg text-gray-400">{t('dashboard.welcome')}</p>
       </header>
 
@@ -181,7 +181,9 @@ function Dashboard() {
       <section className="mb-8">
         <Card className="bg-gray-800 border-gray-700 p-6">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-medium text-blue-300">Overall ECTS Progress</h3>
+            <h3 className="text-lg font-medium text-blue-300">
+              {t('dashboard.overallECTSProgress')}
+            </h3>
             <span className="text-lg font-semibold text-blue-300">
               {completedECTS} / {totalECTS}
             </span>
@@ -192,34 +194,34 @@ function Dashboard() {
 
       <section className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
         <SummaryCard
-          title="Average Grade"
+          title={t('dashboard.avgGrade')}
           value={averageGrade}
           icon={GraduationCap}
           color="text-green-400"
-          cta="Based on passed courses"
+          cta={t('dashboard.avgGradeMsg')}
         />
         <SummaryCard
-          title="Courses Passed"
+          title={t('dashboard.coursesPassed')}
           value={passedCourses.length}
           icon={CheckCircle2}
           color="text-green-400"
-          cta="Total unique courses"
+          cta={t('dashboard.coursesPassedMsg')}
         />
         <SummaryCard
-          title="Courses Planned"
+          title={t('dashboard.coursesPlanned')}
           value={plannedCourses.length}
           icon={Clock}
           color="text-yellow-400"
-          cta="Ready for future semesters"
+          cta={t('dashboard.coursesPlannedMsg')}
           onClick={() => navigate('/plan-courses')}
           showArrow={true}
         />
         <SummaryCard
-          title="Degree Requirements"
+          title={t('dashboard.degreeReqs')}
           value="Check"
           icon={Target}
           color="text-purple-400"
-          cta="View your progress"
+          cta={t('dashboard.degreeReqsMsg')}
           onClick={() => navigate('/degree-requirements')}
           showArrow={true}
         />
@@ -232,8 +234,10 @@ function Dashboard() {
           <Card className="bg-gray-800 border-gray-700 text-white">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>This Semester's Courses</span>
-                <Badge variant="secondary">{currentSemesterCourses.length} enrolled</Badge>
+                <span>{t('dashboard.thisSemestersCourses')}</span>
+                <Badge variant="secondary">
+                  {currentSemesterCourses.length} {t('dashboard.enrolledMsg')}
+                </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -260,15 +264,13 @@ function Dashboard() {
                   )}
                 </ul>
               ) : (
-                <p className="text-center py-6 text-gray-400">
-                  No courses for the current semester.
-                </p>
+                <p className="text-center py-6 text-gray-400">{t('dashboard.noCoursesMsg')}</p>
               )}
               <Button
                 onClick={() => navigate('/current-courses')}
                 className="w-full mt-6 bg-blue-600 hover:bg-blue-700"
               >
-                Manage Current Courses
+                {t('dashboard.manageCurrentCourses')}
               </Button>
             </CardContent>
           </Card>
@@ -283,8 +285,10 @@ function Dashboard() {
             <CardHeader className="flex-row items-center gap-4">
               <CalendarClock className="h-10 w-10 text-blue-400 transition-transform group-hover:scale-110" />
               <div>
-                <CardTitle className="text-xl text-gray-100">View Timetable</CardTitle>
-                <p className="text-gray-400 text-sm">See your weekly course schedule.</p>
+                <CardTitle className="text-xl text-gray-100">
+                  {t('dashboard.viewTimetable')}
+                </CardTitle>
+                <p className="text-gray-400 text-sm">{t('dashboard.viewTimetableMsg')}</p>
               </div>
               <ArrowRight className="ml-auto h-6 w-6 text-gray-500 group-hover:text-white transition-colors" />
             </CardHeader>
@@ -299,9 +303,11 @@ function Dashboard() {
                 <AlertTriangle className="h-10 w-10 text-red-400 transition-transform group-hover:scale-110" />
                 <div>
                   <CardTitle className="text-xl text-red-200">
-                    {failedCourses.length} Failed Course{failedCourses.length > 1 ? 's' : ''}
+                    {failedCourses.length}
+                    {t('dashboard.failedCourses')}
+                    {failedCourses.length > 1 ? 's' : ''}
                   </CardTitle>
-                  <p className="text-red-300/80 text-sm">Review and plan to retake them.</p>
+                  <p className="text-red-300/80 text-sm">{t('dashboard.failedCoursesMsg')}</p>
                 </div>
                 <ArrowRight className="ml-auto h-6 w-6 text-red-400/80 group-hover:text-red-200 transition-colors" />
               </CardHeader>
@@ -315,8 +321,8 @@ function Dashboard() {
             <CardHeader className="flex-row items-center gap-4">
               <BookCopy className="h-10 w-10 text-blue-400 transition-transform group-hover:scale-110" />
               <div>
-                <CardTitle className="text-xl text-gray-100">Explore All Courses</CardTitle>
-                <p className="text-gray-400 text-sm">Browse the full university course catalog.</p>
+                <CardTitle className="text-xl text-gray-100">{t('dashboard.allCourses')}</CardTitle>
+                <p className="text-gray-400 text-sm">{t('dashboard.allCoursesMsg')}</p>
               </div>
               <ArrowRight className="ml-auto h-6 w-6 text-gray-500 group-hover:text-white transition-colors" />
             </CardHeader>
@@ -376,6 +382,7 @@ function App() {
     return <Maintenance />;
   }
 
+  // TODO: remove home button
   return (
     <div className="flex min-h-screen bg-gray-900">
       <Toaster richColors theme="dark" />

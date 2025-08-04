@@ -24,6 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { toGreeklish, toGreek } from 'greek-utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const API_URL = '/api/courses';
 
@@ -52,6 +53,7 @@ const getSemesterBadgeClass = (semester) => {
 };
 
 function AllCourses() {
+  const { t } = useTranslation();
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -71,10 +73,27 @@ function AllCourses() {
         setLoading(false);
       })
       .catch(() => {
-        toast.error('Failed to load courses.');
+        toast.error(t('allCourses.messages.failedToLoad'));
         setLoading(false);
       });
-  }, []);
+  }, [t]);
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'Passed':
+        return t('allCourses.statuses.passed');
+      case 'Current Semester':
+        return t('allCourses.statuses.currentSemester');
+      case 'Planned':
+        return t('allCourses.statuses.planned');
+      case 'Failed':
+        return t('allCourses.statuses.failed');
+      case 'Not Taken':
+        return t('allCourses.statuses.notTaken');
+      default:
+        return status;
+    }
+  };
 
   const checkSemesterParity = (courseId, newStatus) => {
     if (newStatus !== 'Current Semester') {
@@ -91,8 +110,7 @@ function AllCourses() {
     if (!userCurrentSemester) {
       return {
         valid: false,
-        message:
-          'Please set your current semester in your profile before marking courses as current.',
+        message: t('allCourses.messages.setSemesterFirst'),
         showProfileLink: true,
       };
     }
@@ -103,12 +121,22 @@ function AllCourses() {
     const courseSemesterIsOdd = courseSemester % 2 === 1;
 
     if (userSemesterIsOdd !== courseSemesterIsOdd) {
-      const courseType = courseSemesterIsOdd ? 'odd' : 'even';
-      const userType = userSemesterIsOdd ? 'odd' : 'even';
+      const courseType = courseSemesterIsOdd
+        ? t('allCourses.semesterTypes.odd')
+        : t('allCourses.semesterTypes.even');
+      const userType = userSemesterIsOdd
+        ? t('allCourses.semesterTypes.odd')
+        : t('allCourses.semesterTypes.even');
 
       return {
         valid: false,
-        message: `Cannot mark this course as current. "${course.name}" is a semester ${courseSemester} (${courseType}) course, but you're currently in semester ${userCurrentSemester} (${userType}). Please update your current semester in your profile if this is correct.`,
+        message: t('allCourses.messages.semesterMismatch', {
+          courseName: course.name,
+          courseSemester,
+          courseType,
+          userSemester: userCurrentSemester,
+          userType,
+        }),
         showProfileLink: true,
       };
     }
@@ -125,7 +153,7 @@ function AllCourses() {
         toast.error(validation.message, {
           duration: 8000,
           action: {
-            label: 'Update Profile',
+            label: t('allCourses.messages.updateProfile'),
             onClick: () => navigate('/profile'),
           },
         });
@@ -156,10 +184,10 @@ function AllCourses() {
     })
       .then((res) => {
         if (!res.ok) throw new Error();
-        toast.success(`Status updated to "${newStatus}"`);
+        toast.success(t('allCourses.messages.statusUpdated', { status: getStatusText(newStatus) }));
       })
       .catch(() => {
-        toast.error('Failed to update status. Reverting.');
+        toast.error(t('allCourses.messages.failedToUpdate'));
         setCourses(originalCourses);
       });
   };
@@ -167,7 +195,7 @@ function AllCourses() {
   const updateGrade = (id, newGrade) => {
     const gradeValue = parseFloat(newGrade);
     if (isNaN(gradeValue) || gradeValue < 0 || gradeValue > 10) {
-      toast.error('Please enter a valid grade between 0 and 10.');
+      toast.error(t('allCourses.messages.invalidGrade'));
       return;
     }
 
@@ -181,10 +209,10 @@ function AllCourses() {
     })
       .then((res) => {
         if (!res.ok) throw new Error();
-        toast.success(`Grade updated to ${gradeValue}`);
+        toast.success(t('allCourses.messages.gradeUpdated', { grade: gradeValue }));
       })
       .catch(() => {
-        toast.error('Failed to update grade. Reverting.');
+        toast.error(t('allCourses.messages.failedToUpdateGrade'));
         setCourses(originalCourses);
       });
   };
@@ -222,12 +250,17 @@ function AllCourses() {
     <div className="bg-gray-900 min-h-screen text-white p-4 md:p-8">
       <header className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">All University Courses</h1>
-          <p className="text-lg text-gray-400">Browse, search, and manage all available courses.</p>
+          <h1 className="text-4xl font-bold tracking-tight">{t('allCourses.title')}</h1>
+          <p className="text-lg text-gray-400">{t('allCourses.subtitle')}</p>
           {userCurrentSemester && (
             <p className="text-sm text-gray-400 mt-1">
-              Current semester: {userCurrentSemester} (
-              {userCurrentSemester % 2 === 1 ? 'odd' : 'even'})
+              {t('allCourses.currentSemester', {
+                semester: userCurrentSemester,
+                parity:
+                  userCurrentSemester % 2 === 1
+                    ? t('allCourses.semesterTypes.odd')
+                    : t('allCourses.semesterTypes.even'),
+              })}
             </p>
           )}
         </div>
@@ -238,7 +271,7 @@ function AllCourses() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <Input
             type="text"
-            placeholder="Search by name or code (Greek/Greeklish)..."
+            placeholder={t('allCourses.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 h-12 bg-gray-800 border-gray-700 text-white rounded-md focus:border-blue-500 transition-all duration-200"
@@ -251,11 +284,13 @@ function AllCourses() {
               variant="outline"
               className="h-12 w-full md:w-auto bg-gray-700 border-gray-600 text-white hover:bg-gray-600 hover:text-white transition-colors duration-200"
             >
-              <SlidersHorizontal className="mr-2 h-4 w-4" /> Filters
+              <SlidersHorizontal className="mr-2 h-4 w-4" /> {t('allCourses.filters')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 bg-gray-800 text-white border-gray-700" align="end">
-            <DropdownMenuLabel className="text-white">Filter by Semester</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-white">
+              {t('allCourses.filterBySemester')}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-600" />
             {['all', 1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
               <DropdownMenuCheckboxItem
@@ -264,18 +299,22 @@ function AllCourses() {
                 onCheckedChange={() => setFilters((f) => ({ ...f, semester: sem }))}
                 className="text-white focus:bg-gray-700 focus:text-white"
               >
-                {sem === 'all' ? 'All Semesters' : `Semester ${sem}`}
+                {sem === 'all'
+                  ? t('allCourses.allSemesters')
+                  : t('allCourses.semester', { number: sem })}
               </DropdownMenuCheckboxItem>
             ))}
 
-            <DropdownMenuLabel className="mt-2 text-white">Filter by Type</DropdownMenuLabel>
+            <DropdownMenuLabel className="mt-2 text-white">
+              {t('allCourses.filterByType')}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-600" />
             <DropdownMenuCheckboxItem
               checked={filters.type === 'all'}
               onCheckedChange={() => setFilters((f) => ({ ...f, type: 'all' }))}
               className="text-white focus:bg-gray-700 focus:text-white"
             >
-              All Types
+              {t('allCourses.allTypes')}
             </DropdownMenuCheckboxItem>
             {courseTypes.map((type) => (
               <DropdownMenuCheckboxItem
@@ -292,20 +331,30 @@ function AllCourses() {
       </div>
 
       {loading ? (
-        <p className="text-center py-10">Loading courses...</p>
+        <p className="text-center py-10">{t('allCourses.loading')}</p>
       ) : (
         <Card className="bg-gray-800 border-gray-700">
           <Table>
             <TableHeader>
               <TableRow className="border-b-gray-700 hover:bg-transparent">
-                <TableHead className="text-white">Name</TableHead>
-                <TableHead className="text-white">Code</TableHead>
-                <TableHead className="text-white hidden md:table-cell">Semester</TableHead>
-                <TableHead className="text-white hidden md:table-cell">Type</TableHead>
-                <TableHead className="text-white hidden md:table-cell">ECTS</TableHead>
-                <TableHead className="text-white hidden lg:table-cell">Grade</TableHead>
-                <TableHead className="text-white">Status</TableHead>
-                <TableHead className="text-white text-right">Actions</TableHead>
+                <TableHead className="text-white">{t('allCourses.headers.name')}</TableHead>
+                <TableHead className="text-white">{t('allCourses.headers.code')}</TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('allCourses.headers.semester')}
+                </TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('allCourses.headers.type')}
+                </TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('allCourses.headers.ects')}
+                </TableHead>
+                <TableHead className="text-white hidden lg:table-cell">
+                  {t('allCourses.headers.grade')}
+                </TableHead>
+                <TableHead className="text-white">{t('allCourses.headers.status')}</TableHead>
+                <TableHead className="text-white text-right">
+                  {t('allCourses.headers.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -343,17 +392,19 @@ function AllCourses() {
                           step="0.5"
                           min="0"
                           max="10"
-                          defaultValue={course.grade || '5'}
+                          defaultValue={course.grade || t('allCourses.gradeDefault')}
                           onBlur={(e) => updateGrade(course.id, e.target.value)}
                           className="w-20 bg-gray-700 border-gray-600 text-white h-8"
-                          placeholder="N/A"
+                          placeholder={t('allCourses.gradePlaceholder')}
                         />
                       ) : (
-                        <span className="text-gray-500">-</span>
+                        <span className="text-gray-500">{t('allCourses.gradeNA')}</span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge className={getStatusBadgeColor(course.status)}>{course.status}</Badge>
+                      <Badge className={getStatusBadgeColor(course.status)}>
+                        {getStatusText(course.status)}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -363,7 +414,8 @@ function AllCourses() {
                             size="sm"
                             className="text-white hover:bg-gray-700 hover:text-white transition duration-200"
                           >
-                            Actions <ChevronDown className="h-4 w-4 ml-2" />
+                            {t('allCourses.actions.actions')}{' '}
+                            <ChevronDown className="h-4 w-4 ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
@@ -375,14 +427,14 @@ function AllCourses() {
                             disabled={course.status === 'Passed'}
                             className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
-                            Set as Passed
+                            {t('allCourses.actions.setAsPassed')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Failed')}
                             disabled={course.status === 'Failed'}
                             className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
-                            Set as Failed
+                            {t('allCourses.actions.setAsFailed')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Current Semester')}
@@ -392,7 +444,7 @@ function AllCourses() {
                             }`}
                           >
                             <span className="flex items-center justify-between w-full">
-                              Set as Current
+                              {t('allCourses.actions.setAsCurrent')}
                               {hasSemesterMismatch(course) && (
                                 <span
                                   className="ml-2 text-xs text-yellow-400"
@@ -408,7 +460,7 @@ function AllCourses() {
                             disabled={course.status === 'Planned'}
                             className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
-                            Set to Plan
+                            {t('allCourses.actions.setPlanned')}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator className="bg-gray-700" />
                           <DropdownMenuItem
@@ -416,7 +468,7 @@ function AllCourses() {
                             disabled={course.status === 'Not Taken'}
                             className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
-                            Reset Status
+                            {t('allCourses.actions.resetStatus')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -426,7 +478,7 @@ function AllCourses() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center h-24 text-gray-400">
-                    No courses found matching your criteria.
+                    {t('allCourses.noCourses')}
                   </TableCell>
                 </TableRow>
               )}

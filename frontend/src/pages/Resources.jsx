@@ -1,48 +1,9 @@
 import { ExternalLink, LifeBuoy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
-const resources = [
-  {
-    title: 'DIT Website',
-    description: 'The official website of the Department of Informatics and Telecommunications.',
-    href: 'https://www.di.uoa.gr/',
-  },
-  {
-    title: 'eClass',
-    description:
-      'The official e-learning platform for course materials, announcements, and assignments.',
-    href: 'https://eclass.uoa.gr/',
-  },
-  {
-    title: 'My-Studies',
-    description: 'The student portal for grades, course declarations, and official documents.',
-    href: 'https://my-studies.uoa.gr/',
-  },
-  {
-    title: 'DIT Lab',
-    description: 'Access to notes and old exams for various courses.',
-    href: 'https://ditlab.gr/',
-  },
-  {
-    title: 'Prog Intro Lectures',
-    description: 'Lecture notes and resources for the Introduction to Programming course.',
-    href: 'https://progintrolectures.netlify.app/',
-  },
-  {
-    title: 'Hack Intro Lectures',
-    description:
-      'Lecture notes and resources for the Protection and Security of Computer Systems course.',
-    href: 'https://hackintro-lectures.netlify.app/',
-  },
-  {
-    title: 'Uoabot',
-    description: 'A website for testing your assignments on Introduction to Programming course.',
-    href: 'https://cgi.di.uoa.gr/~uoabot/index.html',
-  },
-];
-
-function ResourceCard({ title, description, href }) {
+function ResourceCard({ title, description, href, buttonText }) {
   return (
     <Card className="bg-gray-800 border-gray-700 text-white hover:border-blue-500 transition-all duration-300 flex flex-col">
       <CardHeader>
@@ -52,7 +13,7 @@ function ResourceCard({ title, description, href }) {
       <CardContent className="flex-grow flex items-end">
         <Button asChild className="w-full bg-gray-700 hover:bg-blue-600 transition-colors">
           <a href={href} target="_blank" rel="noopener noreferrer">
-            Go to Site <ExternalLink className="ml-2 h-4 w-4" />
+            {buttonText} <ExternalLink className="ml-2 h-4 w-4" />
           </a>
         </Button>
       </CardContent>
@@ -61,25 +22,64 @@ function ResourceCard({ title, description, href }) {
 }
 
 function Resources() {
+  const { t } = useTranslation();
+
+  const resources = [
+    {
+      title: t('resources.items.ditWebsite.title'),
+      description: t('resources.items.ditWebsite.description'),
+      href: 'https://www.di.uoa.gr/',
+    },
+    {
+      title: t('resources.items.eclass.title'),
+      description: t('resources.items.eclass.description'),
+      href: 'https://eclass.uoa.gr/',
+    },
+    {
+      title: t('resources.items.myStudies.title'),
+      description: t('resources.items.myStudies.description'),
+      href: 'https://my-studies.uoa.gr/',
+    },
+    {
+      title: t('resources.items.ditLab.title'),
+      description: t('resources.items.ditLab.description'),
+      href: 'https://ditlab.gr/',
+    },
+    {
+      title: t('resources.items.progIntroLectures.title'),
+      description: t('resources.items.progIntroLectures.description'),
+      href: 'https://progintrolectures.netlify.app/',
+    },
+    {
+      title: t('resources.items.hackIntroLectures.title'),
+      description: t('resources.items.hackIntroLectures.description'),
+      href: 'https://hackintro-lectures.netlify.app/',
+    },
+    {
+      title: t('resources.items.uoabot.title'),
+      description: t('resources.items.uoabot.description'),
+      href: 'https://cgi.di.uoa.gr/~uoabot/index.html',
+    },
+  ];
+
   return (
     <div className="bg-gray-900 min-h-screen text-white p-4 md:p-8">
       <header className="mb-10">
         <div className="flex items-center gap-3 mb-2">
           <LifeBuoy className="h-10 w-10 text-green-400" />
-          <h1 className="text-4xl font-bold tracking-tight">Useful Resources</h1>
+          <h1 className="text-4xl font-bold tracking-tight">{t('resources.title')}</h1>
         </div>
-        <p className="text-lg text-gray-400">
-          A collection of essential links for students of the department.
-        </p>
+        <p className="text-lg text-gray-400">{t('resources.subtitle')}</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {resources.map((resource) => (
           <ResourceCard
-            key={resource.title}
+            key={resource.href}
             title={resource.title}
             description={resource.description}
             href={resource.href}
+            buttonText={t('resources.goToSite')}
           />
         ))}
       </div>

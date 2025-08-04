@@ -1,8 +1,11 @@
 import { HardDrive, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 function Maintenance() {
+  const { t } = useTranslation();
+
   const handleReload = () => {
     window.location.reload();
   };
@@ -14,19 +17,16 @@ function Maintenance() {
           <div className="mx-auto bg-red-900/40 rounded-full p-4 w-fit">
             <HardDrive className="h-12 w-12 text-red-400" />
           </div>
-          <CardTitle className="text-3xl font-bold mt-6">Services Currently Down</CardTitle>
+          <CardTitle className="text-3xl font-bold mt-6">{t('maintenance.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-400 mb-8">
-            We're sorry, but our backend services are temporarily unavailable. We are working hard
-            to resolve the issue. Please try again in a few moments.
-          </p>
+          <p className="text-gray-400 mb-8">{t('maintenance.description')}</p>
           <Button
             onClick={handleReload}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6"
           >
             <RefreshCw className="mr-2 h-5 w-5" />
-            Try Again
+            {t('maintenance.buttonText')}
           </Button>
         </CardContent>
       </Card>

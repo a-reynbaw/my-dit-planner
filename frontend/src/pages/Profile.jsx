@@ -26,17 +26,17 @@ function Profile() {
   const [editing, setEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({});
 
-  // Direction options
+  // Direction options with translations
   const directions = [
-    { value: 'Not Selected', label: 'Not Selected' },
-    { value: 'CS', label: 'Computer Science (CS)' },
-    { value: 'CET', label: 'Computer Engineering & Telecommunications (CET)' },
+    { value: 'Not Selected', label: t('profile.directions.notSelected') },
+    { value: 'CS', label: t('profile.directions.cs') },
+    { value: 'CET', label: t('profile.directions.cet') },
   ];
 
-  // Semester options (1-8)
+  // Semester options (1-8) with translations
   const semesters = Array.from({ length: 8 }, (_, i) => ({
     value: i + 1,
-    label: `Semester ${i + 1}`,
+    label: t('profile.values.semester', { number: i + 1 }),
   }));
 
   useEffect(() => {
@@ -76,7 +76,7 @@ function Profile() {
       setEditedProfile(profileData);
     } catch (error) {
       console.error('Error fetching profile:', error);
-      toast.error('Failed to load profile data');
+      toast.error(t('profile.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -95,11 +95,11 @@ function Profile() {
   const handleSave = async () => {
     try {
       if (!editedProfile.first_name || !editedProfile.last_name) {
-        toast.error('First name and last name are required');
+        toast.error(t('profile.validation.nameRequired'));
         return;
       }
       if (!editedProfile.sdi || editedProfile.sdi.toString().length !== 7) {
-        toast.error('SDI must be a 7-digit number');
+        toast.error(t('profile.validation.sdiRequired'));
         return;
       }
 
@@ -161,16 +161,16 @@ function Profile() {
       for (const response of responses) {
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.detail || 'Failed to update profile');
+          throw new Error(errorData.detail || t('profile.profileUpdateFailed'));
         }
       }
 
       setProfile(editedProfile);
       setEditing(false);
-      toast.success('Profile updated successfully!');
+      toast.success(t('profile.profileUpdated'));
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error(error.message || 'Failed to update profile');
+      toast.error(error.message || t('profile.profileUpdateFailed'));
     }
   };
 
@@ -207,19 +207,17 @@ function Profile() {
   const fullName =
     profile.first_name && profile.last_name
       ? `${profile.first_name} ${profile.last_name}`
-      : 'Student Name';
+      : t('profile.fullName');
   const directionLabel =
-    directions.find((d) => d.value === profile.direction)?.label || 'Not selected';
+    directions.find((d) => d.value === profile.direction)?.label || t('profile.values.notSelected');
 
   return (
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
         <header className="flex items-center justify-between gap-6 mb-8">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Your Profile</h1>
-            <p className="text-lg text-gray-400">
-              View and manage your personal information and academic preferences.
-            </p>
+            <h1 className="text-4xl font-bold tracking-tight">{t('profile.title')}</h1>
+            <p className="text-lg text-gray-400">{t('profile.subtitle')}</p>
           </div>
         </header>
 
@@ -236,11 +234,14 @@ function Profile() {
               </p>
               <div className="mt-4 text-sm text-center">
                 <p className="text-gray-300">
-                  <span className="font-semibold text-orange-400">Direction:</span> {directionLabel}
+                  <span className="font-semibold text-orange-400">{t('profile.direction')}:</span>{' '}
+                  {directionLabel}
                 </p>
                 <p className="text-gray-300">
-                  <span className="font-semibold text-purple-400">Semester:</span>{' '}
-                  {profile.current_semester ? ` ${profile.current_semester}` : ' Not set'}
+                  <span className="font-semibold text-purple-400">{t('profile.semester')}:</span>{' '}
+                  {profile.current_semester
+                    ? ` ${profile.current_semester}`
+                    : ` ${t('profile.values.notSet')}`}
                 </p>
               </div>
             </div>
@@ -248,7 +249,9 @@ function Profile() {
             {/* Right Content / Form Section */}
             <div className="md:col-span-8 p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-blue-300">Account Details</h3>
+                <h3 className="text-xl font-semibold text-blue-300">
+                  {t('profile.accountDetails')}
+                </h3>
                 {!editing ? (
                   <Button
                     onClick={handleEdit}
@@ -257,7 +260,7 @@ function Profile() {
                     className="bg-gray-700 border-gray-600 hover:bg-gray-600"
                   >
                     <Edit3 className="h-4 w-4 mr-2" />
-                    Edit Profile
+                    {t('profile.editProfile')}
                   </Button>
                 ) : (
                   <div className="flex items-center gap-2">
@@ -267,7 +270,7 @@ function Profile() {
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <Check className="h-4 w-4 mr-2" />
-                      Save Changes
+                      {t('profile.saveChanges')}
                     </Button>
                     <Button
                       onClick={handleCancel}
@@ -276,7 +279,7 @@ function Profile() {
                       className="text-gray-300 hover:bg-gray-700"
                     >
                       <X className="h-4 w-4 mr-2" />
-                      Cancel
+                      {t('profile.cancel')}
                     </Button>
                   </div>
                 )}
@@ -288,43 +291,43 @@ function Profile() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-2">
-                        First Name
+                        {t('profile.fields.firstName')}
                       </label>
                       <Input
                         value={editedProfile.first_name}
                         onChange={(e) => handleInputChange('first_name', e.target.value)}
                         className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="Enter first name"
+                        placeholder={t('profile.placeholders.firstName')}
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-2">
-                        Last Name
+                        {t('profile.fields.lastName')}
                       </label>
                       <Input
                         value={editedProfile.last_name}
                         onChange={(e) => handleInputChange('last_name', e.target.value)}
                         className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="Enter last name"
+                        placeholder={t('profile.placeholders.lastName')}
                       />
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-2">
-                      Student ID (SDI)
+                      {t('profile.fields.sdi')}
                     </label>
                     <Input
                       type="number"
                       value={editedProfile.sdi}
                       onChange={(e) => handleInputChange('sdi', parseInt(e.target.value) || '')}
                       className="bg-gray-700 border-gray-600 text-white"
-                      placeholder="Enter 7-digit SDI"
+                      placeholder={t('profile.placeholders.sdi')}
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-2">
-                        Current Semester
+                        {t('profile.fields.currentSemester')}
                       </label>
                       <Select
                         value={editedProfile.current_semester?.toString() || ''}
@@ -333,7 +336,7 @@ function Profile() {
                         }
                       >
                         <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                          <SelectValue placeholder="Select semester" />
+                          <SelectValue placeholder={t('profile.placeholders.selectSemester')} />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-800 border-gray-700 text-white">
                           {semesters.map((sem) => (
@@ -350,14 +353,14 @@ function Profile() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-400 mb-2">
-                        Academic Direction
+                        {t('profile.fields.academicDirection')}
                       </label>
                       <Select
                         value={editedProfile.direction}
                         onValueChange={(value) => handleInputChange('direction', value)}
                       >
                         <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                          <SelectValue placeholder="Select direction" />
+                          <SelectValue placeholder={t('profile.placeholders.selectDirection')} />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-800 border-gray-700 text-white">
                           {directions.map((dir) => (
@@ -379,37 +382,41 @@ function Profile() {
                 <dl className="space-y-6 text-sm">
                   <div className="grid grid-cols-3 gap-2">
                     <dt className="font-medium text-gray-400 flex items-center gap-2">
-                      <User className="h-4 w-4" /> First Name
+                      <User className="h-4 w-4" /> {t('profile.fields.firstName')}
                     </dt>
-                    <dd className="col-span-2 text-gray-200">{profile.first_name || 'Not set'}</dd>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <dt className="font-medium text-gray-400 flex items-center gap-2">
-                      <User className="h-4 w-4" /> Last Name
-                    </dt>
-                    <dd className="col-span-2 text-gray-200">{profile.last_name || 'Not set'}</dd>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <dt className="font-medium text-gray-400 flex items-center gap-2">
-                      <Hash className="h-4 w-4" /> Student ID (SDI)
-                    </dt>
-                    <dd className="col-span-2 font-mono text-gray-200">
-                      {profile.sdi || 'Not set'}
+                    <dd className="col-span-2 text-gray-200">
+                      {profile.first_name || t('profile.values.notSet')}
                     </dd>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <dt className="font-medium text-gray-400 flex items-center gap-2">
-                      <BookOpen className="h-4 w-4" /> Current Semester
+                      <User className="h-4 w-4" /> {t('profile.fields.lastName')}
+                    </dt>
+                    <dd className="col-span-2 text-gray-200">
+                      {profile.last_name || t('profile.values.notSet')}
+                    </dd>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <dt className="font-medium text-gray-400 flex items-center gap-2">
+                      <Hash className="h-4 w-4" /> {t('profile.fields.sdi')}
+                    </dt>
+                    <dd className="col-span-2 font-mono text-gray-200">
+                      {profile.sdi || t('profile.values.notSet')}
+                    </dd>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <dt className="font-medium text-gray-400 flex items-center gap-2">
+                      <BookOpen className="h-4 w-4" /> {t('profile.fields.currentSemester')}
                     </dt>
                     <dd className="col-span-2 text-gray-200">
                       {profile.current_semester
-                        ? `Semester ${profile.current_semester}`
-                        : 'Not set'}
+                        ? t('profile.values.semester', { number: profile.current_semester })
+                        : t('profile.values.notSet')}
                     </dd>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <dt className="font-medium text-gray-400 flex items-center gap-2">
-                      <Settings className="h-4 w-4" /> Academic Direction
+                      <Settings className="h-4 w-4" /> {t('profile.fields.academicDirection')}
                     </dt>
                     <dd className="col-span-2 text-gray-200">{directionLabel}</dd>
                   </div>

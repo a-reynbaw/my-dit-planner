@@ -42,10 +42,25 @@ function CurrentCourses() {
         setLoading(false);
       })
       .catch(() => {
-        toast.error('Failed to load courses.');
+        toast.error(t('currentCourses.messages.failedToLoad'));
         setLoading(false);
       });
-  }, []);
+  }, [t]);
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'Passed':
+        return t('allCourses.statuses.passed');
+      case 'Failed':
+        return t('allCourses.statuses.failed');
+      case 'Planned':
+        return t('allCourses.statuses.planned');
+      case 'Not Taken':
+        return t('allCourses.statuses.notTaken');
+      default:
+        return status;
+    }
+  };
 
   const updateStatus = (id, newStatus) => {
     const originalCourses = [...courses];
@@ -69,14 +84,16 @@ function CurrentCourses() {
     })
       .then((res) => {
         if (!res.ok) throw new Error();
-        toast.success(`Status updated to "${newStatus}"`);
+        toast.success(
+          t('currentCourses.messages.statusUpdated', { status: getStatusText(newStatus) })
+        );
         // Remove from current courses list if status changed
         if (newStatus !== 'Current Semester') {
           setCourses((prev) => prev.filter((c) => c.id !== id));
         }
       })
       .catch(() => {
-        toast.error('Failed to update status. Reverting.');
+        toast.error(t('currentCourses.messages.failedToUpdate'));
         setCourses(originalCourses);
       });
   };
@@ -84,7 +101,7 @@ function CurrentCourses() {
   const updateGrade = (id, newGrade) => {
     const gradeValue = parseFloat(newGrade);
     if (isNaN(gradeValue) || gradeValue < 0 || gradeValue > 10) {
-      toast.error('Please enter a valid grade between 0 and 10.');
+      toast.error(t('currentCourses.messages.invalidGrade'));
       return;
     }
 
@@ -98,10 +115,10 @@ function CurrentCourses() {
     })
       .then((res) => {
         if (!res.ok) throw new Error();
-        toast.success(`Grade updated to ${gradeValue}`);
+        toast.success(t('currentCourses.messages.gradeUpdated', { grade: gradeValue }));
       })
       .catch(() => {
-        toast.error('Failed to update grade. Reverting.');
+        toast.error(t('currentCourses.messages.failedToUpdateGrade'));
         setCourses(originalCourses);
       });
   };
@@ -132,7 +149,7 @@ function CurrentCourses() {
             <h1 className="text-4xl font-bold tracking-tight">{t('currentCourses.title')}</h1>
           </div>
           <p className="text-lg text-gray-400">
-            Manage your current semester courses. Total: {courses.length} courses ({totalECTS} ECTS)
+            {t('currentCourses.subtitle', { count: courses.length, ects: totalECTS })}
           </p>
         </div>
       </header>
@@ -142,7 +159,7 @@ function CurrentCourses() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <Input
             type="text"
-            placeholder="Search current semester courses by name or code (Greek/Greeklish)..."
+            placeholder={t('currentCourses.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 h-12 bg-gray-800 border-gray-700 text-white rounded-md focus:border-purple-500 transition-all duration-200"
@@ -151,20 +168,20 @@ function CurrentCourses() {
       </div>
 
       {loading ? (
-        <p className="text-center py-10">Loading current semester courses...</p>
+        <p className="text-center py-10">{t('currentCourses.loading')}</p>
       ) : courses.length === 0 ? (
         <Card className="bg-gray-800 border-gray-700 p-8">
           <div className="text-center">
             <BookOpen className="h-16 w-16 text-blue-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-200 mb-2">No Current Courses</h3>
-            <p className="text-gray-400 mb-4">
-              You don't have any courses set for the current semester.
-            </p>
+            <h3 className="text-xl font-semibold text-gray-200 mb-2">
+              {t('currentCourses.emptyState.title')}
+            </h3>
+            <p className="text-gray-400 mb-4">{t('currentCourses.emptyState.description')}</p>
             <Button
               onClick={() => navigate('/all-courses')}
               className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
             >
-              Browse All Courses
+              {t('currentCourses.emptyState.buttonText')}
             </Button>
           </div>
         </Card>
@@ -174,22 +191,39 @@ function CurrentCourses() {
             <div className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-purple-400" />
               <span className="text-purple-400 font-medium">
-                {filteredCourses.length} current semester course
-                {filteredCourses.length !== 1 ? 's' : ''}(
-                {filteredCourses.reduce((sum, course) => sum + course.ects, 0)} ECTS)
+                {filteredCourses.length === 1
+                  ? t('currentCourses.summary.count', { count: filteredCourses.length })
+                  : t('currentCourses.summary.countPlural', { count: filteredCourses.length })}{' '}
+                {t('currentCourses.summary.ects', {
+                  ects: filteredCourses.reduce((sum, course) => sum + course.ects, 0),
+                })}
               </span>
             </div>
           </div>
           <Table>
             <TableHeader>
               <TableRow className="border-b-gray-700">
-                <TableHead className="text-white">Course Name</TableHead>
-                <TableHead className="text-white">Code</TableHead>
-                <TableHead className="text-white hidden md:table-cell">Semester</TableHead>
-                <TableHead className="text-white hidden md:table-cell">Type</TableHead>
-                <TableHead className="text-white hidden md:table-cell">ECTS</TableHead>
-                <TableHead className="text-white hidden lg:table-cell">Grade</TableHead>
-                <TableHead className="text-white text-right">Actions</TableHead>
+                <TableHead className="text-white">
+                  {t('currentCourses.table.headers.courseName')}
+                </TableHead>
+                <TableHead className="text-white">
+                  {t('currentCourses.table.headers.code')}
+                </TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('currentCourses.table.headers.semester')}
+                </TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('currentCourses.table.headers.type')}
+                </TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('currentCourses.table.headers.ects')}
+                </TableHead>
+                <TableHead className="text-white hidden lg:table-cell">
+                  {t('currentCourses.table.headers.grade')}
+                </TableHead>
+                <TableHead className="text-white text-right">
+                  {t('currentCourses.table.headers.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -228,8 +262,8 @@ function CurrentCourses() {
                         max="10"
                         defaultValue={course.grade || ''}
                         onBlur={(e) => updateGrade(course.id, e.target.value)}
-                        className="w-20 bg-gray-700 border-gray-600 text-white h-8"
-                        placeholder="Grade"
+                        className="w-21 bg-gray-700 border-gray-600 text-white h-8"
+                        placeholder={t('currentCourses.table.gradePlaceholder')}
                       />
                     </TableCell>
                     <TableCell className="text-right">
@@ -240,7 +274,8 @@ function CurrentCourses() {
                             size="sm"
                             className="text-white hover:bg-gray-700 transition-colors duration-200"
                           >
-                            Change Status <ChevronDown className="h-4 w-4 ml-2" />
+                            {t('currentCourses.table.changeStatus')}{' '}
+                            <ChevronDown className="h-4 w-4 ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
@@ -251,25 +286,25 @@ function CurrentCourses() {
                             onClick={() => updateStatus(course.id, 'Passed')}
                             className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
-                            Mark as Passed
+                            {t('currentCourses.actions.markAsPassed')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Failed')}
                             className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
-                            Mark as Failed
+                            {t('currentCourses.actions.markAsFailed')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Planned')}
                             className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
-                            Move to Planned
+                            {t('currentCourses.actions.moveToPlanned')}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => updateStatus(course.id, 'Not Taken')}
                             className="hover:bg-gray-700 text-white transition-colors duration-200 focus:bg-gray-700 focus:text-white"
                           >
-                            Reset Status
+                            {t('currentCourses.actions.resetStatus')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -279,7 +314,7 @@ function CurrentCourses() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center h-24 text-gray-400">
-                    No current semester courses found matching your search criteria.
+                    {t('currentCourses.search.noResults')}
                   </TableCell>
                 </TableRow>
               )}

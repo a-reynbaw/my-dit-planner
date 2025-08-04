@@ -7,14 +7,386 @@ sidebar:
   currentCourses: Current Courses
   failedCourses: Failed Courses
   profile: Profile
+  resources: Resources
   subscription: Subscription Plans
 
 dashboard:
   title: Dashboard
   welcome: Welcome back! Here's your academic snapshot.
+  overallECTSProgress: Overall ECTS Progress
+  avgGrade: Average Grade
+  avgGradeMsg: Based on passed courses
+  coursesPassed: Courses Passed
+  coursesPassedMsg: Total unique courses
+  coursesPlanned: Courses Planned
+  coursesPlannedMsg: Ready for future semesters
+  degreeReqs: Degree Requirements
+  degreeReqsMsg: View your Progress
+  thisSemestersCourses: This Semester's Courses
+  enrolledMsg: enrolled
+  noCoursesMsg: No courses for the current semester.
+  manageCurrentCourses: Manage Current Courses
+  viewTimetable: View Timetable
+  viewTimetableMsg: See your weekly course schedule.
+  failedCourses: Failed Courses
+  failedCoursesMsg: Review and plan to retake them.
+  allCourses: Explore All Courses
+  allCoursesMsg: Browse the full university course catalog.
 
-profile:
-  language: Language
+allCourses:
+  title: All University Courses
+  subtitle: Browse, search, and manage all available courses.
+  currentSemester: "Current semester: {{semester}} ({{parity}})"
+  searchPlaceholder: Search by name or code (Greek/Greeklish)...
+  filters: Filters
+  filterBySemester: Filter by Semester
+  filterByType: Filter by Type
+  allSemesters: All Semesters
+  semester: "Semester {{number}}"
+  allTypes: All Types
+  loading: Loading courses...
+  noCourses: No courses found matching your criteria.
+  headers:
+    name: Name
+    code: Code
+    semester: Semester
+    type: Type
+    ects: ECTS
+    grade: Grade
+    status: Status
+    actions: Actions
+  statuses:
+    passed: Passed
+    currentSemester: Current Semester
+    planned: Planned
+    failed: Failed
+    notTaken: Not Taken
+  actions:
+    actions: Actions
+    setAsPassed: Set as Passed
+    setAsFailed: Set as Failed
+    setAsCurrent: Set as Current
+    setPlanned: Set to Plan
+    resetStatus: Reset Status
+  messages:
+    statusUpdated: "Status updated to \"{{status}}\""
+    failedToUpdate: Failed to update status. Reverting.
+    gradeUpdated: "Grade updated to {{grade}}"
+    failedToUpdateGrade: Failed to update grade. Reverting.
+    invalidGrade: Please enter a valid grade between 0 and 10.
+    failedToLoad: Failed to load courses.
+    setSemesterFirst: Please set your current semester in your profile before marking courses as current.
+    semesterMismatch: "Cannot mark this course as current. \"{{courseName}}\" is a semester {{courseSemester}} ({{courseType}}) course, but you're currently in semester {{userSemester}} ({{userType}}). Please update your current semester in your profile if this is correct."
+    updateProfile: Update Profile
+  semesterTypes:
+    odd: odd
+    even: even
+  gradeDefault: 5
+  gradeNA: "-"
+  gradePlaceholder: "N/A"
 
 currentCourses:
   title: Current Courses
+  subtitle: "Manage your current semester courses. Total: {{count}} courses ({{ects}} ECTS)"
+  searchPlaceholder: Search current semester courses by name or code (Greek/Greeklish)...
+  loading: Loading current semester courses...
+  emptyState:
+    title: No Current Courses
+    description: You don't have any courses set for the current semester.
+    buttonText: Browse All Courses
+  summary:
+    count: "{{count}} current semester course"
+    countPlural: "{{count}} current semester courses"
+    ects: "({{ects}} ECTS)"
+  table:
+    headers:
+      courseName: Course Name
+      code: Code
+      semester: Semester
+      type: Type
+      ects: ECTS
+      grade: Grade
+      actions: Actions
+    gradePlaceholder: Grade
+    changeStatus: Change Status
+  actions:
+    markAsPassed: Mark as Passed
+    markAsFailed: Mark as Failed
+    moveToPlanned: Move to Planned
+    resetStatus: Reset Status
+  messages:
+    failedToLoad: Failed to load courses.
+    statusUpdated: "Status updated to \"{{status}}\""
+    failedToUpdate: Failed to update status. Reverting.
+    gradeUpdated: "Grade updated to {{grade}}"
+    failedToUpdateGrade: Failed to update grade. Reverting.
+    invalidGrade: Please enter a valid grade between 0 and 10.
+  search:
+    noResults: No current semester courses found matching your search criteria.
+
+failedCourses:
+  title: Failed Courses
+  subtitle: "View and manage courses that need to be retaken. Total: {{count}}"
+  searchPlaceholder: Search failed courses by name or code (Greek/Greeklish)...
+  loading: Loading failed courses...
+  emptyState:
+    title: Great job!
+    description: You don't have any failed courses. Keep up the good work!
+    buttonText: Browse All Courses
+  summary:
+    count: "{{count}} failed course"
+    countPlural: "{{count}} failed courses"
+  table:
+    headers:
+      courseName: Course Name
+      code: Code
+      semester: Semester
+      type: Type
+      ects: ECTS
+      actions: Actions
+    changeStatus: Change Status
+  actions:
+    setAsCurrent: Set as Current Semester
+    planToRetake: Plan to Retake
+    markAsPassed: Mark as Passed
+    resetStatus: Reset Status
+  messages:
+    failedToLoad: Failed to load courses.
+    statusUpdated: "Status updated to \"{{status}}\""
+    failedToUpdate: Failed to update status. Reverting.
+  search:
+    noResults: No failed courses found matching your search criteria.
+
+planCourses:
+  title: Plan Your Semesters
+  subtitle: Drag & drop courses to organize your academic path.
+  loading: Loading Planner...
+  plannedECTS: Planned ECTS
+  ectsNote: Includes planned, current & failed courses
+  containers:
+    unassigned: Courses to Plan
+    semester: "Semester {{number}}"
+  dragMessages:
+    courseRemoved: "\"{{courseName}}\" was removed from your plan."
+    courseMoved: "Moved \"{{courseName}}\"."
+    oddEvenWarning: Course can only be placed in a corresponding odd/even semester.
+    failedToSave: Failed to save changes. Reverting.
+    failedToLoad: Failed to load planned courses.
+
+degreeRequirements:
+  title: Degree Requirements
+  subtitle: Your progress towards graduation.
+  loading: Loading degree requirements...
+  chooseDirection:
+    title: Choose Your Direction
+    subtitle: Select Academic Direction
+    description: Choose your direction to see personalized degree requirements.
+    selectButton: "Select {{direction}}"
+  summary:
+    overallECTS: Overall ECTS
+    direction: Direction
+    coursesPassed: Courses Passed
+    specialities: Specialities
+  sections:
+    coreRequirements: Core Requirements
+    specialityProgress: "Speciality Progress ({{direction}})"
+    yourSpecialities: Your Specialities
+    specialityDescription: Each speciality requires 2 compulsory direction (ΕΥΜ) and 4 basic courses.
+  requirements:
+    compulsoryCourses:
+      title: "Compulsory Courses (ΥΜ)"
+      description: Core curriculum courses required for all students.
+    generalEducation:
+      title: "General Education (ΓΠ)"
+      description: Courses from a broad range of subjects.
+    directionCourses:
+      title: "Direction Courses (ΕΥΜ)"
+      description: "4 elective courses specific to the {{direction}} direction."
+      csConstraint: "CS Direction Constraint:"
+      csMet: "{{count}}/3 met"
+    graduationBasic:
+      title: "Graduation Basic Requirement"
+      description: "Pass 4+ courses marked as \"Basic\" across all 3 {{direction}} specialities."
+      specialityCoverage: "Speciality Coverage:"
+      coursesSpecialities: "{{courses}}/4 courses • {{specialities}}/3 specialities"
+      completedBasicCourses: "Completed basic courses:"
+      moreCoursesText: "+{{count}} more..."
+    directionProject:
+      title: "Direction Project"
+      description: A semester-long software development project.
+    finalCourses:
+      title: "Final Courses"
+      description: "Choose 2 from Internship (I/II) or Thesis (I/II)."
+    specialities:
+      title: "Specialities"
+      description: Complete 2 of 3 specialities for your direction (optional).
+  specialityCard:
+    completed: Completed
+    inProgress: In Progress
+    directionCourses: Direction Courses
+    basicCourses: Basic Courses
+    overall: Overall
+  progress:
+    complete: "{{percent}}% Complete"
+  directions:
+    cs: "Computer Science (CS)"
+    cet: "Computer Engineering & Telecommunications (CET)"
+  errors:
+    failedToUpdateDirection: Failed to update direction
+
+maintenance:
+  title: Services Currently Down
+  description: We're sorry, but our backend services are temporarily unavailable. We are working hard to resolve the issue. Please try again in a few moments.
+  buttonText: Try Again
+
+notFound:
+  title: 404 - Not Found
+  description: Oops! The page you are looking for does not exist. It might have been moved or deleted.
+  buttonText: Go to Dashboard
+
+profile:
+  title: Your Profile
+  subtitle: View and manage your personal information and academic preferences.
+  loading: Loading profile...
+  language: Language
+  languageChanged: Language updated successfully!
+  languageChangeFailed: Failed to update language
+  fullName: Student Name
+  direction: Direction
+  semester: Semester
+  accountDetails: Account Details
+  editProfile: Edit Profile
+  saveChanges: Save Changes
+  cancel: Cancel
+  profileUpdated: Profile updated successfully!
+  profileUpdateFailed: Failed to update profile
+  validation:
+    nameRequired: First name and last name are required
+    sdiRequired: SDI must be a 7-digit number
+  fields:
+    firstName: First Name
+    lastName: Last Name
+    sdi: Student ID (SDI)
+    currentSemester: Current Semester
+    academicDirection: Academic Direction
+  placeholders:
+    firstName: Enter first name
+    lastName: Enter last name
+    sdi: Enter 7-digit SDI
+    selectSemester: Select semester
+    selectDirection: Select direction
+  values:
+    notSet: Not set
+    notSelected: Not selected
+    semester: "Semester {{number}}"
+  directions:
+    notSelected: Not Selected
+    cs: Computer Science (CS)
+    cet: Computer Engineering & Telecommunications (CET)
+  loadFailed: Failed to load profile data
+
+resources:
+  title: Useful Resources
+  subtitle: A collection of essential links for students of the department.
+  goToSite: Go to Site
+  items:
+    ditWebsite:
+      title: DIT Website
+      description: The official website of the Department of Informatics and Telecommunications.
+    eclass:
+      title: eClass
+      description: The official e-learning platform for course materials, announcements, and assignments.
+    myStudies:
+      title: My-Studies
+      description: The student portal for grades, course declarations, and official documents.
+    ditLab:
+      title: DIT Lab
+      description: Access to notes and old exams for various courses.
+    progIntroLectures:
+      title: Prog Intro Lectures
+      description: Lecture notes and resources for the Introduction to Programming course.
+    hackIntroLectures:
+      title: Hack Intro Lectures
+      description: Lecture notes and resources for the Protection and Security of Computer Systems course.
+    uoabot:
+      title: Uoabot
+      description: A website for testing your assignments on Introduction to Programming course.
+
+subscription:
+  title: Unlock Your Potential
+  subtitle: Choose a plan that fits your academic journey and take control of your studies like never before.
+  goBackToDashboard: Go back to Dashboard
+  perMonth: "/ month"
+  badges:
+    mostPopular: MOST POPULAR
+    recommended: RECOMMENDED
+  plans:
+    basic:
+      title: Basic
+      price: "€0"
+      cta: Current Plan
+      features:
+        - Track all your courses
+        - Calculate ECTS and GPA
+        - View degree requirements
+        - Basic timetable view
+    pro:
+      title: Pro
+      price: "€5"
+      cta: Upgrade to Pro
+      features:
+        - All features from Basic
+        - Advanced course planning
+        - Timetable conflict detection
+        - What-if scenario analysis
+        - Priority support
+    ultimate:
+      title: Ultimate
+      price: "€15"
+      cta: Go Ultimate
+      features:
+        - All features from Pro
+        - AI-powered semester suggestions
+        - Automated degree audit
+        - Integration with calendar apps
+        - Early access to new features
+
+timetable:
+  title: My Timetable
+  subtitle: "Your schedule for Spring 2025 - {{count}} courses enrolled"
+  loading: Loading your timetable...
+  sdiInfo: "SDI: {{sdi}} ({{group}})"
+  sdiGroups:
+    even: Even
+    odd: Odd
+  summaryCards:
+    enrolledCourses: Enrolled Courses
+    weeklyHours: Weekly Hours
+    totalECTS: Total ECTS
+    sdiGroup: SDI Group
+  sdiFilter:
+    title: SDI-Based Filtering Active
+    description: "Showing courses for {{group}} students only. Duplicate courses with different groups are automatically filtered."
+    modDescription: "Modulo-based filtering: SDI {{sdi}} % 4 = {{remainder}}. Only courses matching this remainder are shown."
+  weeklySchedule: Weekly Schedule
+  groupLabel: "{{group}} Group"
+  days:
+    monday: Monday
+    tuesday: Tuesday
+    wednesday: Wednesday
+    thursday: Thursday
+    friday: Friday
+  emptyState:
+    title: No Schedule Found
+    description: "No courses marked as \"Current Semester\" were found in the timetable. This could mean:"
+    reasons:
+      - "You haven't marked any courses as \"Current Semester\""
+      - "Course names don't match between database and timetable"
+      - "Courses are not scheduled for Spring 2025"
+      - "Courses are filtered out based on your SDI group"
+    buttonText: Manage Courses
+  overlappingCourses: "{{count}} overlapping courses"
+  courseNumber: "#{index} of {{total}}"
+  enrolledCoursesSection: Enrolled Courses
+  conflictsDetected: "⚠️ Schedule conflicts detected"
+  noScheduleFound: No schedule found

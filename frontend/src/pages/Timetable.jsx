@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Clock, MapPin, User, Calendar, Hash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 // Import the timetable data directly
 import timetableData from '../data/spring2025_timetable.json';
 
 function Timetable() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [currentCourses, setCurrentCourses] = useState([]);
   const [myTimetable, setMyTimetable] = useState([]);
   const [userSDI, setUserSDI] = useState(null);
@@ -30,6 +32,15 @@ function Timetable() {
     '18:00-19:00',
     '19:00-20:00',
   ];
+
+  // Day names translations
+  const dayNames = {
+    Δευτέρα: t('timetable.days.monday'),
+    Τρίτη: t('timetable.days.tuesday'),
+    Τετάρτη: t('timetable.days.wednesday'),
+    Πέμπτη: t('timetable.days.thursday'),
+    Παρασκευή: t('timetable.days.friday'),
+  };
 
   useEffect(() => {
     // Fetch both courses and user SDI using the existing endpoint
@@ -107,10 +118,28 @@ function Timetable() {
     }
   }, [myTimetable]);
 
-  // Function to determine if a course should be shown based on SDI
+  // Enhanced function to determine if a course should be shown based on SDI
   const shouldShowCourse = (courseName, userSDI) => {
-    const isSDIEven = userSDI % 2 === 0;
     const courseNameLower = courseName.toLowerCase();
+
+    // Check for general modulo pattern (e.g., "mod 4=2", "mod 3=1", etc.)
+    const modMatch = courseNameLower.match(/mod\s*(\d+)\s*=\s*(\d+)/);
+    if (modMatch) {
+      const modulus = parseInt(modMatch[1], 10);
+      const expectedRemainder = parseInt(modMatch[2], 10);
+      const actualRemainder = userSDI % modulus;
+
+      console.log(`[MOD FILTER] Course: "${courseName}"`);
+      console.log(
+        `  Modulus: ${modulus}, Expected: ${expectedRemainder}, Actual: ${actualRemainder}, SDI: ${userSDI}`
+      );
+      console.log(`  Show course: ${actualRemainder === expectedRemainder}`);
+
+      return actualRemainder === expectedRemainder;
+    }
+
+    // Fall back to even/odd filtering for courses with άρτιοι/περιττοί indicators
+    const isSDIEven = userSDI % 2 === 0;
 
     const hasEvenIndicator =
       courseNameLower.includes('άρτιοι') ||
@@ -124,10 +153,12 @@ function Timetable() {
       courseNameLower.includes('(περιττοί)') ||
       courseNameLower.includes('(περιττοι)');
 
+    // If no even/odd indicators, show the course
     if (!hasEvenIndicator && !hasOddIndicator) {
       return true;
     }
 
+    // Apply even/odd filtering
     if (isSDIEven) {
       return hasEvenIndicator;
     }
@@ -161,8 +192,8 @@ function Timetable() {
     ); // Normalize whitespace
   };
 
-  // Function to get the base course name without even/odd indicators
-  const getBaseCourse = (courseName) => {
+  // Function to get the base course name for MATCHING purposes only (removes all indicators)
+  const getBaseCourseName = (courseName) => {
     return courseName
       .replace(/\s*\(άρτιοι\)/gi, '')
       .replace(/\s*\(αρτιοι\)/gi, '')
@@ -172,6 +203,15 @@ function Timetable() {
       .replace(/\s*αρτιοι\s*/gi, ' ')
       .replace(/\s*περιττοί\s*/gi, ' ')
       .replace(/\s*περιττοι\s*/gi, ' ')
+      .replace(/\s*\(φροντ\.\s*αμ\s*mod\s*\d+\s*=\s*\d+\)/gi, '') // Remove mod patterns like "(Φροντ. ΑΜ mod 4=0)"
+      .replace(/\s*φροντ\.\s*αμ\s*mod\s*\d+\s*=\s*\d+/gi, '') // Remove mod patterns χωρίς παρενθέσεις
+      .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+      .trim();
+  };
+
+  // Function to get the course name for DISPLAY purposes (keeps everything intact, just cleans whitespace)
+  const getDisplayCourseName = (courseName) => {
+    return courseName
       .replace(/\s+/g, ' ') // Replace multiple spaces with single space
       .trim();
   };
@@ -180,17 +220,30 @@ function Timetable() {
   const findMatchingTimetableEntries = (courses, timetableSchedule, userSDI) => {
     const matched = [];
 
+    console.log(
+      `[TIMETABLE MATCHING] Starting with ${courses.length} current courses and SDI ${userSDI}`
+    );
+    console.log(
+      `[TIMETABLE MATCHING] Total timetable entries to filter: ${timetableSchedule.length}`
+    );
+
     courses.forEach((course) => {
+      console.log(`\n[MATCHING] Processing course: "${course.name}"`);
+
       const timetableEntries = timetableSchedule.filter((entry) => {
-        if (!shouldShowCourse(entry.course_name, userSDI)) {
+        // First check SDI filtering
+        const shouldShow = shouldShowCourse(entry.course_name, userSDI);
+        if (!shouldShow) {
           return false;
         }
 
-        const cleanCourseName = normalizeText(getBaseCourse(course.name));
-        const cleanTimetableName = normalizeText(getBaseCourse(entry.course_name));
+        // Use getBaseCourseName for matching (removes all indicators)
+        const cleanCourseName = normalizeText(getBaseCourseName(course.name));
+        const cleanTimetableName = normalizeText(getBaseCourseName(entry.course_name));
 
         // Direct match after normalization
         if (cleanCourseName === cleanTimetableName) {
+          console.log(`  ✓ Direct match with: "${entry.course_name}"`);
           return true;
         }
 
@@ -199,6 +252,7 @@ function Timetable() {
           cleanCourseName.includes(cleanTimetableName) ||
           cleanTimetableName.includes(cleanCourseName)
         ) {
+          console.log(`  ✓ Substring match with: "${entry.course_name}"`);
           return true;
         }
 
@@ -222,8 +276,16 @@ function Timetable() {
         const matchRatio = commonWords.length / Math.min(courseWords.length, timetableWords.length);
         const isMatch = matchRatio >= 0.7 && commonWords.length >= 2;
 
+        if (isMatch) {
+          console.log(
+            `  ✓ Word-based match with: "${entry.course_name}" (ratio: ${matchRatio.toFixed(2)})`
+          );
+        }
+
         return isMatch;
       });
+
+      console.log(`  Found ${timetableEntries.length} matching timetable entries`);
 
       timetableEntries.forEach((entry) => {
         matched.push({
@@ -236,6 +298,7 @@ function Timetable() {
       });
     });
 
+    console.log(`[TIMETABLE MATCHING] Final result: ${matched.length} matched entries`);
     return matched;
   };
 
@@ -269,27 +332,29 @@ function Timetable() {
     return (
       <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
         <div className="text-center py-10">
-          <p className="text-xl text-gray-400">Loading your timetable...</p>
+          <p className="text-xl text-gray-400">{t('timetable.loading')}</p>
         </div>
       </div>
     );
   }
 
   const isSDIEven = userSDI % 2 === 0;
+  const sdiGroup = isSDIEven ? t('timetable.sdiGroups.even') : t('timetable.sdiGroups.odd');
+  const sdiMod4 = userSDI % 4;
 
   return (
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
       <header className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">My Timetable</h1>
+          <h1 className="text-4xl font-bold tracking-tight">{t('timetable.title')}</h1>
           <p className="text-lg text-gray-400">
-            Your schedule for Spring 2025 - {currentCourses.length} courses enrolled
+            {t('timetable.subtitle', { count: currentCourses.length })}
           </p>
           {userSDI && (
             <div className="flex items-center gap-2 mt-2">
               <Hash className="h-4 w-4 text-gray-400" />
               <span className="text-sm text-gray-400">
-                SDI: {userSDI} ({isSDIEven ? 'Άρτιοι' : 'Περιττοί'})
+                {t('timetable.sdiInfo', { sdi: userSDI, group: sdiGroup })}
               </span>
             </div>
           )}
@@ -303,7 +368,9 @@ function Timetable() {
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-blue-400" />
               <div>
-                <p className="text-sm text-gray-400">Enrolled Courses</p>
+                <p className="text-sm text-gray-400">
+                  {t('timetable.summaryCards.enrolledCourses')}
+                </p>
                 <p className="text-2xl font-bold text-blue-400">{currentCourses.length}</p>
               </div>
             </div>
@@ -315,7 +382,7 @@ function Timetable() {
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-green-400" />
               <div>
-                <p className="text-sm text-gray-400">Weekly Hours</p>
+                <p className="text-sm text-gray-400">{t('timetable.summaryCards.weeklyHours')}</p>
                 <p className="text-2xl font-bold text-green-400">{myTimetable.length}</p>
               </div>
             </div>
@@ -327,7 +394,7 @@ function Timetable() {
             <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-purple-400" />
               <div>
-                <p className="text-sm text-gray-400">Total ECTS</p>
+                <p className="text-sm text-gray-400">{t('timetable.summaryCards.totalECTS')}</p>
                 <p className="text-2xl font-bold text-purple-400">
                   {currentCourses.reduce((sum, course) => sum + (course.ects || 0), 0)}
                 </p>
@@ -341,27 +408,29 @@ function Timetable() {
             <div className="flex items-center gap-2">
               <Hash className="h-5 w-5 text-orange-400" />
               <div>
-                <p className="text-sm text-gray-400">SDI Group</p>
-                <p className="text-2xl font-bold text-orange-400">
-                  {userSDI ? (isSDIEven ? 'Άρτιοι' : 'Περιττοί') : 'N/A'}
-                </p>
+                <p className="text-sm text-gray-400">{t('timetable.summaryCards.sdiGroup')}</p>
+                <p className="text-2xl font-bold text-orange-400">{userSDI ? sdiGroup : 'N/A'}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* SDI Filter Info */}
+      {/* Enhanced SDI Filter Info */}
       {userSDI && (
         <Card className="bg-blue-900 border-blue-600 text-blue-100 mb-6">
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <Hash className="h-5 w-5 text-blue-300" />
               <div>
-                <p className="text-sm font-medium text-blue-200">SDI-Based Filtering Active</p>
+                <p className="text-sm font-medium text-blue-200">
+                  {t('timetable.sdiFilter.title')}
+                </p>
                 <p className="text-xs text-blue-300">
-                  Showing courses for {isSDIEven ? 'Άρτιοι (Even)' : 'Περιττοί (Odd)'} students
-                  only. Duplicate courses with different groups are automatically filtered.
+                  {t('timetable.sdiFilter.description', { group: sdiGroup })}
+                </p>
+                <p className="text-xs text-blue-300 mt-1">
+                  {t('timetable.sdiFilter.modDescription', { sdi: userSDI, remainder: sdiMod4 })}
                 </p>
               </div>
             </div>
@@ -373,21 +442,18 @@ function Timetable() {
         <Card className="bg-gray-800 border-gray-700 text-white">
           <CardContent className="p-8 text-center">
             <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No Schedule Found</h3>
-            <p className="text-gray-400 mb-4">
-              No courses marked as "Current Semester" were found in the timetable. This could mean:
-            </p>
+            <h3 className="text-xl font-semibold mb-2">{t('timetable.emptyState.title')}</h3>
+            <p className="text-gray-400 mb-4">{t('timetable.emptyState.description')}</p>
             <ul className="text-gray-400 text-left max-w-md mx-auto space-y-1">
-              <li>• You haven't marked any courses as "Current Semester"</li>
-              <li>• Course names don't match between database and timetable</li>
-              <li>• Courses are not scheduled for Spring 2025</li>
-              <li>• Courses are filtered out based on your SDI group</li>
+              {t('timetable.emptyState.reasons', { returnObjects: true }).map((reason, index) => (
+                <li key={index}>• {reason}</li>
+              ))}
             </ul>
             <Button
               onClick={() => navigate('/all-courses')}
               className="mt-4 bg-blue-600 hover:bg-blue-700"
             >
-              Manage Courses
+              {t('timetable.emptyState.buttonText')}
             </Button>
           </CardContent>
         </Card>
@@ -399,10 +465,10 @@ function Timetable() {
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Calendar className="h-5 w-5" />
-                  Weekly Schedule
+                  {t('timetable.weeklySchedule')}
                   {userSDI && (
                     <span className="text-sm text-gray-400 ml-2">
-                      ({isSDIEven ? 'Άρτιοι' : 'Περιττοί'} Group)
+                      ({t('timetable.groupLabel', { group: sdiGroup })})
                     </span>
                   )}
                 </CardTitle>
@@ -417,7 +483,7 @@ function Timetable() {
                         </th>
                         {days.map((day) => (
                           <th key={day} className="p-2 text-center text-gray-400 min-w-[200px]">
-                            {day}
+                            {dayNames[day]}
                           </th>
                         ))}
                       </tr>
@@ -456,7 +522,7 @@ function Timetable() {
                                           className="font-medium text-xs leading-tight mb-1"
                                           title={course.course_name}
                                         >
-                                          {getBaseCourse(course.course_name)}
+                                          {getDisplayCourseName(course.course_name)}
                                         </div>
                                         <div className="flex items-center gap-1 text-xs opacity-80">
                                           <MapPin className="h-3 w-3 flex-shrink-0" />
@@ -468,7 +534,10 @@ function Timetable() {
                                         </div>
                                         {courses.length > 1 && (
                                           <div className="text-xs font-medium mt-1 opacity-60">
-                                            #{index + 1} of {courses.length}
+                                            {t('timetable.courseNumber', {
+                                              index: index + 1,
+                                              total: courses.length,
+                                            })}
                                           </div>
                                         )}
                                       </div>
@@ -505,7 +574,7 @@ function Timetable() {
                           : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
                       } whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}
                     >
-                      {day}
+                      {dayNames[day]}
                     </button>
                   ))}
                 </nav>
@@ -521,7 +590,7 @@ function Timetable() {
                       {timeSlot}
                       {courses.length > 1 && (
                         <span className="text-sm text-yellow-400 ml-2">
-                          ({courses.length} overlapping courses)
+                          ({t('timetable.overlappingCourses', { count: courses.length })})
                         </span>
                       )}
                     </h3>
@@ -537,7 +606,7 @@ function Timetable() {
                             </div>
                           )}
                           <div className="font-bold text-base pr-12" title={course.course_name}>
-                            {getBaseCourse(course.course_name)}
+                            {getDisplayCourseName(course.course_name)}
                           </div>
                           <div className="flex items-center gap-2 mt-2 text-sm">
                             <MapPin className="h-4 w-4" />
@@ -560,7 +629,7 @@ function Timetable() {
           <Card className="bg-gray-800 border-gray-700 text-white mt-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                Enrolled Courses
+                {t('timetable.enrolledCoursesSection')}
                 {/* Show warning if there are time conflicts */}
                 {(() => {
                   const conflicts = timeSlots.some((timeSlot) =>
@@ -569,7 +638,7 @@ function Timetable() {
                   return (
                     conflicts && (
                       <span className="text-yellow-400 text-sm bg-yellow-900 bg-opacity-30 px-2 py-1 rounded">
-                        ⚠️ Schedule conflicts detected
+                        {t('timetable.conflictsDetected')}
                       </span>
                     )
                   );
@@ -623,7 +692,7 @@ function Timetable() {
                                 }`}
                               >
                                 <span>
-                                  {entry.day} {entry.start_time}-{entry.end_time}
+                                  {dayNames[entry.day]} {entry.start_time}-{entry.end_time}
                                   {isConflicted && ` (${coursesInSlot.length} courses)`}
                                 </span>
                                 <span>{entry.room}</span>
@@ -633,7 +702,7 @@ function Timetable() {
                         </div>
                       )}
                       {timetableEntries.length === 0 && (
-                        <p className="text-xs opacity-60">No schedule found</p>
+                        <p className="text-xs opacity-60">{t('timetable.noScheduleFound')}</p>
                       )}
                     </div>
                   );

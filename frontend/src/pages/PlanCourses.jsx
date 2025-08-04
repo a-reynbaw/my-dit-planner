@@ -6,11 +6,13 @@ import DraggableCourse from '@/components/course-planning/DraggableCourse';
 import DroppableContainer from '@/components/course-planning/DroppableContainer';
 import TrashCan from '@/components/course-planning/TrashCan';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const API_URL = '/api/courses';
 
 function PlanCourses() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [activeCourse, setActiveCourse] = useState(null);
 
@@ -52,12 +54,12 @@ function PlanCourses() {
         setContainers(newContainers); // Set the new, correctly partitioned state
       })
       .catch(() => {
-        toast.error('Failed to load planned courses.');
+        toast.error(t('planCourses.dragMessages.failedToLoad'));
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, [t]); // Add t to dependency array
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -159,7 +161,7 @@ function PlanCourses() {
       const isOddCourse = course.semester % 2 === 1;
       const isEvenDest = destSemesterNum % 2 === 0;
       if ((isOddCourse && isEvenDest) || (!isOddCourse && !isEvenDest)) {
-        toast.warning('Course can only be placed in a corresponding odd/even semester.');
+        toast.warning(t('planCourses.dragMessages.oddEvenWarning'));
         return;
       }
     }
@@ -184,16 +186,16 @@ function PlanCourses() {
     try {
       if (destinationContainerId === 'trash') {
         await updateCourseBackend(activeCourseId, { status: 'Not Taken', planned_semester: 0 });
-        toast.success(`"${course.name}" was removed from your plan.`);
+        toast.success(t('planCourses.dragMessages.courseRemoved', { courseName: course.name }));
       } else {
         const newPlannedSemester = isDroppingInSemester
           ? parseInt(destinationContainerId.split('-')[1], 10)
           : 0; // 0 for 'unassigned'
         await updateCourseBackend(activeCourseId, { planned_semester: newPlannedSemester });
-        toast.success(`Moved "${course.name}".`);
+        toast.success(t('planCourses.dragMessages.courseMoved', { courseName: course.name }));
       }
     } catch (error) {
-      toast.error('Failed to save changes. Reverting.');
+      toast.error(t('planCourses.dragMessages.failedToSave'));
       setContainers(originalContainers); // Rollback on API error
     }
   };
@@ -206,31 +208,29 @@ function PlanCourses() {
       <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
         <header className="flex flex-wrap items-center justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Plan Your Semesters</h1>
-            <p className="text-lg text-gray-400">
-              Drag & drop courses to organize your academic path.
-            </p>
+            <h1 className="text-4xl font-bold tracking-tight">{t('planCourses.title')}</h1>
+            <p className="text-lg text-gray-400">{t('planCourses.subtitle')}</p>
           </div>
           <div className="text-center w-full">
-            <h4 className="text-xl font-bold text-blue-300">Planned ECTS</h4>
+            <h4 className="text-xl font-bold text-blue-300">{t('planCourses.plannedECTS')}</h4>
             <span className="text-lg font-semibold">
               {totalPlannedECTS} / {totalECTS}
             </span>
-            <p className="text-xs text-gray-500 mt-1">Includes planned, current & failed courses</p>
+            <p className="text-xs text-gray-500 mt-1">{t('planCourses.ectsNote')}</p>
           </div>
         </header>
 
         {loading ? (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="h-10 w-10 animate-spin text-blue-400" />
-            <p className="ml-4 text-xl text-gray-400">Loading Planner...</p>
+            <p className="ml-4 text-xl text-gray-400">{t('planCourses.loading')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-1">
               <DroppableContainer
                 id="unassigned"
-                title="Courses to Plan"
+                title={t('planCourses.containers.unassigned')}
                 courses={containers.unassigned}
                 activeCourse={activeCourse}
               />
@@ -241,7 +241,7 @@ function PlanCourses() {
                 <DroppableContainer
                   key={key}
                   id={key}
-                  title={`Semester ${key.split('-')[1]}`}
+                  title={t('planCourses.containers.semester', { number: key.split('-')[1] })}
                   courses={containers[key]}
                   activeCourse={activeCourse}
                 />

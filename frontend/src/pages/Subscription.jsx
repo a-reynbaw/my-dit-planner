@@ -2,6 +2,7 @@ import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function SubscriptionPlan({
   title,
@@ -11,6 +12,8 @@ function SubscriptionPlan({
   isFeatured = false,
   isRecommended = false,
 }) {
+  const { t } = useTranslation();
+
   return (
     <Card
       className={`
@@ -26,15 +29,19 @@ function SubscriptionPlan({
     >
       <CardHeader className="text-center">
         {isFeatured && (
-          <div className="mb-2 text-sm font-bold text-blue-400 tracking-wider">MOST POPULAR</div>
+          <div className="mb-2 text-sm font-bold text-blue-400 tracking-wider">
+            {t('subscription.badges.mostPopular')}
+          </div>
         )}
         {isRecommended && (
-          <div className="mb-2 text-sm font-bold text-yellow-400 tracking-wider">RECOMMENDED</div>
+          <div className="mb-2 text-sm font-bold text-yellow-400 tracking-wider">
+            {t('subscription.badges.recommended')}
+          </div>
         )}
         <CardTitle className="text-2xl text-white font-bold">{title}</CardTitle>
         <p className="text-4xl font-extrabold text-white mt-2">
           {price}
-          <span className="text-base font-medium text-gray-400">/ month</span>
+          <span className="text-base font-medium text-gray-400">{t('subscription.perMonth')}</span>
         </p>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-between">
@@ -64,55 +71,36 @@ function SubscriptionPlan({
 
 function Subscription() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const plans = [
     {
-      title: 'Basic',
-      price: '€0',
-      features: [
-        'Track all your courses',
-        'Calculate ECTS and GPA',
-        'View degree requirements',
-        'Basic timetable view',
-      ],
-      cta: 'Current Plan',
+      title: t('subscription.plans.basic.title'),
+      price: t('subscription.plans.basic.price'),
+      features: t('subscription.plans.basic.features', { returnObjects: true }),
+      cta: t('subscription.plans.basic.cta'),
     },
     {
-      title: 'Pro',
-      price: '€5',
+      title: t('subscription.plans.pro.title'),
+      price: t('subscription.plans.pro.price'),
       isFeatured: true,
-      features: [
-        'All features from Basic',
-        'Advanced course planning',
-        'Timetable conflict detection',
-        'What-if scenario analysis',
-        'Priority support',
-      ],
-      cta: 'Upgrade to Pro',
+      features: t('subscription.plans.pro.features', { returnObjects: true }),
+      cta: t('subscription.plans.pro.cta'),
     },
     {
-      title: 'Ultimate',
-      price: '€15',
+      title: t('subscription.plans.ultimate.title'),
+      price: t('subscription.plans.ultimate.price'),
       isRecommended: true,
-      features: [
-        'All features from Pro',
-        'AI-powered semester suggestions',
-        'Automated degree audit',
-        'Integration with calendar apps',
-        'Early access to new features',
-      ],
-      cta: 'Go Ultimate',
+      features: t('subscription.plans.ultimate.features', { returnObjects: true }),
+      cta: t('subscription.plans.ultimate.cta'),
     },
   ];
 
   return (
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
       <header className="text-center mb-12">
-        <h1 className="text-5xl font-bold tracking-tight">Unlock Your Potential</h1>
-        <p className="text-xl text-gray-400 mt-4 max-w-2xl mx-auto">
-          Choose a plan that fits your academic journey and take control of your studies like never
-          before.
-        </p>
+        <h1 className="text-5xl font-bold tracking-tight">{t('subscription.title')}</h1>
+        <p className="text-xl text-gray-400 mt-4 max-w-2xl mx-auto">{t('subscription.subtitle')}</p>
       </header>
 
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -126,7 +114,7 @@ function Subscription() {
           onClick={() => navigate('/')}
           className="text-gray-400 hover:text-white"
         >
-          Go back to Dashboard
+          {t('subscription.goBackToDashboard')}
         </Button>
       </div>
     </div>

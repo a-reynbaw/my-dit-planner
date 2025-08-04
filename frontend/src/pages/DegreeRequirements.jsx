@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 function SummaryCard({ title, value, icon: Icon, color }) {
   return (
@@ -46,6 +48,8 @@ function RequirementCard({
   progress,
   children,
 }) {
+  const { t } = useTranslation();
+
   return (
     <Card className="bg-gray-800 border-gray-700 text-white flex flex-col">
       <CardHeader>
@@ -64,7 +68,9 @@ function RequirementCard({
         {children && <div className="mb-4">{children}</div>}
         <div className="space-y-1">
           <Progress value={progress} className="h-2 bg-gray-700" />
-          <p className="text-xs text-gray-400 text-right">{progress.toFixed(0)}% Complete</p>
+          <p className="text-xs text-gray-400 text-right">
+            {t('degreeRequirements.progress.complete', { percent: progress.toFixed(0) })}
+          </p>
         </div>
       </CardContent>
     </Card>
@@ -73,6 +79,7 @@ function RequirementCard({
 
 function DegreeRequirements() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userDirection, setUserDirection] = useState(null);
@@ -84,8 +91,8 @@ function DegreeRequirements() {
   const [graduationBasicReq, setGraduationBasicReq] = useState(null);
 
   const directions = [
-    { value: 'CS', label: 'Computer Science (CS)' },
-    { value: 'CET', label: 'Computer Engineering & Telecommunications (CET)' },
+    { value: 'CS', label: t('degreeRequirements.directions.cs') },
+    { value: 'CET', label: t('degreeRequirements.directions.cet') },
   ];
 
   useEffect(() => {
@@ -136,19 +143,16 @@ function DegreeRequirements() {
         };
       };
 
-      // NEW: Calculate graduation requirement for basic courses across all specialities
       const calculateGraduationBasicRequirement = (direction) => {
         if (!direction) return { completed: 0, total: 4, passedCourses: [] };
 
         const availableSpecs = getAvailableSpecialities(direction);
         const passedCourses = courses.filter((c) => c.status === 'Passed');
 
-        // Get courses marked as "B" in any of the three direction specialities
         const basicCoursesAcrossSpecs = passedCourses.filter((course) => {
           return availableSpecs.some((spec) => course[spec] === 'B');
         });
 
-        // Count how many specialities are represented
         const specialitiesRepresented = new Set();
         basicCoursesAcrossSpecs.forEach((course) => {
           availableSpecs.forEach((spec) => {
@@ -182,7 +186,6 @@ function DegreeRequirements() {
       ]);
       setSpecialityProgress(Object.fromEntries(progressResults));
 
-      // Store the graduation basic requirement data
       setGraduationBasicReq(calculateGraduationBasicRequirement(userDirection));
     }
   }, [courses, userDirection]);
@@ -197,17 +200,18 @@ function DegreeRequirements() {
       if (response.ok) {
         setUserDirection(newDirection);
       } else {
-        console.error('Failed to update direction');
+        toast.error(t('degreeRequirements.errors.failedToUpdateDirection'));
       }
     } catch (error) {
       console.error('Error updating direction:', error);
+      toast.error(t('degreeRequirements.errors.failedToUpdateDirection'));
     }
   };
 
   if (loading) {
     return (
       <div className="bg-gray-900 min-h-screen text-white font-sans p-8 text-center">
-        <p className="text-xl text-gray-400">Loading degree requirements...</p>
+        <p className="text-xl text-gray-400">{t('degreeRequirements.loading')}</p>
       </div>
     );
   }
@@ -216,17 +220,19 @@ function DegreeRequirements() {
     return (
       <div className="bg-gray-900 min-h-screen text-white p-8">
         <header className="flex items-center justify-between mb-10">
-          <h1 className="text-4xl font-bold tracking-tight">Choose Your Direction</h1>
+          <h1 className="text-4xl font-bold tracking-tight">
+            {t('degreeRequirements.chooseDirection.title')}
+          </h1>
         </header>
         <Card className="bg-gray-800 border-gray-700 max-w-2xl mx-auto">
           <CardHeader>
             <CardTitle className="text-center text-2xl text-blue-400">
-              Select Academic Direction
+              {t('degreeRequirements.chooseDirection.subtitle')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-gray-300 text-center">
-              Choose your direction to see personalized degree requirements.
+              {t('degreeRequirements.chooseDirection.description')}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {directions.map((dir) => (
@@ -244,7 +250,9 @@ function DegreeRequirements() {
                         handleDirectionChange(dir.value);
                       }}
                     >
-                      Select {dir.value}
+                      {t('degreeRequirements.chooseDirection.selectButton', {
+                        direction: dir.value,
+                      })}
                     </Button>
                   </CardContent>
                 </Card>
@@ -294,31 +302,35 @@ function DegreeRequirements() {
 
   const requirements = [
     {
-      title: 'Compulsory Courses (ΥΜ)',
-      description: 'Core curriculum courses required for all students.',
+      title: t('degreeRequirements.requirements.compulsoryCourses.title'),
+      description: t('degreeRequirements.requirements.compulsoryCourses.description'),
       icon: ListChecks,
       color: 'text-green-400',
       completed: completedCompulsory.length,
       total: 18,
     },
     {
-      title: 'General Education (ΓΠ)',
-      description: 'Courses from a broad range of subjects.',
+      title: t('degreeRequirements.requirements.generalEducation.title'),
+      description: t('degreeRequirements.requirements.generalEducation.description'),
       icon: ListChecks,
       color: 'text-yellow-400',
       completed: completedGE.length,
       total: 3,
     },
     {
-      title: 'Direction Courses (ΕΥΜ)',
-      description: `4 elective courses specific to the ${selectedDirectionLabel} direction.`,
+      title: t('degreeRequirements.requirements.directionCourses.title'),
+      description: t('degreeRequirements.requirements.directionCourses.description', {
+        direction: selectedDirectionLabel,
+      }),
       icon: Target,
       color: 'text-orange-400',
       completed: completedDirection.length,
       total: 4,
       children: userDirection === 'CS' && (
         <div className="mt-3 pt-3 border-t border-dashed border-gray-700 text-xs">
-          <p className="font-semibold text-gray-400 mb-2">CS Direction Constraint:</p>
+          <p className="font-semibold text-gray-400 mb-2">
+            {t('degreeRequirements.requirements.directionCourses.csConstraint')}
+          </p>
           <ul className="space-y-1.5">
             {csRequiredCourses.map((name) => (
               <li key={name} className="flex items-center gap-2">
@@ -344,14 +356,18 @@ function DegreeRequirements() {
               csRequiredCompleted.length >= 3 ? 'text-green-400' : 'text-orange-400'
             }`}
           >
-            {csRequiredCompleted.length}/3 met
+            {t('degreeRequirements.requirements.directionCourses.csMet', {
+              count: csRequiredCompleted.length,
+            })}
           </p>
         </div>
       ),
     },
     {
-      title: 'Graduation Basic Requirement',
-      description: `Pass 4+ courses marked as "Basic" across all 3 ${selectedDirectionLabel} specialities.`,
+      title: t('degreeRequirements.requirements.graduationBasic.title'),
+      description: t('degreeRequirements.requirements.graduationBasic.description', {
+        direction: selectedDirectionLabel,
+      }),
       icon: Target,
       color: 'text-indigo-400',
       completed: graduationBasicReq?.completed || 0,
@@ -359,7 +375,9 @@ function DegreeRequirements() {
       children: graduationBasicReq && (
         <div className="mt-2 space-y-2">
           <div className="p-3 bg-gray-700/50 rounded-lg text-xs">
-            <p className="font-semibold text-gray-300 mb-2">Speciality Coverage:</p>
+            <p className="font-semibold text-gray-300 mb-2">
+              {t('degreeRequirements.requirements.graduationBasic.specialityCoverage')}
+            </p>
             <div className="grid grid-cols-3 gap-2">
               {availableSpecialities.map((spec) => {
                 const isRepresented = graduationBasicReq.specialitiesRepresented.includes(spec);
@@ -389,14 +407,18 @@ function DegreeRequirements() {
                       : 'text-red-400'
                 }`}
               >
-                {graduationBasicReq.completed}/4 courses •{' '}
-                {graduationBasicReq.specialitiesRepresented.length}/3 specialities
+                {t('degreeRequirements.requirements.graduationBasic.coursesSpecialities', {
+                  courses: graduationBasicReq.completed,
+                  specialities: graduationBasicReq.specialitiesRepresented.length,
+                })}
               </p>
             </div>
           </div>
           {graduationBasicReq.passedCourses.length > 0 && (
             <div className="max-h-24 overflow-y-auto">
-              <p className="text-xs text-gray-400 mb-1">Completed basic courses:</p>
+              <p className="text-xs text-gray-400 mb-1">
+                {t('degreeRequirements.requirements.graduationBasic.completedBasicCourses')}
+              </p>
               <div className="space-y-1">
                 {graduationBasicReq.passedCourses.slice(0, 6).map((course) => (
                   <div key={course.id} className="text-xs text-gray-300 truncate">
@@ -405,7 +427,9 @@ function DegreeRequirements() {
                 ))}
                 {graduationBasicReq.passedCourses.length > 6 && (
                   <div className="text-xs text-gray-400">
-                    +{graduationBasicReq.passedCourses.length - 6} more...
+                    {t('degreeRequirements.requirements.graduationBasic.moreCoursesText', {
+                      count: graduationBasicReq.passedCourses.length - 6,
+                    })}
                   </div>
                 )}
               </div>
@@ -415,16 +439,16 @@ function DegreeRequirements() {
       ),
     },
     {
-      title: 'Direction Project',
-      description: 'A semester-long software development project.',
+      title: t('degreeRequirements.requirements.directionProject.title'),
+      description: t('degreeRequirements.requirements.directionProject.description'),
       icon: BookOpen,
       color: 'text-purple-400',
       completed: completedProject.length,
       total: 1,
     },
     {
-      title: 'Final Courses',
-      description: 'Choose 2 from Internship (I/II) or Thesis (I/II).',
+      title: t('degreeRequirements.requirements.finalCourses.title'),
+      description: t('degreeRequirements.requirements.finalCourses.description'),
       icon: Clock,
       color: 'text-cyan-400',
       completed: completedFinal.length,
@@ -446,11 +470,9 @@ function DegreeRequirements() {
         </div>
       ),
     },
-    // NEW: Graduation Basic Requirement
-
     {
-      title: 'Specialities',
-      description: 'Complete 2 of 3 specialities for your direction (optional).',
+      title: t('degreeRequirements.requirements.specialities.title'),
+      description: t('degreeRequirements.requirements.specialities.description'),
       icon: GraduationCap,
       color: 'text-pink-400',
       completed: completedSpecialities.length,
@@ -471,8 +493,8 @@ function DegreeRequirements() {
     <div className="bg-gray-900 min-h-screen text-white font-sans p-4 md:p-8">
       <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">Degree Requirements</h1>
-          <p className="text-lg text-gray-400">Your progress towards graduation.</p>
+          <h1 className="text-4xl font-bold tracking-tight">{t('degreeRequirements.title')}</h1>
+          <p className="text-lg text-gray-400">{t('degreeRequirements.subtitle')}</p>
         </div>
         <div className="flex items-center gap-4">
           <Select value={userDirection} onValueChange={handleDirectionChange}>
@@ -497,25 +519,25 @@ function DegreeRequirements() {
       {/* High-Level Summary */}
       <section className="mb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard
-          title="Overall ECTS"
+          title={t('degreeRequirements.summary.overallECTS')}
           value={`${completedECTS} / 240`}
           icon={Target}
           color="text-blue-400"
         />
         <SummaryCard
-          title="Direction"
+          title={t('degreeRequirements.summary.direction')}
           value={selectedDirectionLabel}
           icon={Settings}
           color="text-orange-400"
         />
         <SummaryCard
-          title="Courses Passed"
+          title={t('degreeRequirements.summary.coursesPassed')}
           value={passedCourses.length}
           icon={CheckCircle2}
           color="text-green-400"
         />
         <SummaryCard
-          title="Specialities"
+          title={t('degreeRequirements.summary.specialities')}
           value={`${completedSpecialities.length} / 2`}
           icon={GraduationCap}
           color="text-pink-400"
@@ -524,7 +546,9 @@ function DegreeRequirements() {
 
       {/* Core Requirements Grid */}
       <section className="mb-10">
-        <h2 className="text-2xl font-bold tracking-tight mb-6">Core Requirements</h2>
+        <h2 className="text-2xl font-bold tracking-tight mb-6">
+          {t('degreeRequirements.sections.coreRequirements')}
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {requirements.map((req) => (
             <RequirementCard
@@ -540,13 +564,17 @@ function DegreeRequirements() {
       {userDirection && availableSpecialities.length > 0 && (
         <section>
           <h2 className="text-2xl font-bold tracking-tight mb-6">
-            Speciality Progress ({selectedDirectionLabel})
+            {t('degreeRequirements.sections.specialityProgress', {
+              direction: selectedDirectionLabel,
+            })}
           </h2>
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-purple-400">Your Specialities</CardTitle>
+              <CardTitle className="text-purple-400">
+                {t('degreeRequirements.sections.yourSpecialities')}
+              </CardTitle>
               <p className="text-sm text-gray-400">
-                Each speciality requires 2 compulsory direction (ΕΥΜ) and 4 basic courses.
+                {t('degreeRequirements.sections.specialityDescription')}
               </p>
             </CardHeader>
             <CardContent className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -571,16 +599,20 @@ function DegreeRequirements() {
                           {specialityNames[spec] || spec}
                         </p>
                         {progress.isCompleted ? (
-                          <Badge className="bg-green-600">Completed</Badge>
+                          <Badge className="bg-green-600">
+                            {t('degreeRequirements.specialityCard.completed')}
+                          </Badge>
                         ) : (
-                          <Badge variant="secondary">In Progress</Badge>
+                          <Badge variant="secondary">
+                            {t('degreeRequirements.specialityCard.inProgress')}
+                          </Badge>
                         )}
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3 text-sm">
                       <div>
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
-                          <span>Direction Courses</span>
+                          <span>{t('degreeRequirements.specialityCard.directionCourses')}</span>
                           <span>{progress.compulsoryCompleted}/2</span>
                         </div>
                         <Progress
@@ -590,14 +622,14 @@ function DegreeRequirements() {
                       </div>
                       <div>
                         <div className="flex justify-between text-xs text-gray-400 mb-1">
-                          <span>Basic Courses</span>
+                          <span>{t('degreeRequirements.specialityCard.basicCourses')}</span>
                           <span>{progress.basicCompleted}/4</span>
                         </div>
                         <Progress value={(progress.basicCompleted / 4) * 100} className="h-1.5" />
                       </div>
                       <div className="pt-2 border-t border-gray-600/50">
                         <div className="flex justify-between text-xs font-medium text-gray-300">
-                          <span>Overall</span>
+                          <span>{t('degreeRequirements.specialityCard.overall')}</span>
                           <span
                             className={progress.isCompleted ? 'text-green-400' : 'text-orange-400'}
                           >

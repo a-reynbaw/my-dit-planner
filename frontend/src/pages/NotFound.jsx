@@ -2,9 +2,11 @@ import { Frown, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function NotFound() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
@@ -13,18 +15,18 @@ function NotFound() {
           <div className="mx-auto bg-yellow-900/40 rounded-full p-4 w-fit">
             <Frown className="h-12 w-12 text-yellow-400" />
           </div>
-          <CardTitle className="text-4xl font-bold mt-6 text-white">404 - Not Found</CardTitle>
+          <CardTitle className="text-4xl font-bold mt-6 text-white">
+            {t('notFound.title')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-400 mb-8">
-            Oops! The page you are looking for does not exist. It might have been moved or deleted.
-          </p>
+          <p className="text-gray-400 mb-8">{t('notFound.description')}</p>
           <Button
             onClick={() => navigate('/')}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6"
           >
             <Home className="mr-2 h-5 w-5" />
-            Go to Dashboard
+            {t('notFound.buttonText')}
           </Button>
         </CardContent>
       </Card>
