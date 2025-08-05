@@ -160,7 +160,6 @@ failedCourses:
 planCourses:
   title: Προγραμματισμός Εξαμήνων
   subtitle: Σύρετε και αποθέστε μαθήματα για να οργανώσετε την ακαδημαϊκή σας πορεία.
-  gradePlanMsg: Opting for a specific final grade? See here what grades you need for courses with specific ECTS to achieve your wishing grade!
   gradePlanMsg: Στοχεύεις για κάποιον συγκεκριμένο βαθμό? Δες εδώ τι βαθμούς χρειάζεσαι για μαθήματα με αντίστοιχα ECTS ώστε να πετύχεις τον επιθυμητό βαθμό!
   loading: Φόρτωση Προγραμματιστή...
   plannedECTS: Προγραμματισμένα ECTS
