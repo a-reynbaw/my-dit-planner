@@ -35,11 +35,11 @@ function Timetable() {
 
   // Day names translations
   const dayNames = {
-    Δευτέρα: t('timetable.days.monday'),
-    Τρίτη: t('timetable.days.tuesday'),
-    Τετάρτη: t('timetable.days.wednesday'),
-    Πέμπτη: t('timetable.days.thursday'),
-    Παρασκευή: t('timetable.days.friday'),
+    'Δευτέρα': t('timetable.days.monday'),
+    'Τρίτη': t('timetable.days.tuesday'),
+    'Τετάρτη': t('timetable.days.wednesday'),
+    'Πέμπτη': t('timetable.days.thursday'),
+    'Παρασκευή': t('timetable.days.friday'),
   };
 
   useEffect(() => {
@@ -368,9 +368,7 @@ function Timetable() {
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-blue-400" />
               <div>
-                <p className="text-sm text-gray-400">
-                  {t('timetable.summaryCards.enrolledCourses')}
-                </p>
+                <p className="text-sm text-gray-400">{t('timetable.summaryCards.enrolledCourses')}</p>
                 <p className="text-2xl font-bold text-blue-400">{currentCourses.length}</p>
               </div>
             </div>
@@ -409,7 +407,9 @@ function Timetable() {
               <Hash className="h-5 w-5 text-orange-400" />
               <div>
                 <p className="text-sm text-gray-400">{t('timetable.summaryCards.sdiGroup')}</p>
-                <p className="text-2xl font-bold text-orange-400">{userSDI ? sdiGroup : 'N/A'}</p>
+                <p className="text-2xl font-bold text-orange-400">
+                  {userSDI ? sdiGroup : 'N/A'}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -423,9 +423,7 @@ function Timetable() {
             <div className="flex items-center gap-2">
               <Hash className="h-5 w-5 text-blue-300" />
               <div>
-                <p className="text-sm font-medium text-blue-200">
-                  {t('timetable.sdiFilter.title')}
-                </p>
+                <p className="text-sm font-medium text-blue-200">{t('timetable.sdiFilter.title')}</p>
                 <p className="text-xs text-blue-300">
                   {t('timetable.sdiFilter.description', { group: sdiGroup })}
                 </p>
@@ -443,7 +441,9 @@ function Timetable() {
           <CardContent className="p-8 text-center">
             <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">{t('timetable.emptyState.title')}</h3>
-            <p className="text-gray-400 mb-4">{t('timetable.emptyState.description')}</p>
+            <p className="text-gray-400 mb-4">
+              {t('timetable.emptyState.description')}
+            </p>
             <ul className="text-gray-400 text-left max-w-md mx-auto space-y-1">
               {t('timetable.emptyState.reasons', { returnObjects: true }).map((reason, index) => (
                 <li key={index}>• {reason}</li>
@@ -534,10 +534,7 @@ function Timetable() {
                                         </div>
                                         {courses.length > 1 && (
                                           <div className="text-xs font-medium mt-1 opacity-60">
-                                            {t('timetable.courseNumber', {
-                                              index: index + 1,
-                                              total: courses.length,
-                                            })}
+                                            {t('timetable.courseNumber', { index: index + 1, total: courses.length })}
                                           </div>
                                         )}
                                       </div>

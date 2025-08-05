@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Calculator } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import DraggableCourse from '@/components/course-planning/DraggableCourse';
 import DroppableContainer from '@/components/course-planning/DroppableContainer';
 import TrashCan from '@/components/course-planning/TrashCan';
+import PlanGrade from '@/components/PlanGrade';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +17,7 @@ function PlanCourses() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [activeCourse, setActiveCourse] = useState(null);
+  const [showGradePlanner, setShowGradePlanner] = useState(false);
 
   // Define the structure of our containers
   const createInitialContainers = () => ({
@@ -218,6 +221,15 @@ function PlanCourses() {
             </span>
             <p className="text-xs text-gray-500 mt-1">{t('planCourses.ectsNote')}</p>
           </div>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => setShowGradePlanner(true)}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Calculator className="h-4 w-4 mr-2" />
+              {t('planCourses.gradeCalculator', 'Grade Calculator')}
+            </Button>
+          </div>
         </header>
 
         {loading ? (
@@ -256,6 +268,12 @@ function PlanCourses() {
       </DragOverlay>
 
       {isDragging && <TrashCan />}
+
+      {/* Grade Planner Popup */}
+      <PlanGrade 
+        isOpen={showGradePlanner} 
+        onClose={() => setShowGradePlanner(false)} 
+      />
     </DndContext>
   );
 }

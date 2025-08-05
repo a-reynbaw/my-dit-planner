@@ -160,6 +160,7 @@ failedCourses:
 planCourses:
   title: Plan Your Semesters
   subtitle: Drag & drop courses to organize your academic path.
+  gradePlanMsg: Opting for a specific final grade? See here what grades you need for courses with specific ECTS to achieve your wishing grade!
   loading: Loading Planner...
   plannedECTS: Planned ECTS
   ectsNote: Includes planned, current & failed courses
