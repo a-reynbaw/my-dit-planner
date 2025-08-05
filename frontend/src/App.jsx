@@ -17,6 +17,8 @@ import {
   User,
   Gem,
   LifeBuoy,
+  Menu, 
+  X,
 } from 'lucide-react';
 import { Toaster } from 'sonner';
 
@@ -38,8 +40,8 @@ import { Badge } from '@/components/ui/badge';
 import HomeButton from '@/components/layout/HomeButton';
 import { useTranslation } from 'react-i18next';
 
-// Sidebar component for navigation
-function Sidebar() {
+// Reusable content for both sidebar variants
+function SidebarContent({ onLinkClick }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -56,44 +58,109 @@ function Sidebar() {
     { title: t('sidebar.resources'), path: '/resources', icon: LifeBuoy },
   ];
 
+  const handleNavigate = (path) => {
+    navigate(path);
+    if (onLinkClick) {
+      onLinkClick(); // Close the drawer on mobile after navigation
+    }
+  };
+
   return (
-    <aside className="w-72 flex-shrink-0 bg-gray-800 p-6 hidden lg:flex flex-col justify-between">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-10">DIT Hub</h2>
-        <nav className="flex flex-col space-y-2">
-          {navItems.map((item) => (
-            <Button
-              key={item.title}
-              variant="ghost"
-              onClick={() => navigate(item.path)}
-              className={`justify-start text-left text-sm leading-tight p-3 min-h-[3rem] h-auto whitespace-normal ${
-                location.pathname === item.path
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              }`}
-            >
-              <item.icon className="h-5 w-5 mr-3 flex-shrink-0 self-start mt-0.5" />
-              <span className="flex-1 text-left">{item.title}</span>
-            </Button>
-          ))}
-        </nav>
-      </div>
+    <div className="flex flex-col justify-between flex-grow">
+      <nav className="flex flex-col space-y-2">
+        {navItems.map((item) => (
+          <Button
+            key={item.title}
+            variant="ghost"
+            onClick={() => handleNavigate(item.path)}
+            className={`justify-start text-left text-sm leading-tight p-3 min-h-[3rem] h-auto whitespace-normal ${
+              location.pathname === item.path
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+            }`}
+          >
+            <item.icon className="h-5 w-5 mr-3 flex-shrink-0 self-start mt-0.5" />
+            <span className="flex-1 text-left">{item.title}</span>
+          </Button>
+        ))}
+      </nav>
 
       {/* Subscription Link at the bottom */}
       <div>
         <Button
           variant="ghost"
-          onClick={() => navigate('/subscription')}
+          onClick={() => handleNavigate('/subscription')}
           className="justify-start text-left w-full text-xs p-3 min-h-[2.5rem] h-auto text-gray-500 hover:bg-gray-700 hover:text-white whitespace-normal"
         >
           <Gem className="h-4 w-4 mr-3 flex-shrink-0 self-start mt-0.5" />
           <span className="flex-1 text-left">{t('sidebar.subscription')}</span>
         </Button>
       </div>
+    </div>
+  );
+}
+
+// The drawer for smaller screens
+function MobileSidebar({ isOpen, onClose }) {
+  return (
+    <>
+      {/* Overlay */}
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-60 z-40 transition-opacity lg:hidden ${
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      {/* Drawer */}
+      <aside
+        className={`fixed top-0 right-0 h-full w-72 bg-gray-800 p-6 flex flex-col transform transition-transform z-50 lg:hidden ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="flex justify-between items-center mb-10">
+          <h2 className="text-2xl font-bold text-white">DIT Hub</h2>
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-gray-700 hover:text-white"
+          >
+            <X className="h-6 w-6" />
+          </Button>
+        </div>
+        <SidebarContent onLinkClick={onClose} />
+      </aside>
+    </>
+  );
+}
+
+// The permanent sidebar for larger screens
+function DesktopSidebar() {
+  return (
+    <aside className="w-72 flex-shrink-0 bg-gray-800 p-6 hidden lg:flex flex-col">
+      <h2 className="text-2xl font-bold text-white mb-10">DIT Hub</h2>
+      <SidebarContent />
     </aside>
   );
 }
 
+// Header for mobile view with a burger icon
+function MobileHeader({ onMenuClick }) {
+  return (
+    <header className="lg:hidden bg-gray-800/80 backdrop-blur-sm p-4 flex items-center justify-between sticky top-0 z-30 shadow-md">
+      <h2 className="text-xl font-bold text-white">DIT Hub</h2>
+      <Button
+        onClick={onMenuClick}
+        variant="ghost"
+        size="icon"
+        className="text-white hover:bg-gray-700 hover:text-white"
+      >
+        <Menu className="h-6 w-6" />
+      </Button>
+    </header>
+  );
+}
 // A smaller, more focused StatCard
 function SummaryCard({ title, value, icon: Icon, color, onClick, cta, showArrow }) {
   const isClickable = !!onClick;
@@ -334,12 +401,11 @@ function Dashboard() {
 }
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isBackendDown, setIsBackendDown] = useState(false);
   const location = useLocation();
   const { i18n } = useTranslation();
-
-  const showHomeButton = location.pathname !== '/' && location.pathname !== '*';
 
   useEffect(() => {
     // Health check first
@@ -382,27 +448,36 @@ function App() {
     return <Maintenance />;
   }
 
-  // TODO: remove home button
   return (
     <div className="flex min-h-screen bg-gray-900">
       <Toaster richColors theme="dark" />
-      <Sidebar />
-      <main className="flex-1">
-        {showHomeButton && <HomeButton />}
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/all-courses" element={<AllCourses />} />
-          <Route path="/plan-courses" element={<PlanCourses />} />
-          <Route path="/failed-courses" element={<FailedCourses />} />
-          <Route path="/current-courses" element={<CurrentCourses />} />
-          <Route path="/degree-requirements" element={<DegreeRequirements />} />
-          <Route path="/timetable" element={<Timetable />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/subscription" element={<Subscription />} />
-          <Route path="/resources" element={<Resources />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
+      
+      {/* Sidebars for both mobile and desktop */}
+      <DesktopSidebar />
+      <MobileSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile header appears above content on small screens */}
+        <MobileHeader onMenuClick={() => setIsSidebarOpen(true)} />
+
+        <main className="flex-1">
+          {location.pathname !== '/' && <HomeButton />}
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/all-courses" element={<AllCourses />} />
+            <Route path="/plan-courses" element={<PlanCourses />} />
+            <Route path="/failed-courses" element={<FailedCourses />} />
+            <Route path="/current-courses" element={<CurrentCourses />} />
+            <Route path="/degree-requirements" element={<DegreeRequirements />} />
+            <Route path="/timetable" element={<Timetable />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/subscription" element={<Subscription />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+      </div>
     </div>
   );
 }
