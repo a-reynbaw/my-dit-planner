@@ -24,3 +24,5 @@ function HomeButton() {
 }
 
 export default HomeButton;
+
+// We don't need it anymore.

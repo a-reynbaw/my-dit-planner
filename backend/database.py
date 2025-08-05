@@ -213,6 +213,14 @@ def get_all_courses():
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
 
+def get_course_by_id(course_id):
+    """Return a single course by its ID as a dict"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM courses WHERE id = ?', (course_id,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+        
 def get_sdi_with_id(profile_id):
     with get_db_connection() as conn:
         cursor = conn.cursor()

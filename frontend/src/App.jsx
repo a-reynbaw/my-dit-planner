@@ -462,7 +462,6 @@ function App() {
         <MobileHeader onMenuClick={() => setIsSidebarOpen(true)} />
 
         <main className="flex-1">
-          {location.pathname !== '/' && <HomeButton />}
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/all-courses" element={<AllCourses />} />

@@ -7,6 +7,7 @@ import os
 from database import (
     init_database,
     get_all_courses,
+    get_course_by_id,
     get_sdi_with_id,
     get_first_name_with_id,
     get_last_name_with_id,
@@ -188,8 +189,9 @@ def api_get_language():
 def api_update_course_status(course_id: int, update: CourseStatusUpdate):
     try:
         update_course_status(course_id, update.status)
-        if update.status == 'Not Taken':
-            update_course_grade(course_id, None)  # Reset grade if status is 'Not Taken'
+        # If the new status is anything other than 'Passed', reset the grade to null.
+        if update.status != 'Passed':
+            update_course_grade(course_id, None)
         return {"message": "Status updated"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating course status: {str(e)}")
@@ -197,10 +199,19 @@ def api_update_course_status(course_id: int, update: CourseStatusUpdate):
 @app.put("/api/courses/{course_id}/grade")
 def api_update_course_grade(course_id: int, update: CourseGradeUpdate):
     try:
+        course = get_course_by_id(course_id)
+        if not course:
+            raise HTTPException(status_code=404, detail="Course not found")
+        
+        if course['status'] != 'Passed':
+            raise HTTPException(status_code=400, detail="Grade can only be set for 'Passed' courses.")
+
         update_course_grade(course_id, update.grade)
         return {"message": "Grade updated"}
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating course status: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating course grade: {str(e)}")
 
 @app.put("/api/courses/{course_id}/planned_semester")
 def api_update_course_planned_semester(course_id: int, update: CoursePlannedSemesterUpdate):
