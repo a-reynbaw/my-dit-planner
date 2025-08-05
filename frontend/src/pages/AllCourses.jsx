@@ -76,7 +76,15 @@ const getSemesterBadgeClass = (semester) => {
 };
 
 // Mobile-friendly card component for a single course
-function CourseCard({ course, updateStatus, updateGrade, getStatusText, getStatusBadgeColor, hasSemesterMismatch, t }) {
+function CourseCard({
+  course,
+  updateStatus,
+  updateGrade,
+  getStatusText,
+  getStatusBadgeColor,
+  hasSemesterMismatch,
+  t,
+}) {
   return (
     <Card className="bg-gray-800 border border-gray-700 mb-4 overflow-hidden">
       <CardContent className="p-4">
@@ -89,7 +97,7 @@ function CourseCard({ course, updateStatus, updateGrade, getStatusText, getStatu
             {getStatusText(course.status)}
           </Badge>
         </div>
-        
+
         <div className="space-y-2 text-sm border-t border-gray-700 pt-3">
           <div className="flex justify-between">
             <span className="text-gray-400">{t('allCourses.headers.semester')}</span>
@@ -129,7 +137,10 @@ function CourseCard({ course, updateStatus, updateGrade, getStatusText, getStatu
               {t('allCourses.actions.actions')} <ChevronDown className="h-4 w-4 ml-2" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-gray-800 text-white border-gray-700 w-56 z-50">
+          <DropdownMenuContent
+            align="end"
+            className="bg-gray-800 text-white border-gray-700 w-56 z-50"
+          >
             <DropdownMenuItem
               onClick={() => updateStatus(course.id, 'Passed')}
               disabled={course.status === 'Passed'}
@@ -209,12 +220,18 @@ function AllCourses() {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'Passed': return t('allCourses.statuses.passed');
-      case 'Current Semester': return t('allCourses.statuses.currentSemester');
-      case 'Planned': return t('allCourses.statuses.planned');
-      case 'Failed': return t('allCourses.statuses.failed');
-      case 'Not Taken': return t('allCourses.statuses.notTaken');
-      default: return status;
+      case 'Passed':
+        return t('allCourses.statuses.passed');
+      case 'Current Semester':
+        return t('allCourses.statuses.currentSemester');
+      case 'Planned':
+        return t('allCourses.statuses.planned');
+      case 'Failed':
+        return t('allCourses.statuses.failed');
+      case 'Not Taken':
+        return t('allCourses.statuses.notTaken');
+      default:
+        return status;
     }
   };
 
@@ -235,11 +252,21 @@ function AllCourses() {
     const courseSemesterIsOdd = course.semester % 2 === 1;
 
     if (userSemesterIsOdd !== courseSemesterIsOdd) {
-      const courseType = courseSemesterIsOdd ? t('allCourses.semesterTypes.odd') : t('allCourses.semesterTypes.even');
-      const userType = userSemesterIsOdd ? t('allCourses.semesterTypes.odd') : t('allCourses.semesterTypes.even');
+      const courseType = courseSemesterIsOdd
+        ? t('allCourses.semesterTypes.odd')
+        : t('allCourses.semesterTypes.even');
+      const userType = userSemesterIsOdd
+        ? t('allCourses.semesterTypes.odd')
+        : t('allCourses.semesterTypes.even');
       return {
         valid: false,
-        message: t('allCourses.messages.semesterMismatch', { courseName: course.name, courseSemester: course.semester, courseType, userSemester: userCurrentSemester, userType }),
+        message: t('allCourses.messages.semesterMismatch', {
+          courseName: course.name,
+          courseSemester: course.semester,
+          courseType,
+          userSemester: userCurrentSemester,
+          userType,
+        }),
         showProfileLink: true,
       };
     }
@@ -252,7 +279,10 @@ function AllCourses() {
       if (validation.showProfileLink) {
         toast.error(validation.message, {
           duration: 8000,
-          action: { label: t('allCourses.messages.updateProfile'), onClick: () => navigate('/profile') },
+          action: {
+            label: t('allCourses.messages.updateProfile'),
+            onClick: () => navigate('/profile'),
+          },
         });
       } else {
         toast.error(validation.message);
@@ -344,7 +374,13 @@ function AllCourses() {
           <p className="text-lg text-gray-400">{t('allCourses.subtitle')}</p>
           {userCurrentSemester && (
             <p className="text-sm text-gray-400 mt-1">
-              {t('allCourses.currentSemester', { semester: userCurrentSemester, parity: userCurrentSemester % 2 === 1 ? t('allCourses.semesterTypes.odd') : t('allCourses.semesterTypes.even') })}
+              {t('allCourses.currentSemester', {
+                semester: userCurrentSemester,
+                parity:
+                  userCurrentSemester % 2 === 1
+                    ? t('allCourses.semesterTypes.odd')
+                    : t('allCourses.semesterTypes.even'),
+              })}
             </p>
           )}
         </div>
@@ -363,25 +399,48 @@ function AllCourses() {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-12 w-full md:w-auto bg-gray-700 border-gray-600 text-white hover:bg-gray-600 hover:text-white transition-colors duration-200">
+            <Button
+              variant="outline"
+              className="h-12 w-full md:w-auto bg-gray-700 border-gray-600 text-white hover:bg-gray-600 hover:text-white transition-colors duration-200"
+            >
               <SlidersHorizontal className="mr-2 h-4 w-4" /> {t('allCourses.filters')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 bg-gray-800 text-white border-gray-700" align="end">
-            <DropdownMenuLabel className="text-white">{t('allCourses.filterBySemester')}</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-white">
+              {t('allCourses.filterBySemester')}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-600" />
             {['all', 1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
-              <DropdownMenuCheckboxItem key={sem} checked={filters.semester === sem} onCheckedChange={() => setFilters((f) => ({ ...f, semester: sem }))} className="text-white focus:bg-gray-700 focus:text-white">
-                {sem === 'all' ? t('allCourses.allSemesters') : t('allCourses.semester', { number: sem })}
+              <DropdownMenuCheckboxItem
+                key={sem}
+                checked={filters.semester === sem}
+                onCheckedChange={() => setFilters((f) => ({ ...f, semester: sem }))}
+                className="text-white focus:bg-gray-700 focus:text-white"
+              >
+                {sem === 'all'
+                  ? t('allCourses.allSemesters')
+                  : t('allCourses.semester', { number: sem })}
               </DropdownMenuCheckboxItem>
             ))}
-            <DropdownMenuLabel className="mt-2 text-white">{t('allCourses.filterByType')}</DropdownMenuLabel>
+            <DropdownMenuLabel className="mt-2 text-white">
+              {t('allCourses.filterByType')}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-600" />
-            <DropdownMenuCheckboxItem checked={filters.type === 'all'} onCheckedChange={() => setFilters((f) => ({ ...f, type: 'all' }))} className="text-white focus:bg-gray-700 focus:text-white">
+            <DropdownMenuCheckboxItem
+              checked={filters.type === 'all'}
+              onCheckedChange={() => setFilters((f) => ({ ...f, type: 'all' }))}
+              className="text-white focus:bg-gray-700 focus:text-white"
+            >
               {t('allCourses.allTypes')}
             </DropdownMenuCheckboxItem>
             {courseTypes.map((type) => (
-              <DropdownMenuCheckboxItem key={type} checked={filters.type === type} onCheckedChange={() => setFilters((f) => ({ ...f, type }))} className="text-white focus:bg-gray-700 focus:text-white">
+              <DropdownMenuCheckboxItem
+                key={type}
+                checked={filters.type === type}
+                onCheckedChange={() => setFilters((f) => ({ ...f, type }))}
+                className="text-white focus:bg-gray-700 focus:text-white"
+              >
                 {type}
               </DropdownMenuCheckboxItem>
             ))}
@@ -407,9 +466,7 @@ function AllCourses() {
               />
             ))
           ) : (
-            <div className="text-center py-10 text-gray-400">
-              {t('allCourses.noCourses')}
-            </div>
+            <div className="text-center py-10 text-gray-400">{t('allCourses.noCourses')}</div>
           )}
         </div>
       ) : (
@@ -419,12 +476,22 @@ function AllCourses() {
               <TableRow className="border-b-gray-700 hover:bg-transparent">
                 <TableHead className="text-white">{t('allCourses.headers.name')}</TableHead>
                 <TableHead className="text-white">{t('allCourses.headers.code')}</TableHead>
-                <TableHead className="text-white hidden md:table-cell">{t('allCourses.headers.semester')}</TableHead>
-                <TableHead className="text-white hidden md:table-cell">{t('allCourses.headers.type')}</TableHead>
-                <TableHead className="text-white hidden md:table-cell">{t('allCourses.headers.ects')}</TableHead>
-                <TableHead className="text-white hidden md:table-cell">{t('allCourses.headers.grade')}</TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('allCourses.headers.semester')}
+                </TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('allCourses.headers.type')}
+                </TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('allCourses.headers.ects')}
+                </TableHead>
+                <TableHead className="text-white hidden md:table-cell">
+                  {t('allCourses.headers.grade')}
+                </TableHead>
                 <TableHead className="text-white">{t('allCourses.headers.status')}</TableHead>
-                <TableHead className="text-white text-right">{t('allCourses.headers.actions')}</TableHead>
+                <TableHead className="text-white text-right">
+                  {t('allCourses.headers.actions')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -434,17 +501,33 @@ function AllCourses() {
                     <TableCell className="font-medium text-white">{course.name}</TableCell>
                     <TableCell className="text-gray-300">{course.code}</TableCell>
                     <TableCell className="hidden md:table-cell">
-                      <Badge variant="secondary" className={`${getSemesterBadgeClass(course.semester)}`}>
+                      <Badge
+                        variant="secondary"
+                        className={`${getSemesterBadgeClass(course.semester)}`}
+                      >
                         {course.semester}
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                      <Badge variant="outline" className="text-gray-300">{course.type}</Badge>
+                      <Badge variant="outline" className="text-gray-300">
+                        {course.type}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-gray-300">{course.ects}</TableCell>
+                    <TableCell className="hidden md:table-cell text-gray-300">
+                      {course.ects}
+                    </TableCell>
                     <TableCell className="hidden md:table-cell">
                       {course.status === 'Passed' ? (
-                        <Input type="number" step="0.5" min="0" max="10" defaultValue={course.grade || ''} onBlur={(e) => updateGrade(course.id, e.target.value)} className="w-20 bg-gray-700 border-gray-600 text-white h-8" placeholder={t('allCourses.gradePlaceholder')} />
+                        <Input
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          max="10"
+                          defaultValue={course.grade || ''}
+                          onBlur={(e) => updateGrade(course.id, e.target.value)}
+                          className="w-20 bg-gray-700 border-gray-600 text-white h-8"
+                          placeholder={t('allCourses.gradePlaceholder')}
+                        />
                       ) : (
                         <span className="text-gray-500">{t('allCourses.gradeNA')}</span>
                       )}
@@ -457,32 +540,64 @@ function AllCourses() {
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="text-white hover:bg-gray-700">
-                            {t('allCourses.actions.actions')} <ChevronDown className="h-4 w-4 ml-2" />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-white hover:bg-gray-700"
+                          >
+                            {t('allCourses.actions.actions')}{' '}
+                            <ChevronDown className="h-4 w-4 ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-gray-800 text-white border-gray-700 w-56 z-50">
-                          <DropdownMenuItem onClick={() => updateStatus(course.id, 'Passed')} disabled={course.status === 'Passed'} className="flex items-center hover:bg-gray-700">
+                        <DropdownMenuContent
+                          align="end"
+                          className="bg-gray-800 text-white border-gray-700 w-56 z-50"
+                        >
+                          <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Passed')}
+                            disabled={course.status === 'Passed'}
+                            className="flex items-center hover:bg-gray-700"
+                          >
                             <CheckCircle2 className="mr-2 h-4 w-4 text-green-400" />
                             <span>{t('allCourses.actions.setAsPassed')}</span>
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => updateStatus(course.id, 'Failed')} disabled={course.status === 'Failed'} className="flex items-center hover:bg-gray-700">
+                          <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Failed')}
+                            disabled={course.status === 'Failed'}
+                            className="flex items-center hover:bg-gray-700"
+                          >
                             <XCircle className="mr-2 h-4 w-4 text-red-400" />
                             <span>{t('allCourses.actions.setAsFailed')}</span>
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => updateStatus(course.id, 'Current Semester')} disabled={course.status === 'Current Semester'} className={`flex items-center hover:bg-gray-700 ${hasSemesterMismatch(course) ? 'opacity-60' : ''}`}>
+                          <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Current Semester')}
+                            disabled={course.status === 'Current Semester'}
+                            className={`flex items-center hover:bg-gray-700 ${hasSemesterMismatch(course) ? 'opacity-60' : ''}`}
+                          >
                             <BookOpen className="mr-2 h-4 w-4 text-blue-400" />
                             <span className="flex items-center justify-between w-full">
                               {t('allCourses.actions.setAsCurrent')}
-                              {hasSemesterMismatch(course) && <span className="ml-2 text-xs" title="Semester parity mismatch">⚠️</span>}
+                              {hasSemesterMismatch(course) && (
+                                <span className="ml-2 text-xs" title="Semester parity mismatch">
+                                  ⚠️
+                                </span>
+                              )}
                             </span>
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => updateStatus(course.id, 'Planned')} disabled={course.status === 'Planned'} className="flex items-center hover:bg-gray-700">
+                          <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Planned')}
+                            disabled={course.status === 'Planned'}
+                            className="flex items-center hover:bg-gray-700"
+                          >
                             <ListTodo className="mr-2 h-4 w-4 text-yellow-400" />
                             <span>{t('allCourses.actions.setPlanned')}</span>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator className="bg-gray-700" />
-                          <DropdownMenuItem onClick={() => updateStatus(course.id, 'Not Taken')} disabled={course.status === 'Not Taken'} className="flex items-center hover:bg-gray-700">
+                          <DropdownMenuItem
+                            onClick={() => updateStatus(course.id, 'Not Taken')}
+                            disabled={course.status === 'Not Taken'}
+                            className="flex items-center hover:bg-gray-700"
+                          >
                             <RotateCcw className="mr-2 h-4 w-4 text-gray-400" />
                             <span>{t('allCourses.actions.resetStatus')}</span>
                           </DropdownMenuItem>
