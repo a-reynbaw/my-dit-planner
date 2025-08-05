@@ -17,7 +17,7 @@ import {
   User,
   Gem,
   LifeBuoy,
-  Menu, 
+  Menu,
   X,
 } from 'lucide-react';
 import { Toaster } from 'sonner';
@@ -451,7 +451,7 @@ function App() {
   return (
     <div className="flex min-h-screen bg-gray-900">
       <Toaster richColors theme="dark" />
-      
+
       {/* Sidebars for both mobile and desktop */}
       <DesktopSidebar />
       <MobileSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
