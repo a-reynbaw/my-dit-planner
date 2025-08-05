@@ -270,10 +270,7 @@ function PlanCourses() {
       {isDragging && <TrashCan />}
 
       {/* Grade Planner Popup */}
-      <PlanGrade 
-        isOpen={showGradePlanner} 
-        onClose={() => setShowGradePlanner(false)} 
-      />
+      <PlanGrade isOpen={showGradePlanner} onClose={() => setShowGradePlanner(false)} />
     </DndContext>
   );
 }

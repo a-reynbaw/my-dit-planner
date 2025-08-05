@@ -23,29 +23,29 @@ function PlanGrade({ isOpen, onClose }) {
       // const response = await fetch('/api/grade-planning');
       // const data = await response.json();
       // setGradeData(data);
-      
+
       // Placeholder data structure for now
       setGradeData([
         {
           id: 1,
-          name: "Αλγόριθμοι & Πολυπλοκότητα",
-          code: "CS201",
+          name: 'Αλγόριθμοι & Πολυπλοκότητα',
+          code: 'CS201',
           ects: 6,
           currentGrade: null,
           requiredGrade: 7.2,
           semester: 3,
-          status: "Planned"
+          status: 'Planned',
         },
         {
           id: 2,
-          name: "Βάσεις Δεδομένων",
-          code: "CS301",
+          name: 'Βάσεις Δεδομένων',
+          code: 'CS301',
           ects: 5,
           currentGrade: 5.5,
           requiredGrade: 8.1,
           semester: 4,
-          status: "Failed"
-        }
+          status: 'Failed',
+        },
       ]);
     } catch (error) {
       console.error('Error fetching grade data:', error);
@@ -73,10 +73,14 @@ function PlanGrade({ isOpen, onClose }) {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Planned': return 'bg-blue-100 text-blue-800';
-      case 'Failed': return 'bg-red-100 text-red-800';
-      case 'Current Semester': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Planned':
+        return 'bg-blue-100 text-blue-800';
+      case 'Failed':
+        return 'bg-red-100 text-red-800';
+      case 'Current Semester':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -115,9 +119,7 @@ function PlanGrade({ isOpen, onClose }) {
                     <p className="text-sm text-gray-400">
                       {t('planGrade.summary.targetGPA', 'Target GPA')}
                     </p>
-                    <p className="text-2xl font-bold text-blue-400">
-                      {targetGrade.toFixed(1)}
-                    </p>
+                    <p className="text-2xl font-bold text-blue-400">{targetGrade.toFixed(1)}</p>
                   </div>
                 </div>
               </CardContent>
@@ -147,9 +149,7 @@ function PlanGrade({ isOpen, onClose }) {
                     <p className="text-sm text-gray-400">
                       {t('planGrade.summary.totalECTS', 'Total ECTS')}
                     </p>
-                    <p className="text-2xl font-bold text-purple-400">
-                      {getTotalECTS()}
-                    </p>
+                    <p className="text-2xl font-bold text-purple-400">{getTotalECTS()}</p>
                   </div>
                 </div>
               </CardContent>
@@ -235,9 +235,7 @@ function PlanGrade({ isOpen, onClose }) {
                               <p className="text-gray-400 text-sm">{course.code}</p>
                             </div>
                           </td>
-                          <td className="text-center py-3 px-2 text-gray-300">
-                            {course.ects}
-                          </td>
+                          <td className="text-center py-3 px-2 text-gray-300">{course.ects}</td>
                           <td className="text-center py-3 px-2">
                             {course.currentGrade ? (
                               <span className={`font-medium ${getGradeColor(course.currentGrade)}`}>
@@ -253,7 +251,9 @@ function PlanGrade({ isOpen, onClose }) {
                             </span>
                           </td>
                           <td className="text-center py-3 px-2">
-                            <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(course.status)}`}>
+                            <span
+                              className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(course.status)}`}
+                            >
                               {course.status}
                             </span>
                           </td>
