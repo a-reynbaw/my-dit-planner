@@ -370,11 +370,11 @@ function Dashboard() {
                 <AlertTriangle className="h-10 w-10 text-red-400 transition-transform group-hover:scale-110" />
                 <div>
                   <CardTitle className="text-xl text-red-200">
-                    {failedCourses.length}
-                    {t('dashboard.failedCourses')}
-                    {failedCourses.length > 1 ? 's' : ''}
+                    {failedCourses.length} {t('dashboard.failedCourses')}
                   </CardTitle>
-                  <p className="text-red-300/80 text-sm">{t('dashboard.failedCoursesMsg')}</p>
+                  <p className="text-red-300/80 text-sm">
+                    {t('dashboard.failedCoursesMsg')}
+                  </p>
                 </div>
                 <ArrowRight className="ml-auto h-6 w-6 text-red-400/80 group-hover:text-red-200 transition-colors" />
               </CardHeader>
